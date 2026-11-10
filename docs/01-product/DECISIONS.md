@@ -44,3 +44,4 @@ Hər yeni qərarda səbəb, təsirlənən tələb/test ID-ləri, keçid/data mig
 | D28 | Base data app_private; api allowlist RPC; authenticated/anon base-table grant yoxdur | Giriş sərhədinin dəqiqləşdirilməsi |
 | D29 | Provider credential gate-i local domain/schema/UI işini bloklamır; sandbox sınağı ayrıca Done/release şərtidir | İcra ardıcıllığının düzəlişi |
 | D30 | Reversal və depozit allocation yalnız sahib/full; daily managerin rent receipt qeydi ilə qarışmır | İcazə dəqiqləşdirilməsi |
+| D31 | R05 qəbul əlaqəsi AT11–13, R06 qəbul əlaqəsi AT14-dür. AT13 realtor settlement və ikinci receipt-in qarşısını, AT14 expense approval/allocation-u yoxlayır; ssenarilərdə müvafiq olaraq yalnız R05 və R06 göstərilir. PRD-dəki əlavə əlaqələr buna görə düzəldilir. Hər iki ssenari və M7-də AT01–36 tələbi saxlanılır; məhsul davranışı, data və migration dəyişmir. | Sənəd və traceability uyğunluğu; R05/R06, AT13/AT14 |

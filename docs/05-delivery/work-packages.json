@@ -8,7 +8,7 @@
       "parent_issue": 9,
       "milestone": "M0",
       "title": "Mənbə və tələb inventarı",
-      "status": "review",
+      "status": "done",
       "depends_on": [],
       "role": "domain_engineer",
       "owned_path_candidates": [
@@ -35,7 +35,7 @@
       "parent_issue": 9,
       "milestone": "M0",
       "title": "Ziddiyyət və sərhəd auditi",
-      "status": "backlog",
+      "status": "review",
       "depends_on": [
         "EVE-001.1"
       ],
