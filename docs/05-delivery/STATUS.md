@@ -31,7 +31,7 @@ Prototip smoke-u 71 assertion ilə VM/fake-DOM yoxlamasıdır. Cloud browser wor
 - Production tətbiqi, executable SQL migrations/RLS, real API route-ları.
 - Supabase/SMTP/Payriff/Vercel faktiki canlı konfiqurasiyası və provider sandbox sınaqları.
 - Tətbiq integration/E2E/security/performance testləri, DB+media restore və rollback.
-- GitHub branch ruleset və required-check aktivliyinin təsdiqi. Private repo planı ruleset/branch protection API-sini 403 ilə rədd edir; qayda aktivliyi təsdiqlənməyib. Native M0–M7 milestones yaradılıb və roadmap epic/task issue-lar milestone-lara bağlanıb.
+- GitHub branch ruleset və required-check aktivliyinin təsdiqi. Private repo planı ruleset/branch protection API-sini 403 ilə rədd edir; qayda aktivliyi təsdiqlənməyib. GitHub-un [plan sənədlərinə](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets) görə private repo üçün Pro/Team/Enterprise, Free-də isə public repo tələb olunur. Native M0–M7 milestones yaradılıb və roadmap epic/task issue-lar milestone-lara bağlanıb.
 - Hüquqi retention/refund/məxfilik mətnlərinin təsdiqi və production deploy.
 
 ## Növbəti iş
