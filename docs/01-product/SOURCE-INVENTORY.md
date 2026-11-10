@@ -27,13 +27,13 @@ Rəsmi ID və AT mapping [PRD](PRD.md)-dədir; ekran/API/data/task üzrə geniş
 | R02 | Çox ev və sahib tenant izolyasiyası | [Əməliyyatlar](OPERATIONS.md), [giriş sərhədi](../03-engineering/ACCESS-BOUNDARY.md) | AT04–06 |
 | R03 | Çoxsahibli menecer və ev üzrə icazələr | [Əməliyyatlar](OPERATIONS.md), [giriş sərhədi](../03-engineering/ACCESS-BOUNDARY.md) | AT04–06 |
 | R04 | Rezervasiya, hold, blok, giriş/çıxış və toqquşma müdafiəsi | [Əməliyyatlar](OPERATIONS.md), [state maşınları](STATE-MACHINES.md), [data modeli](../03-engineering/DATA-MODEL.md) | AT07–10 |
-| R05 | Kirayə uçotu, depozit, refund və realtor hesabı | [Pul və abunə](BILLING-FINANCE.md), [əməliyyatlar](OPERATIONS.md) | AT11–14 |
-| R06 | Xərc, təkrarlanan xatırlatma və təsdiq | [Pul və abunə](BILLING-FINANCE.md), [əməliyyatlar](OPERATIONS.md) | AT13–14 |
+| R05 | Kirayə uçotu, depozit, refund və realtor hesabı | [Pul və abunə](BILLING-FINANCE.md), [əməliyyatlar](OPERATIONS.md) | AT11–13 |
+| R06 | Xərc, təkrarlanan xatırlatma və təsdiq | [Pul və abunə](BILLING-FINANCE.md), [əməliyyatlar](OPERATIONS.md) | AT14 |
 | R07 | Tapşırıq keçidi və WhatsApp paylaşımı | [Əməliyyatlar](OPERATIONS.md), [paylaşım](SHARING-GUIDES.md), [state maşınları](STATE-MACHINES.md) | AT15–16 |
 | R08 | Hazırlıq statusu və təmizlik | [Əməliyyatlar](OPERATIONS.md), [state maşınları](STATE-MACHINES.md) | AT10, AT16 |
-| R09 | Daimi inventar və tarixli/təhvil yoxlaması | [Əməliyyatlar](OPERATIONS.md), [data modeli](../03-engineering/DATA-MODEL.md) | AT12, AT17–19 |
+| R09 | Daimi inventar və tarixli/təhvil yoxlaması | [Əməliyyatlar](OPERATIONS.md), [data modeli](../03-engineering/DATA-MODEL.md) | AT17–19 |
 | R10 | Çoxdilli QR təlimatı və public/məxfi ayrılığı | [Paylaşım](SHARING-GUIDES.md), [təhlükəsizlik](../03-engineering/SECURITY.md) | AT20–21 |
-| R11 | Nömrəsiz public təqdimat və boş tarixlər | [Paylaşım](SHARING-GUIDES.md), [təhlükəsizlik](../03-engineering/SECURITY.md) | AT08, AT22–24 |
+| R11 | Nömrəsiz public təqdimat və boş tarixlər | [Paylaşım](SHARING-GUIDES.md), [təhlükəsizlik](../03-engineering/SECURITY.md) | AT22–24 |
 | R12 | Ev başına Payriff abunəsi | [Pul və abunə](BILLING-FINANCE.md), [qərarlar](DECISIONS.md), [state maşınları](STATE-MACHINES.md) | AT25–28 |
 | R13 | Mobil sürət, əlçatanlıq və vəziyyətlər | [Mobil UX](../02-design/MOBILE-UX.md), [ekranlar](../02-design/SCREENS.md), [axınlar](../02-design/FLOW-SPEC.md) | AT29–31 |
 | R14 | Audit, export, backup və dəstək | [Təhlükəsizlik](../03-engineering/SECURITY.md), [istismar runbook-u](../05-delivery/RUNBOOK.md) | AT32–34 |
@@ -42,17 +42,17 @@ Rəsmi ID və AT mapping [PRD](PRD.md)-dədir; ekran/API/data/task üzrə geniş
 
 ## EVE-001.2 üçün tutuşdurma qeydləri
 
-PRD-dəki qəbul siyahısı ilə machine trace-dəki əlavə və çatışmayan AT əlaqələri inventar zamanı göründü. Bu, hələ ziddiyyət hökmü deyil: eyni test bir neçə tələbi dəstəkləyə bilər. EVE-001.2 hər fərqin məqsədli cross-coverage, yoxsa köhnəlmiş xəritə olduğunu müəyyən etməlidir. Bu paket heç bir ID-ni səssiz dəyişmir.
+İlkin inventarda PRD ilə machine trace arasında beş AT əlaqəsi fərqi qeydə alındı. EVE-001.2 R05/R06 əlaqələrini ssenarilərlə uyğunlaşdırdı; R09/R10/R11 əlavə əlaqələri aid ssenarilərdə məqsədli cross-coverage kimi təsdiqləndi.
 
-| Tələb | PRD | traceability.json / TRACEABILITY.md | EVE-001.2-də veriləcək qərar |
+| Tələb | PRD | traceability.json / TRACEABILITY.md | Nəticə |
 |---|---|---|---|
-| R05 | AT11–14 | AT11–13 | AT14 R05 üçün qəbul meyarıdır, yoxsa yalnız xərc xəritəsində qalmalıdır? |
-| R06 | AT13–14 | AT14 | AT13 realtor hesabı R06 xərc tələbinə məqsədli cross-coverage-dirmi? |
-| R09 | AT17–19 | AT12, AT17–19 | AT12 inventory acceptance-inə aiddir, yoxsa yalnız cross-coverage-dir? |
-| R10 | AT20–21 | AT20–21, AT28 | AT28 QR expiry davranışını R10 üçün də dəstəkləyirmi? |
-| R11 | AT22–24 | AT08, AT22–24 | AT08 departure davranışını R11 üçün də dəstəkləyirmi? |
+| R05 | AT11–13 | AT11–13 | EVE-001.2-də PRD və inventar AT14-ün yalnız R06 ssenarisi olduğunu nəzərə alaraq düzəldildi. |
+| R06 | AT14 | AT14 | EVE-001.2-də PRD və inventar AT13-ün yalnız R05 ssenarisi olduğunu nəzərə alaraq düzəldildi. |
+| R09 | AT17–19 | AT12, AT17–19 | AT12 inspection və deposit sərhədi üçün cross-coverage-dir. |
+| R10 | AT20–21 | AT20–21, AT28 | AT28 expiry zamanı safety QR davranışı üçün cross-coverage-dir. |
+| R11 | AT22–24 | AT08, AT22–24 | AT08 public departure davranışı üçün cross-coverage-dir. |
 
-PRD, traceability Markdown və machine JSON-dakı acceptance əlaqələrinin uyğunluğunu EVE-001.2 təsdiqləməlidir. JSON checker-in PASS nəticəsi yalnız strukturu və istinadları yoxlayır, biznes mənasını yox.
+EVE-001.3 yekun qərar və traceability bağlanmasını aparmalıdır. JSON checker-in PASS nəticəsi yalnız strukturu və istinadları yoxlayır, biznes mənasını yox.
 
 ## Xarici mənbələrin əhatəsi
 
