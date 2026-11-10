@@ -42,8 +42,10 @@ Wi-Fi şifrəsi, qapı kodu və qonağa aid giriş məlumatı yalnız guest-priv
 
 ## Müddətli keçidlər
 
-Token ən az 256 bit random, DB-də hash; raw token log/audit/analytics-ə düşmür. Token task, event-side və ya guest guide scope-una bağlıdır. Token GET-i vəziyyət dəyişmir. Yazılar scoped endpoint-dən idempotent POST olur. Expiry/revoke media erişimini də dayandırır; qısaömürlü media URL istifadə olunur.
+Token ən az 256 bit random, DB-də hash; raw token log/audit/analytics-ə düşmür. Token task, event-side və ya guest guide scope-una bağlıdır. Token GET-i vəziyyət dəyişmir. Yazılar scoped endpoint-dən idempotent POST olur. Expiry/revoke media erişimini də dayandırır; private media üçün hər sorğuda scope/expiry/revoke yoxlayan proxy URL istifadə olunur; əvvəl endirilmiş baytlar geri alınmır.
 
 Task/inventory write window due_at +48 saat; gələcək işlərdə token müddəti max 30 gün, lazım olsa yenilənir. Tamamlanmış yoxlama write-locked olur. Guest guide plan checkout+24 saat; checkout uzadıldıqda səlahiyyətli server update edir. Bir linkin başqa şəxsə ötürülməsi mümkündür: bu bearer access-dir, hüquqi şəxsiyyət sübutu deyil.
 
 WhatsApp-da task linki preview oluna bilər, buna görə qəbul/completion GET-dən heç vaxt dəyişmir. “Paylaş” actual delivered/read telemetriyası kimi qeyd edilmir.
+
+Guest-private oxuma predicate-i reservation cancelled/no_show olmamasını və link placement-in cari placement olmasını tələb edir. Move/cancel/no_show köhnə linkləri atomik revoke edir. Çıxışdan sonrakı 24 saat yalnız qanuni completed qonaq keçidinə aiddir.

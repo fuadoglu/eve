@@ -6,8 +6,8 @@ Status: taskların hamısı ilkin olaraq **Backlog**. Ready olmaq üçün taskı
 |---|---|---|---|---|
 | EVE-001 | M0 | Spec və qərar uyğunluğunu yoxla, unresolved register bağla | — | R01–16 map, ziddiyyət yoxdur |
 | EVE-002 | M0 | UI01–18 clickable mobil prototip; production kod deyil | 001 | 360 px, 5 nəfər test protokolu |
-| EVE-003 | M0 | Auth cross-device/scanner və Payriff API feasibility spike | 001 | Rəsmi schema, sandbox evidence; secret yoxdur |
-| EVE-004 | M0 | OpenAPI 3.1, domain state/event və fixture kontraktı | 001,003 | Request/response/error/capability schema |
+| EVE-003 | M0 | Auth cross-device/scanner və Payriff API feasibility spike | 001 | Rəsmi schema və feasibility/bloklayıcı hesabatı; real sandbox EVE-027-də |
+| EVE-004 | M0 | OpenAPI 3.1, domain state/event və fixture kontraktı | 001 | Request/response/error/capability schema; provider əlavəsi EXT05 gate |
 | EVE-005 | M1 | Next/TS/pnpm/Node pin, env example, CI scripts | 004 | Təmiz checkout build/typecheck |
 | EVE-006 | M1 | SQL schema, composite FK, RLS, seed, generated types | 004,005 | AT04–06 DB negative tests |
 | EVE-007 | M1 | Passwordless email, session, confirm/resend/logout | 003,005,006 | AT01–03 real SMTP staging |
@@ -45,3 +45,8 @@ Backlog → Ready → In progress → Review → Done. Blocked ayrıca səbəb/�
 
 
 Faktiki GitHub issue nömrələri: [İzləmə xəritəsi](GITHUB-TRACKING.md).
+
+
+## Asılılığın iki növü
+
+Hard dependency code/müqavilə nəticəsidir; external gate real SMTP, Payriff və usability sübutudur. EVE-004 domain müqaviləsi EVE-003 sandbox-ını gözləmir; EVE-009.1 prototipin .2 nəticəsindən başlayır, real istifadəçi .3 sübutu buraxılış gate-i qalır. Dəqiq paket dependency-si [work-packages.json](work-packages.json)-dadır və parent cədvəlin ümumi ardıcıllığından daha dəqiqdir. Mock xarici gate-i bağlamır.

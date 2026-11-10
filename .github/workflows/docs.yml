@@ -19,3 +19,13 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - name: Sənəd linkləri və tələb ID-ləri
         run: node scripts/docs-check.mjs
+      - name: Kontraktlar və asılılıq qrafı
+        run: node scripts/verify-contracts.mjs
+      - name: Python validator mühiti
+        run: |
+          python3 -m venv .venv-docs
+          .venv-docs/bin/python -m pip install --disable-pip-version-check -r scripts/requirements-docs.txt
+      - name: OpenAPI və JSON Schema nümunələri
+        run: .venv-docs/bin/python scripts/validate-schemas.py
+      - name: Prototipin davranış smoke yoxlaması
+        run: node scripts/test-prototype.mjs

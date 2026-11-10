@@ -1,0 +1,3453 @@
+{
+  "schema_version": 1,
+  "source": {
+    "openapi": "openapi.json",
+    "data_dictionary": "data-dictionary.json"
+  },
+  "bindings": [
+    {
+      "schema": "Profile",
+      "api_field": "display_name",
+      "table": "profiles",
+      "column": "display_name",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Profile",
+      "api_field": "phone",
+      "table": "profiles",
+      "column": "phone",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Profile",
+      "api_field": "locale",
+      "table": "profiles",
+      "column": "locale",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ProfilePatch",
+      "api_field": "display_name",
+      "table": "profiles",
+      "column": "display_name",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ProfilePatch",
+      "api_field": "phone",
+      "table": "profiles",
+      "column": "phone",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ProfilePatch",
+      "api_field": "locale",
+      "table": "profiles",
+      "column": "locale",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Property",
+      "api_field": "name",
+      "table": "properties",
+      "column": "name",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Property",
+      "api_field": "area",
+      "table": "properties",
+      "column": "area",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Property",
+      "api_field": "address",
+      "table": "properties",
+      "column": "private_address",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Property",
+      "api_field": "property_type",
+      "table": "properties",
+      "column": "property_type",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Property",
+      "api_field": "room_count",
+      "table": "properties",
+      "column": "room_count",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Property",
+      "api_field": "bed_count",
+      "table": "properties",
+      "column": "bed_count",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Property",
+      "api_field": "max_guests",
+      "table": "properties",
+      "column": "max_guests",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Property",
+      "api_field": "default_check_in",
+      "table": "properties",
+      "column": "default_check_in",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Property",
+      "api_field": "default_check_out",
+      "table": "properties",
+      "column": "default_check_out",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Property",
+      "api_field": "default_nightly_minor",
+      "table": "properties",
+      "column": "nightly_rate_minor",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Property",
+      "api_field": "readiness",
+      "table": "properties",
+      "column": "readiness",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PropertyCreate",
+      "api_field": "name",
+      "table": "properties",
+      "column": "name",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PropertyCreate",
+      "api_field": "area",
+      "table": "properties",
+      "column": "area",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PropertyCreate",
+      "api_field": "property_type",
+      "table": "properties",
+      "column": "property_type",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PropertyPatch",
+      "api_field": "name",
+      "table": "properties",
+      "column": "name",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PropertyPatch",
+      "api_field": "area",
+      "table": "properties",
+      "column": "area",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PropertyPatch",
+      "api_field": "address",
+      "table": "properties",
+      "column": "private_address",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PropertyPatch",
+      "api_field": "property_type",
+      "table": "properties",
+      "column": "property_type",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PropertyPatch",
+      "api_field": "room_count",
+      "table": "properties",
+      "column": "room_count",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PropertyPatch",
+      "api_field": "bed_count",
+      "table": "properties",
+      "column": "bed_count",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PropertyPatch",
+      "api_field": "max_guests",
+      "table": "properties",
+      "column": "max_guests",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PropertyPatch",
+      "api_field": "default_check_in",
+      "table": "properties",
+      "column": "default_check_in",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PropertyPatch",
+      "api_field": "default_check_out",
+      "table": "properties",
+      "column": "default_check_out",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PropertyPatch",
+      "api_field": "default_nightly_minor",
+      "table": "properties",
+      "column": "nightly_rate_minor",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "MembershipPatch",
+      "api_field": "permission",
+      "table": "property_memberships",
+      "column": "permission",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "MembershipCreate",
+      "api_field": "email",
+      "table": "manager_invites",
+      "column": "normalized_email",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Contact",
+      "api_field": "name",
+      "table": "contacts",
+      "column": "name",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Contact",
+      "api_field": "phone",
+      "table": "contacts",
+      "column": "phone",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Contact",
+      "api_field": "service_type",
+      "table": "contacts",
+      "column": "service_type",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Contact",
+      "api_field": "private_note",
+      "table": "contacts",
+      "column": "private_note",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ContactCreate",
+      "api_field": "name",
+      "table": "contacts",
+      "column": "name",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ContactCreate",
+      "api_field": "phone",
+      "table": "contacts",
+      "column": "phone",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ContactCreate",
+      "api_field": "service_type",
+      "table": "contacts",
+      "column": "service_type",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ContactCreate",
+      "api_field": "private_note",
+      "table": "contacts",
+      "column": "private_note",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ContactPatch",
+      "api_field": "name",
+      "table": "contacts",
+      "column": "name",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ContactPatch",
+      "api_field": "phone",
+      "table": "contacts",
+      "column": "phone",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ContactPatch",
+      "api_field": "service_type",
+      "table": "contacts",
+      "column": "service_type",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ContactPatch",
+      "api_field": "private_note",
+      "table": "contacts",
+      "column": "private_note",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Reservation",
+      "api_field": "guest_name",
+      "table": "reservations",
+      "column": "guest_name",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Reservation",
+      "api_field": "guest_phone",
+      "table": "reservations",
+      "column": "guest_phone",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Reservation",
+      "api_field": "guest_count",
+      "table": "reservations",
+      "column": "guest_count",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Reservation",
+      "api_field": "check_in",
+      "table": "reservations",
+      "column": "check_in",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Reservation",
+      "api_field": "check_out",
+      "table": "reservations",
+      "column": "check_out",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Reservation",
+      "api_field": "check_in_time",
+      "table": "reservations",
+      "column": "check_in_time",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Reservation",
+      "api_field": "check_out_time",
+      "table": "reservations",
+      "column": "check_out_time",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Reservation",
+      "api_field": "status",
+      "table": "reservations",
+      "column": "state",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Reservation",
+      "api_field": "total_minor",
+      "table": "reservations",
+      "column": "total_minor",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Reservation",
+      "api_field": "note",
+      "table": "reservations",
+      "column": "private_note",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ReservationCreate",
+      "api_field": "guest_name",
+      "table": "reservations",
+      "column": "guest_name",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ReservationCreate",
+      "api_field": "guest_phone",
+      "table": "reservations",
+      "column": "guest_phone",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ReservationCreate",
+      "api_field": "guest_count",
+      "table": "reservations",
+      "column": "guest_count",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ReservationCreate",
+      "api_field": "check_in",
+      "table": "reservations",
+      "column": "check_in",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ReservationCreate",
+      "api_field": "check_out",
+      "table": "reservations",
+      "column": "check_out",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ReservationCreate",
+      "api_field": "check_in_time",
+      "table": "reservations",
+      "column": "check_in_time",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ReservationCreate",
+      "api_field": "check_out_time",
+      "table": "reservations",
+      "column": "check_out_time",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ReservationCreate",
+      "api_field": "status",
+      "table": "reservations",
+      "column": "state",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ReservationCreate",
+      "api_field": "total_minor",
+      "table": "reservations",
+      "column": "total_minor",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ReservationCreate",
+      "api_field": "free_stay",
+      "table": "reservations",
+      "column": "zero_price_confirmed",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ReservationCreate",
+      "api_field": "note",
+      "table": "reservations",
+      "column": "private_note",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ReservationPatch",
+      "api_field": "guest_name",
+      "table": "reservations",
+      "column": "guest_name",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ReservationPatch",
+      "api_field": "guest_phone",
+      "table": "reservations",
+      "column": "guest_phone",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ReservationPatch",
+      "api_field": "guest_count",
+      "table": "reservations",
+      "column": "guest_count",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ReservationPatch",
+      "api_field": "check_in",
+      "table": "reservations",
+      "column": "check_in",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ReservationPatch",
+      "api_field": "check_out",
+      "table": "reservations",
+      "column": "check_out",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ReservationPatch",
+      "api_field": "check_in_time",
+      "table": "reservations",
+      "column": "check_in_time",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ReservationPatch",
+      "api_field": "check_out_time",
+      "table": "reservations",
+      "column": "check_out_time",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ReservationPatch",
+      "api_field": "total_minor",
+      "table": "reservations",
+      "column": "total_minor",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ReservationPatch",
+      "api_field": "free_stay",
+      "table": "reservations",
+      "column": "zero_price_confirmed",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ReservationPatch",
+      "api_field": "note",
+      "table": "reservations",
+      "column": "private_note",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Block",
+      "api_field": "reason",
+      "table": "manual_blocks",
+      "column": "reason",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Block",
+      "api_field": "check_in",
+      "table": "manual_blocks",
+      "column": "check_in",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Block",
+      "api_field": "check_out",
+      "table": "manual_blocks",
+      "column": "check_out",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "BlockCreate",
+      "api_field": "reason",
+      "table": "manual_blocks",
+      "column": "reason",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "BlockCreate",
+      "api_field": "check_in",
+      "table": "manual_blocks",
+      "column": "check_in",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "BlockCreate",
+      "api_field": "check_out",
+      "table": "manual_blocks",
+      "column": "check_out",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "BlockPatch",
+      "api_field": "reason",
+      "table": "manual_blocks",
+      "column": "reason",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "BlockPatch",
+      "api_field": "check_in",
+      "table": "manual_blocks",
+      "column": "check_in",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "BlockPatch",
+      "api_field": "check_out",
+      "table": "manual_blocks",
+      "column": "check_out",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RentEntry",
+      "api_field": "kind",
+      "table": "rent_entries",
+      "column": "kind",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RentEntry",
+      "api_field": "amount_minor",
+      "table": "rent_entries",
+      "column": "amount_minor",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RentEntry",
+      "api_field": "custodian",
+      "table": "rent_entries",
+      "column": "custodian",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RentEntry",
+      "api_field": "contact_id",
+      "table": "rent_entries",
+      "column": "realtor_contact_id",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RentEntry",
+      "api_field": "original_id",
+      "table": "rent_entries",
+      "column": "original_entry_id",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RentEntry",
+      "api_field": "note",
+      "table": "rent_entries",
+      "column": "note",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RentEntry",
+      "api_field": "occurred_at",
+      "table": "rent_entries",
+      "column": "occurred_at",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RentEntryCreate",
+      "api_field": "kind",
+      "table": "rent_entries",
+      "column": "kind",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RentEntryCreate",
+      "api_field": "amount_minor",
+      "table": "rent_entries",
+      "column": "amount_minor",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RentEntryCreate",
+      "api_field": "custodian",
+      "table": "rent_entries",
+      "column": "custodian",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RentEntryCreate",
+      "api_field": "contact_id",
+      "table": "rent_entries",
+      "column": "realtor_contact_id",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RentEntryCreate",
+      "api_field": "original_id",
+      "table": "rent_entries",
+      "column": "original_entry_id",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RentEntryCreate",
+      "api_field": "note",
+      "table": "rent_entries",
+      "column": "note",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RentEntryCreate",
+      "api_field": "occurred_at",
+      "table": "rent_entries",
+      "column": "occurred_at",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Commission",
+      "api_field": "kind",
+      "table": "realtor_accounts",
+      "column": "commission_kind",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Commission",
+      "api_field": "fixed_minor",
+      "table": "realtor_accounts",
+      "column": "fixed_minor",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Commission",
+      "api_field": "percentage_basis_points",
+      "table": "realtor_accounts",
+      "column": "percentage_basis_points",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Commission",
+      "api_field": "basis_minor",
+      "table": "realtor_accounts",
+      "column": "basis_minor",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Commission",
+      "api_field": "contact_id",
+      "table": "realtor_accounts",
+      "column": "contact_id",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Expense",
+      "api_field": "category",
+      "table": "expenses",
+      "column": "category",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Expense",
+      "api_field": "amount_minor",
+      "table": "expenses",
+      "column": "total_minor",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Expense",
+      "api_field": "approval",
+      "table": "expenses",
+      "column": "approval",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Expense",
+      "api_field": "payment_status",
+      "table": "expenses",
+      "column": "payment_status",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Expense",
+      "api_field": "occurred_on",
+      "table": "expenses",
+      "column": "expense_date",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Expense",
+      "api_field": "due_on",
+      "table": "expenses",
+      "column": "due_date",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Expense",
+      "api_field": "contact_id",
+      "table": "expenses",
+      "column": "contact_id",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Expense",
+      "api_field": "task_id",
+      "table": "expenses",
+      "column": "source_task_id",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Expense",
+      "api_field": "note",
+      "table": "expenses",
+      "column": "note",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ExpenseCreate",
+      "api_field": "category",
+      "table": "expenses",
+      "column": "category",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ExpenseCreate",
+      "api_field": "amount_minor",
+      "table": "expenses",
+      "column": "total_minor",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ExpenseCreate",
+      "api_field": "occurred_on",
+      "table": "expenses",
+      "column": "expense_date",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ExpenseCreate",
+      "api_field": "due_on",
+      "table": "expenses",
+      "column": "due_date",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ExpenseCreate",
+      "api_field": "contact_id",
+      "table": "expenses",
+      "column": "contact_id",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ExpenseCreate",
+      "api_field": "task_id",
+      "table": "expenses",
+      "column": "source_task_id",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ExpenseCreate",
+      "api_field": "note",
+      "table": "expenses",
+      "column": "note",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ExpensePatch",
+      "api_field": "category",
+      "table": "expenses",
+      "column": "category",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ExpensePatch",
+      "api_field": "amount_minor",
+      "table": "expenses",
+      "column": "total_minor",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ExpensePatch",
+      "api_field": "occurred_on",
+      "table": "expenses",
+      "column": "expense_date",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ExpensePatch",
+      "api_field": "due_on",
+      "table": "expenses",
+      "column": "due_date",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ExpensePatch",
+      "api_field": "note",
+      "table": "expenses",
+      "column": "note",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RecurringExpense",
+      "api_field": "category",
+      "table": "recurring_expenses",
+      "column": "category",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RecurringExpense",
+      "api_field": "day_of_month",
+      "table": "recurring_expenses",
+      "column": "day_of_month",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RecurringExpense",
+      "api_field": "fixed_minor",
+      "table": "recurring_expenses",
+      "column": "suggested_minor",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RecurringExpense",
+      "api_field": "enabled",
+      "table": "recurring_expenses",
+      "column": "enabled",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RecurringExpense",
+      "api_field": "title",
+      "table": "recurring_expenses",
+      "column": "note",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RecurringExpenseCreate",
+      "api_field": "category",
+      "table": "recurring_expenses",
+      "column": "category",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RecurringExpenseCreate",
+      "api_field": "day_of_month",
+      "table": "recurring_expenses",
+      "column": "day_of_month",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RecurringExpenseCreate",
+      "api_field": "fixed_minor",
+      "table": "recurring_expenses",
+      "column": "suggested_minor",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RecurringExpenseCreate",
+      "api_field": "title",
+      "table": "recurring_expenses",
+      "column": "note",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RecurringExpensePatch",
+      "api_field": "category",
+      "table": "recurring_expenses",
+      "column": "category",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RecurringExpensePatch",
+      "api_field": "day_of_month",
+      "table": "recurring_expenses",
+      "column": "day_of_month",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RecurringExpensePatch",
+      "api_field": "fixed_minor",
+      "table": "recurring_expenses",
+      "column": "suggested_minor",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RecurringExpensePatch",
+      "api_field": "title",
+      "table": "recurring_expenses",
+      "column": "note",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RecurringExpensePatch",
+      "api_field": "enabled",
+      "table": "recurring_expenses",
+      "column": "enabled",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Task",
+      "api_field": "title",
+      "table": "tasks",
+      "column": "title",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Task",
+      "api_field": "kind",
+      "table": "tasks",
+      "column": "kind",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Task",
+      "api_field": "due_at",
+      "table": "tasks",
+      "column": "due_at",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Task",
+      "api_field": "state",
+      "table": "tasks",
+      "column": "state",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Task",
+      "api_field": "note",
+      "table": "tasks",
+      "column": "description",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Task",
+      "api_field": "reported_at",
+      "table": "tasks",
+      "column": "reported_done_at",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Task",
+      "api_field": "completed_at",
+      "table": "tasks",
+      "column": "confirmed_at",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "TaskCreate",
+      "api_field": "title",
+      "table": "tasks",
+      "column": "title",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "TaskCreate",
+      "api_field": "kind",
+      "table": "tasks",
+      "column": "kind",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "TaskCreate",
+      "api_field": "due_at",
+      "table": "tasks",
+      "column": "due_at",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "TaskCreate",
+      "api_field": "note",
+      "table": "tasks",
+      "column": "description",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "TaskPatch",
+      "api_field": "title",
+      "table": "tasks",
+      "column": "title",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "TaskPatch",
+      "api_field": "due_at",
+      "table": "tasks",
+      "column": "due_at",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "TaskPatch",
+      "api_field": "note",
+      "table": "tasks",
+      "column": "description",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Room",
+      "api_field": "name",
+      "table": "rooms",
+      "column": "name",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Room",
+      "api_field": "position",
+      "table": "rooms",
+      "column": "position",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RoomCreate",
+      "api_field": "name",
+      "table": "rooms",
+      "column": "name",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RoomCreate",
+      "api_field": "position",
+      "table": "rooms",
+      "column": "position",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RoomPatch",
+      "api_field": "name",
+      "table": "rooms",
+      "column": "name",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RoomPatch",
+      "api_field": "position",
+      "table": "rooms",
+      "column": "position",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItem",
+      "api_field": "name",
+      "table": "inventory_items",
+      "column": "name",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItem",
+      "api_field": "quantity",
+      "table": "inventory_items",
+      "column": "quantity",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItem",
+      "api_field": "unit",
+      "table": "inventory_items",
+      "column": "unit",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItem",
+      "api_field": "condition",
+      "table": "inventory_items",
+      "column": "state",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItem",
+      "api_field": "minimum_stock",
+      "table": "inventory_items",
+      "column": "min_stock",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItem",
+      "api_field": "purchase_minor",
+      "table": "inventory_items",
+      "column": "purchase_minor",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItem",
+      "api_field": "purchased_on",
+      "table": "inventory_items",
+      "column": "purchased_on",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItem",
+      "api_field": "warranty_until",
+      "table": "inventory_items",
+      "column": "warranty_until",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItem",
+      "api_field": "model",
+      "table": "inventory_items",
+      "column": "model",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItem",
+      "api_field": "serial_number",
+      "table": "inventory_items",
+      "column": "serial_number",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItem",
+      "api_field": "note",
+      "table": "inventory_items",
+      "column": "note",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItemCreate",
+      "api_field": "name",
+      "table": "inventory_items",
+      "column": "name",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItemCreate",
+      "api_field": "quantity",
+      "table": "inventory_items",
+      "column": "quantity",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItemCreate",
+      "api_field": "unit",
+      "table": "inventory_items",
+      "column": "unit",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItemCreate",
+      "api_field": "condition",
+      "table": "inventory_items",
+      "column": "state",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItemCreate",
+      "api_field": "minimum_stock",
+      "table": "inventory_items",
+      "column": "min_stock",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItemCreate",
+      "api_field": "purchase_minor",
+      "table": "inventory_items",
+      "column": "purchase_minor",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItemCreate",
+      "api_field": "purchased_on",
+      "table": "inventory_items",
+      "column": "purchased_on",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItemCreate",
+      "api_field": "warranty_until",
+      "table": "inventory_items",
+      "column": "warranty_until",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItemCreate",
+      "api_field": "model",
+      "table": "inventory_items",
+      "column": "model",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItemCreate",
+      "api_field": "serial_number",
+      "table": "inventory_items",
+      "column": "serial_number",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItemCreate",
+      "api_field": "note",
+      "table": "inventory_items",
+      "column": "note",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItemPatch",
+      "api_field": "name",
+      "table": "inventory_items",
+      "column": "name",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItemPatch",
+      "api_field": "quantity",
+      "table": "inventory_items",
+      "column": "quantity",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItemPatch",
+      "api_field": "unit",
+      "table": "inventory_items",
+      "column": "unit",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItemPatch",
+      "api_field": "condition",
+      "table": "inventory_items",
+      "column": "state",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItemPatch",
+      "api_field": "minimum_stock",
+      "table": "inventory_items",
+      "column": "min_stock",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItemPatch",
+      "api_field": "purchase_minor",
+      "table": "inventory_items",
+      "column": "purchase_minor",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItemPatch",
+      "api_field": "purchased_on",
+      "table": "inventory_items",
+      "column": "purchased_on",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItemPatch",
+      "api_field": "warranty_until",
+      "table": "inventory_items",
+      "column": "warranty_until",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItemPatch",
+      "api_field": "model",
+      "table": "inventory_items",
+      "column": "model",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItemPatch",
+      "api_field": "serial_number",
+      "table": "inventory_items",
+      "column": "serial_number",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InventoryItemPatch",
+      "api_field": "note",
+      "table": "inventory_items",
+      "column": "note",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InspectionEventCreate",
+      "api_field": "handover_key",
+      "table": "inspection_events",
+      "column": "handover_key",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InspectionEvent",
+      "api_field": "handover_key",
+      "table": "inspection_events",
+      "column": "handover_key",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InspectionAnswer",
+      "api_field": "condition",
+      "table": "inspection_answers",
+      "column": "condition",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InspectionAnswer",
+      "api_field": "actual_quantity",
+      "table": "inspection_answers",
+      "column": "actual_quantity",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InspectionAnswer",
+      "api_field": "note",
+      "table": "inspection_answers",
+      "column": "note",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RoomConfirmation",
+      "api_field": "status",
+      "table": "inspection_room_answers",
+      "column": "result",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "RoomConfirmation",
+      "api_field": "reason",
+      "table": "inspection_room_answers",
+      "column": "reason",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ScopedInspection",
+      "api_field": "claimed_name",
+      "table": "inspection_submissions",
+      "column": "claimed_name",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ScopedInspection",
+      "api_field": "side",
+      "table": "inspection_submissions",
+      "column": "side",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ScopedInspection",
+      "api_field": "state",
+      "table": "inspection_submissions",
+      "column": "state",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InspectionAnswersInput",
+      "api_field": "claimed_name",
+      "table": "inspection_submissions",
+      "column": "claimed_name",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "InspectionCompleteInput",
+      "api_field": "claimed_name",
+      "table": "inspection_submissions",
+      "column": "claimed_name",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ScopedAcceptInput",
+      "api_field": "claimed_name",
+      "table": "inspection_submissions",
+      "column": "claimed_name",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ScopedTaskDoneInput",
+      "api_field": "note",
+      "table": "tasks",
+      "column": "description",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Guide",
+      "api_field": "stable_slug",
+      "table": "guides",
+      "column": "stable_slug",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Guide",
+      "api_field": "classification",
+      "table": "guides",
+      "column": "classification",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Guide",
+      "api_field": "default_locale",
+      "table": "guides",
+      "column": "primary_locale",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "GuideCreate",
+      "api_field": "classification",
+      "table": "guides",
+      "column": "classification",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "GuideCreate",
+      "api_field": "default_locale",
+      "table": "guides",
+      "column": "primary_locale",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "GuidePatch",
+      "api_field": "default_locale",
+      "table": "guides",
+      "column": "primary_locale",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "GuideLocale",
+      "api_field": "title",
+      "table": "guide_versions",
+      "column": "title",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "GuideLocale",
+      "api_field": "locale",
+      "table": "guide_versions",
+      "column": "locale",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "GuideLocale",
+      "api_field": "version",
+      "table": "guide_versions",
+      "column": "content_version",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "GuideLocaleInput",
+      "api_field": "title",
+      "table": "guide_versions",
+      "column": "title",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PublicSettings",
+      "api_field": "enabled",
+      "table": "public_pages",
+      "column": "enabled",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PublicSettings",
+      "api_field": "show_dates",
+      "table": "public_pages",
+      "column": "show_dates",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PublicSettings",
+      "api_field": "show_price",
+      "table": "public_pages",
+      "column": "show_price",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PublicSettings",
+      "api_field": "show_map",
+      "table": "public_pages",
+      "column": "show_map",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PublicSettings",
+      "api_field": "show_exact_address",
+      "table": "public_pages",
+      "column": "show_exact_address",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PublicSettings",
+      "api_field": "slug",
+      "table": "public_pages",
+      "column": "slug",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PublicSettingsPatch",
+      "api_field": "enabled",
+      "table": "public_pages",
+      "column": "enabled",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PublicSettingsPatch",
+      "api_field": "show_dates",
+      "table": "public_pages",
+      "column": "show_dates",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PublicSettingsPatch",
+      "api_field": "show_price",
+      "table": "public_pages",
+      "column": "show_price",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PublicSettingsPatch",
+      "api_field": "show_map",
+      "table": "public_pages",
+      "column": "show_map",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PublicSettingsPatch",
+      "api_field": "show_exact_address",
+      "table": "public_pages",
+      "column": "show_exact_address",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "MediaAsset",
+      "api_field": "classification",
+      "table": "media_assets",
+      "column": "classification",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "MediaAsset",
+      "api_field": "status",
+      "table": "media_assets",
+      "column": "state",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "MediaAsset",
+      "api_field": "size_bytes",
+      "table": "media_assets",
+      "column": "size_bytes",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "UploadInput",
+      "api_field": "classification",
+      "table": "media_assets",
+      "column": "classification",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "UploadInput",
+      "api_field": "mime",
+      "table": "media_assets",
+      "column": "mime",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "UploadInput",
+      "api_field": "size_bytes",
+      "table": "media_assets",
+      "column": "size_bytes",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "UploadInput",
+      "api_field": "duration_seconds",
+      "table": "media_assets",
+      "column": "duration_seconds",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "BillingOrder",
+      "api_field": "state",
+      "table": "billing_orders",
+      "column": "state",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "BillingOrder",
+      "api_field": "amount_minor",
+      "table": "billing_orders",
+      "column": "amount_minor",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "BillingOrder",
+      "api_field": "currency",
+      "table": "billing_orders",
+      "column": "currency",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "OrderLine",
+      "api_field": "plan",
+      "table": "billing_order_lines",
+      "column": "plan",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "OrderLine",
+      "api_field": "amount_minor",
+      "table": "billing_order_lines",
+      "column": "price_minor",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "OrderLine",
+      "api_field": "applied_at",
+      "table": "billing_order_lines",
+      "column": "entitlement_applied_at",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "OrderLineInput",
+      "api_field": "plan",
+      "table": "billing_order_lines",
+      "column": "plan",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Subscription",
+      "api_field": "state",
+      "table": "subscriptions",
+      "column": "state",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Subscription",
+      "api_field": "current_end",
+      "table": "subscriptions",
+      "column": "current_end",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "Subscription",
+      "api_field": "auto_renew_enabled",
+      "table": "subscriptions",
+      "column": "auto_renew_opt_in",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "SupportCreate",
+      "api_field": "category",
+      "table": "support_requests",
+      "column": "category",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "SupportCreate",
+      "api_field": "message",
+      "table": "support_requests",
+      "column": "message",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "SupportRequest",
+      "api_field": "category",
+      "table": "support_requests",
+      "column": "category",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "SupportRequest",
+      "api_field": "message",
+      "table": "support_requests",
+      "column": "message",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "SupportRequest",
+      "api_field": "status",
+      "table": "support_requests",
+      "column": "state",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PushSubscriptionInput",
+      "api_field": "endpoint",
+      "table": "push_subscriptions",
+      "column": "endpoint",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PushSubscriptionInput",
+      "api_field": "p256dh",
+      "table": "push_subscriptions",
+      "column": "p256dh",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "PushSubscriptionInput",
+      "api_field": "auth",
+      "table": "push_subscriptions",
+      "column": "auth_key",
+      "mode": "alias",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ImportPreview",
+      "api_field": "kind",
+      "table": "import_jobs",
+      "column": "kind",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ImportPreview",
+      "api_field": "state",
+      "table": "import_jobs",
+      "column": "state",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ImportPreview",
+      "api_field": "row_count",
+      "table": "import_jobs",
+      "column": "row_count",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ImportPreview",
+      "api_field": "preview_hash",
+      "table": "import_jobs",
+      "column": "preview_hash",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ImportPreviewInput",
+      "api_field": "kind",
+      "table": "import_jobs",
+      "column": "kind",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    },
+    {
+      "schema": "ExportJob",
+      "api_field": "expires_at",
+      "table": "export_jobs",
+      "column": "expires_at",
+      "mode": "direct",
+      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+    }
+  ],
+  "enum_bindings": [
+    {
+      "schema": "Profile",
+      "api_field": "locale",
+      "db_enum": "locale",
+      "mode": "exact"
+    },
+    {
+      "schema": "ProfilePatch",
+      "api_field": "locale",
+      "db_enum": "locale",
+      "mode": "exact"
+    },
+    {
+      "schema": "Property",
+      "api_field": "property_type",
+      "db_enum": "property_type",
+      "mode": "exact"
+    },
+    {
+      "schema": "Property",
+      "api_field": "readiness",
+      "db_enum": "readiness",
+      "mode": "exact"
+    },
+    {
+      "schema": "PropertyCreate",
+      "api_field": "property_type",
+      "db_enum": "property_type",
+      "mode": "exact"
+    },
+    {
+      "schema": "PropertyPatch",
+      "api_field": "property_type",
+      "db_enum": "property_type",
+      "mode": "exact"
+    },
+    {
+      "schema": "MembershipPatch",
+      "api_field": "permission",
+      "db_enum": "permission",
+      "mode": "exact"
+    },
+    {
+      "schema": "Reservation",
+      "api_field": "status",
+      "db_enum": "reservation_state",
+      "mode": "exact"
+    },
+    {
+      "schema": "ReservationCreate",
+      "api_field": "status",
+      "db_enum": "reservation_state",
+      "mode": "subset"
+    },
+    {
+      "schema": "RentEntry",
+      "api_field": "kind",
+      "db_enum": "rent_kind",
+      "mode": "exact"
+    },
+    {
+      "schema": "RentEntry",
+      "api_field": "custodian",
+      "db_enum": "custodian",
+      "mode": "exact"
+    },
+    {
+      "schema": "RentEntryCreate",
+      "api_field": "kind",
+      "db_enum": "rent_kind",
+      "mode": "exact"
+    },
+    {
+      "schema": "RentEntryCreate",
+      "api_field": "custodian",
+      "db_enum": "custodian",
+      "mode": "exact"
+    },
+    {
+      "schema": "Commission",
+      "api_field": "kind",
+      "db_enum": "commission_kind",
+      "mode": "exact"
+    },
+    {
+      "schema": "Expense",
+      "api_field": "category",
+      "db_enum": "expense_category",
+      "mode": "exact"
+    },
+    {
+      "schema": "Expense",
+      "api_field": "approval",
+      "db_enum": "expense_approval",
+      "mode": "exact"
+    },
+    {
+      "schema": "Expense",
+      "api_field": "payment_status",
+      "db_enum": "expense_payment",
+      "mode": "exact"
+    },
+    {
+      "schema": "ExpenseCreate",
+      "api_field": "category",
+      "db_enum": "expense_category",
+      "mode": "exact"
+    },
+    {
+      "schema": "ExpensePatch",
+      "api_field": "category",
+      "db_enum": "expense_category",
+      "mode": "exact"
+    },
+    {
+      "schema": "RecurringExpense",
+      "api_field": "category",
+      "db_enum": "expense_category",
+      "mode": "exact"
+    },
+    {
+      "schema": "RecurringExpenseCreate",
+      "api_field": "category",
+      "db_enum": "expense_category",
+      "mode": "exact"
+    },
+    {
+      "schema": "RecurringExpensePatch",
+      "api_field": "category",
+      "db_enum": "expense_category",
+      "mode": "exact"
+    },
+    {
+      "schema": "Task",
+      "api_field": "kind",
+      "db_enum": "task_kind",
+      "mode": "exact"
+    },
+    {
+      "schema": "Task",
+      "api_field": "state",
+      "db_enum": "task_state",
+      "mode": "exact"
+    },
+    {
+      "schema": "TaskCreate",
+      "api_field": "kind",
+      "db_enum": "task_kind",
+      "mode": "exact"
+    },
+    {
+      "schema": "InventoryItem",
+      "api_field": "condition",
+      "db_enum": "inventory_state",
+      "mode": "exact"
+    },
+    {
+      "schema": "InventoryItemCreate",
+      "api_field": "condition",
+      "db_enum": "inventory_state",
+      "mode": "exact"
+    },
+    {
+      "schema": "InventoryItemPatch",
+      "api_field": "condition",
+      "db_enum": "inventory_state",
+      "mode": "exact"
+    },
+    {
+      "schema": "InspectionAnswer",
+      "api_field": "condition",
+      "db_enum": "inventory_condition",
+      "mode": "exact"
+    },
+    {
+      "schema": "ScopedInspection",
+      "api_field": "side",
+      "db_enum": "inspection_side",
+      "mode": "exact"
+    },
+    {
+      "schema": "ScopedInspection",
+      "api_field": "state",
+      "db_enum": "submission_state",
+      "mode": "exact"
+    },
+    {
+      "schema": "Guide",
+      "api_field": "classification",
+      "db_enum": "guide_classification",
+      "mode": "exact"
+    },
+    {
+      "schema": "Guide",
+      "api_field": "default_locale",
+      "db_enum": "locale",
+      "mode": "exact"
+    },
+    {
+      "schema": "GuideCreate",
+      "api_field": "classification",
+      "db_enum": "guide_classification",
+      "mode": "exact"
+    },
+    {
+      "schema": "GuideCreate",
+      "api_field": "default_locale",
+      "db_enum": "locale",
+      "mode": "exact"
+    },
+    {
+      "schema": "GuidePatch",
+      "api_field": "default_locale",
+      "db_enum": "locale",
+      "mode": "exact"
+    },
+    {
+      "schema": "GuideLocale",
+      "api_field": "locale",
+      "db_enum": "locale",
+      "mode": "exact"
+    },
+    {
+      "schema": "MediaAsset",
+      "api_field": "classification",
+      "db_enum": "media_classification",
+      "mode": "exact"
+    },
+    {
+      "schema": "MediaAsset",
+      "api_field": "status",
+      "db_enum": "media_state",
+      "mode": "exact"
+    },
+    {
+      "schema": "UploadInput",
+      "api_field": "classification",
+      "db_enum": "media_classification",
+      "mode": "exact"
+    },
+    {
+      "schema": "BillingOrder",
+      "api_field": "state",
+      "db_enum": "order_state",
+      "mode": "exact"
+    },
+    {
+      "schema": "OrderLine",
+      "api_field": "plan",
+      "db_enum": "billing_plan",
+      "mode": "exact"
+    },
+    {
+      "schema": "OrderLineInput",
+      "api_field": "plan",
+      "db_enum": "billing_plan",
+      "mode": "exact"
+    },
+    {
+      "schema": "Subscription",
+      "api_field": "state",
+      "db_enum": "subscription_state",
+      "mode": "exact"
+    },
+    {
+      "schema": "SupportRequest",
+      "api_field": "status",
+      "db_enum": "support_state",
+      "mode": "exact"
+    },
+    {
+      "schema": "ImportPreview",
+      "api_field": "kind",
+      "db_enum": "import_kind",
+      "mode": "exact"
+    },
+    {
+      "schema": "ImportPreview",
+      "api_field": "state",
+      "db_enum": "import_state",
+      "mode": "subset",
+      "note": "Preview endpoint upload-dan sonra işləyir; DB uploaded vəziyyəti upload mərhələsinə aiddir və bu DTO-da qaytarılmır."
+    },
+    {
+      "schema": "ImportPreviewInput",
+      "api_field": "kind",
+      "db_enum": "import_kind",
+      "mode": "exact"
+    }
+  ],
+  "computed_fields": [
+    {
+      "schema": "Profile",
+      "api_field": "id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Profile",
+      "api_field": "version",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Profile",
+      "api_field": "created_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Profile",
+      "api_field": "updated_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ProfilePatch",
+      "api_field": "expected_version",
+      "rule": "Optimistic lock; həmin resursun version sütunu ilə müqayisə olunur."
+    },
+    {
+      "schema": "Property",
+      "api_field": "id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Property",
+      "api_field": "owner_account_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Property",
+      "api_field": "owner_display_name",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Property",
+      "api_field": "subscription_state",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Property",
+      "api_field": "archived_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Property",
+      "api_field": "permission",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Property",
+      "api_field": "cover",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Property",
+      "api_field": "version",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Property",
+      "api_field": "created_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Property",
+      "api_field": "updated_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "PropertyPatch",
+      "api_field": "expected_version",
+      "rule": "Optimistic lock; həmin resursun version sütunu ilə müqayisə olunur."
+    },
+    {
+      "schema": "MembershipPatch",
+      "api_field": "expected_version",
+      "rule": "Optimistic lock; həmin resursun version sütunu ilə müqayisə olunur."
+    },
+    {
+      "schema": "MembershipCreate",
+      "api_field": "property_ids",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "MembershipCreate",
+      "api_field": "permission",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Contact",
+      "api_field": "id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Contact",
+      "api_field": "property_ids",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Contact",
+      "api_field": "version",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Contact",
+      "api_field": "created_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Contact",
+      "api_field": "updated_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ContactCreate",
+      "api_field": "property_ids",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ContactPatch",
+      "api_field": "expected_version",
+      "rule": "Optimistic lock; həmin resursun version sütunu ilə müqayisə olunur."
+    },
+    {
+      "schema": "ContactPatch",
+      "api_field": "property_ids",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Reservation",
+      "api_field": "id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Reservation",
+      "api_field": "property_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Reservation",
+      "api_field": "current_placement_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Reservation",
+      "api_field": "actual_check_in_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Reservation",
+      "api_field": "actual_check_out_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Reservation",
+      "api_field": "hold_expires_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Reservation",
+      "api_field": "currency",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Reservation",
+      "api_field": "commission",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Reservation",
+      "api_field": "balance",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Reservation",
+      "api_field": "version",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Reservation",
+      "api_field": "created_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Reservation",
+      "api_field": "updated_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ReservationCreate",
+      "api_field": "property_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ReservationCreate",
+      "api_field": "hold_duration",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ReservationCreate",
+      "api_field": "capacity_override_confirmed",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ReservationCreate",
+      "api_field": "initial_receipt",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ReservationCreate",
+      "api_field": "commission",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ReservationPatch",
+      "api_field": "expected_version",
+      "rule": "Optimistic lock; həmin resursun version sütunu ilə müqayisə olunur."
+    },
+    {
+      "schema": "ReservationPatch",
+      "api_field": "capacity_override_confirmed",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ReservationPatch",
+      "api_field": "commission",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Block",
+      "api_field": "id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Block",
+      "api_field": "property_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Block",
+      "api_field": "version",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Block",
+      "api_field": "created_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Block",
+      "api_field": "updated_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "BlockCreate",
+      "api_field": "property_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "BlockPatch",
+      "api_field": "expected_version",
+      "rule": "Optimistic lock; həmin resursun version sütunu ilə müqayisə olunur."
+    },
+    {
+      "schema": "RentEntry",
+      "api_field": "id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "RentEntry",
+      "api_field": "reservation_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "RentEntry",
+      "api_field": "placement_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "RentEntry",
+      "api_field": "property_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "RentEntry",
+      "api_field": "currency",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "RentEntry",
+      "api_field": "actor_display_name",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "RentEntry",
+      "api_field": "version",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "RentEntry",
+      "api_field": "created_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "RentEntry",
+      "api_field": "updated_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Expense",
+      "api_field": "id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Expense",
+      "api_field": "currency",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Expense",
+      "api_field": "allocations",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Expense",
+      "api_field": "paid_minor",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Expense",
+      "api_field": "receipt_media_ids",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Expense",
+      "api_field": "version",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Expense",
+      "api_field": "created_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Expense",
+      "api_field": "updated_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ExpenseCreate",
+      "api_field": "allocations",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ExpenseCreate",
+      "api_field": "receipt_media_ids",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ExpenseCreate",
+      "api_field": "mark_paid",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ExpensePatch",
+      "api_field": "expected_version",
+      "rule": "Optimistic lock; həmin resursun version sütunu ilə müqayisə olunur."
+    },
+    {
+      "schema": "ExpensePatch",
+      "api_field": "allocations",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "RecurringExpense",
+      "api_field": "id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "RecurringExpense",
+      "api_field": "property_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "RecurringExpense",
+      "api_field": "version",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "RecurringExpense",
+      "api_field": "created_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "RecurringExpense",
+      "api_field": "updated_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "RecurringExpenseCreate",
+      "api_field": "property_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "RecurringExpensePatch",
+      "api_field": "expected_version",
+      "rule": "Optimistic lock; həmin resursun version sütunu ilə müqayisə olunur."
+    },
+    {
+      "schema": "Task",
+      "api_field": "id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Task",
+      "api_field": "property_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Task",
+      "api_field": "reservation_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Task",
+      "api_field": "assignee_contact_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Task",
+      "api_field": "media_ids",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Task",
+      "api_field": "inspection_event_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Task",
+      "api_field": "version",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Task",
+      "api_field": "created_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Task",
+      "api_field": "updated_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "TaskCreate",
+      "api_field": "property_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "TaskCreate",
+      "api_field": "reservation_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "TaskCreate",
+      "api_field": "assignee_contact_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "TaskCreate",
+      "api_field": "media_ids",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "TaskPatch",
+      "api_field": "expected_version",
+      "rule": "Optimistic lock; həmin resursun version sütunu ilə müqayisə olunur."
+    },
+    {
+      "schema": "TaskPatch",
+      "api_field": "assignee_contact_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "TaskPatch",
+      "api_field": "media_ids",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Room",
+      "api_field": "id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Room",
+      "api_field": "property_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Room",
+      "api_field": "version",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Room",
+      "api_field": "created_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Room",
+      "api_field": "updated_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "RoomPatch",
+      "api_field": "expected_version",
+      "rule": "Optimistic lock; həmin resursun version sütunu ilə müqayisə olunur."
+    },
+    {
+      "schema": "InventoryItem",
+      "api_field": "id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InventoryItem",
+      "api_field": "property_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InventoryItem",
+      "api_field": "room_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InventoryItem",
+      "api_field": "media_ids",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InventoryItem",
+      "api_field": "version",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InventoryItem",
+      "api_field": "created_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InventoryItem",
+      "api_field": "updated_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InventoryItemCreate",
+      "api_field": "room_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InventoryItemCreate",
+      "api_field": "media_ids",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InventoryItemPatch",
+      "api_field": "expected_version",
+      "rule": "Optimistic lock; həmin resursun version sütunu ilə müqayisə olunur."
+    },
+    {
+      "schema": "InventoryItemPatch",
+      "api_field": "room_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InventoryItemPatch",
+      "api_field": "media_ids",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InspectionEventCreate",
+      "api_field": "property_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InspectionEventCreate",
+      "api_field": "local_date",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InspectionEventCreate",
+      "api_field": "reservation_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InspectionEventCreate",
+      "api_field": "sides",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InspectionEvent",
+      "api_field": "id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InspectionEvent",
+      "api_field": "property_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InspectionEvent",
+      "api_field": "local_date",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InspectionEvent",
+      "api_field": "reservation_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InspectionEvent",
+      "api_field": "snapshot_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InspectionEvent",
+      "api_field": "submissions",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InspectionEvent",
+      "api_field": "version",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InspectionEvent",
+      "api_field": "created_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InspectionEvent",
+      "api_field": "updated_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InspectionAnswer",
+      "api_field": "snapshot_item_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InspectionAnswer",
+      "api_field": "media_ids",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "RoomConfirmation",
+      "api_field": "room_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ScopedInspection",
+      "api_field": "submission_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ScopedInspection",
+      "api_field": "event_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ScopedInspection",
+      "api_field": "property_label",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ScopedInspection",
+      "api_field": "local_date",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ScopedInspection",
+      "api_field": "identity_kind",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ScopedInspection",
+      "api_field": "snapshot",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ScopedInspection",
+      "api_field": "answers",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ScopedInspection",
+      "api_field": "room_confirmations",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ScopedInspection",
+      "api_field": "version",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ScopedInspection",
+      "api_field": "expires_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InspectionAnswersInput",
+      "api_field": "expected_version",
+      "rule": "Optimistic lock; həmin resursun version sütunu ilə müqayisə olunur."
+    },
+    {
+      "schema": "InspectionAnswersInput",
+      "api_field": "answers",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InspectionAnswersInput",
+      "api_field": "room_confirmations",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "InspectionCompleteInput",
+      "api_field": "expected_version",
+      "rule": "Optimistic lock; həmin resursun version sütunu ilə müqayisə olunur."
+    },
+    {
+      "schema": "InspectionCompleteInput",
+      "api_field": "confirmed_snapshot_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ScopedAcceptInput",
+      "api_field": "expected_version",
+      "rule": "Optimistic lock; həmin resursun version sütunu ilə müqayisə olunur."
+    },
+    {
+      "schema": "ScopedTaskDoneInput",
+      "api_field": "expected_version",
+      "rule": "Optimistic lock; həmin resursun version sütunu ilə müqayisə olunur."
+    },
+    {
+      "schema": "ScopedTaskDoneInput",
+      "api_field": "claimed_name",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ScopedTaskDoneInput",
+      "api_field": "media_ids",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ScopedTaskDoneInput",
+      "api_field": "expense_proposal",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Guide",
+      "api_field": "id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Guide",
+      "api_field": "property_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Guide",
+      "api_field": "title",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Guide",
+      "api_field": "locales",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Guide",
+      "api_field": "published_version",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Guide",
+      "api_field": "version",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Guide",
+      "api_field": "created_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Guide",
+      "api_field": "updated_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "GuideCreate",
+      "api_field": "property_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "GuideCreate",
+      "api_field": "title",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "GuidePatch",
+      "api_field": "expected_version",
+      "rule": "Optimistic lock; həmin resursun version sütunu ilə müqayisə olunur."
+    },
+    {
+      "schema": "GuidePatch",
+      "api_field": "title",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "GuideLocale",
+      "api_field": "guide_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "GuideLocale",
+      "api_field": "blocks",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "GuideLocale",
+      "api_field": "published_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "GuideLocaleInput",
+      "api_field": "expected_version",
+      "rule": "Optimistic lock; həmin resursun version sütunu ilə müqayisə olunur."
+    },
+    {
+      "schema": "GuideLocaleInput",
+      "api_field": "blocks",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "PublicSettings",
+      "api_field": "version",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "PublicSettingsPatch",
+      "api_field": "expected_version",
+      "rule": "Optimistic lock; həmin resursun version sütunu ilə müqayisə olunur."
+    },
+    {
+      "schema": "MediaAsset",
+      "api_field": "id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "MediaAsset",
+      "api_field": "property_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "MediaAsset",
+      "api_field": "kind",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "MediaAsset",
+      "api_field": "url",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "MediaAsset",
+      "api_field": "version",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "MediaAsset",
+      "api_field": "created_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "MediaAsset",
+      "api_field": "updated_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "UploadInput",
+      "api_field": "property_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "UploadInput",
+      "api_field": "kind",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "UploadInput",
+      "api_field": "filename",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "BillingOrder",
+      "api_field": "id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "BillingOrder",
+      "api_field": "lines",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "BillingOrder",
+      "api_field": "checkout_url",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "BillingOrder",
+      "api_field": "failure_code",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "BillingOrder",
+      "api_field": "version",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "BillingOrder",
+      "api_field": "created_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "BillingOrder",
+      "api_field": "updated_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "OrderLine",
+      "api_field": "id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "OrderLine",
+      "api_field": "property_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "OrderLine",
+      "api_field": "projected_end",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "OrderLineInput",
+      "api_field": "property_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Subscription",
+      "api_field": "id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Subscription",
+      "api_field": "property_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Subscription",
+      "api_field": "trial_end",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Subscription",
+      "api_field": "plan",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Subscription",
+      "api_field": "archived",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Subscription",
+      "api_field": "version",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Subscription",
+      "api_field": "created_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "Subscription",
+      "api_field": "updated_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "SupportRequest",
+      "api_field": "id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "SupportRequest",
+      "api_field": "version",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "SupportRequest",
+      "api_field": "created_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "SupportRequest",
+      "api_field": "updated_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ImportPreview",
+      "api_field": "id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ImportPreview",
+      "api_field": "property_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ImportPreview",
+      "api_field": "errors",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ImportPreview",
+      "api_field": "version",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ImportPreview",
+      "api_field": "created_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ImportPreview",
+      "api_field": "updated_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ImportPreviewInput",
+      "api_field": "property_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ImportPreviewInput",
+      "api_field": "media_id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ExportJob",
+      "api_field": "id",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ExportJob",
+      "api_field": "state",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ExportJob",
+      "api_field": "download_url",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ExportJob",
+      "api_field": "version",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ExportJob",
+      "api_field": "created_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ExportJob",
+      "api_field": "updated_at",
+      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    }
+  ]
+}

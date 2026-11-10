@@ -1,0 +1,2813 @@
+{
+  "schema_version": 1,
+  "description": "30 parent GitHub issue daxilində 90 bounded icra vahidi; ayrı issue nömrələri uydurulmur.",
+  "packages": [
+    {
+      "id": "EVE-001.1",
+      "parent": "EVE-001",
+      "parent_issue": 9,
+      "milestone": "M0",
+      "title": "Mənbə və tələb inventarı",
+      "status": "backlog",
+      "depends_on": [],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "docs/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Mənbə və tələb inventarı üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Mənbə və tələb inventarı üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Mənbə və tələb inventarı üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "R01–16 map, ziddiyyət yoxdur"
+    },
+    {
+      "id": "EVE-001.2",
+      "parent": "EVE-001",
+      "parent_issue": 9,
+      "milestone": "M0",
+      "title": "Ziddiyyət və sərhəd auditi",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-001.1"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "docs/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Ziddiyyət və sərhəd auditi üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Ziddiyyət və sərhəd auditi üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Ziddiyyət və sərhəd auditi üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "R01–16 map, ziddiyyət yoxdur"
+    },
+    {
+      "id": "EVE-001.3",
+      "parent": "EVE-001",
+      "parent_issue": 9,
+      "milestone": "M0",
+      "title": "Qərar və traceability bağlanması",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-001.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "docs/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Qərar və traceability bağlanması üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "R01–16 map, ziddiyyət yoxdur",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Qərar və traceability bağlanması üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "R01–16 map, ziddiyyət yoxdur"
+    },
+    {
+      "id": "EVE-002.1",
+      "parent": "EVE-002",
+      "parent_issue": 10,
+      "milestone": "M0",
+      "title": "Mobil wireframe və komponentlər",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-001.3"
+      ],
+      "role": "ux_frontend",
+      "owned_path_candidates": [
+        "docs/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Mobil wireframe və komponentlər üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Mobil wireframe və komponentlər üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Mobil wireframe və komponentlər üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "360 px, 5 nəfər test protokolu"
+    },
+    {
+      "id": "EVE-002.2",
+      "parent": "EVE-002",
+      "parent_issue": 10,
+      "milestone": "M0",
+      "title": "Kliklənən əsas axınlar",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-002.1"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "docs/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Kliklənən əsas axınlar üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Kliklənən əsas axınlar üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Kliklənən əsas axınlar üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "360 px, 5 nəfər test protokolu"
+    },
+    {
+      "id": "EVE-002.3",
+      "parent": "EVE-002",
+      "parent_issue": 10,
+      "milestone": "M0",
+      "title": "Real istifadəçi protokolu və düzəliş",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-002.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "docs/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Real istifadəçi protokolu və düzəliş üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "360 px, 5 nəfər test protokolu",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [
+        "EXT09"
+      ],
+      "expected_result": "Real istifadəçi protokolu və düzəliş üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "360 px, 5 nəfər test protokolu"
+    },
+    {
+      "id": "EVE-003.1",
+      "parent": "EVE-003",
+      "parent_issue": 11,
+      "milestone": "M0",
+      "title": "Email cross-device/scanner spike",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-001.3"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "docs/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Email cross-device/scanner spike üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Email cross-device/scanner spike üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Feasibility hesabatı və bloklayıcılar review edilib; real SMTP/Payriff sübutu EVE-007.3/EVE-027.3 release gate olaraq qalır.",
+      "external_gates": [],
+      "expected_result": "Email cross-device/scanner spike üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "Rəsmi mənbə/API məlumatı və təsdiqlənmiş faktlar ayrıdır."
+    },
+    {
+      "id": "EVE-003.2",
+      "parent": "EVE-003",
+      "parent_issue": 11,
+      "milestone": "M0",
+      "title": "Payriff order/status/webhook spike",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-003.1"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "docs/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Payriff order/status/webhook spike üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Payriff order/status/webhook spike üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Feasibility hesabatı və bloklayıcılar review edilib; real SMTP/Payriff sübutu EVE-007.3/EVE-027.3 release gate olaraq qalır.",
+      "external_gates": [],
+      "expected_result": "Payriff order/status/webhook spike üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "Rəsmi mənbə/API məlumatı və təsdiqlənmiş faktlar ayrıdır."
+    },
+    {
+      "id": "EVE-003.3",
+      "parent": "EVE-003",
+      "parent_issue": 11,
+      "milestone": "M0",
+      "title": "Provider sübutu və bloklayıcı reyestri",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-003.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "docs/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Provider sübutu və bloklayıcı reyestri üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Rəsmi mənbə/API məlumatı və təsdiqlənmiş faktlar ayrıdır.",
+        "Hesab/credential yoxdursa dependency register-də konkret blok və plan yazılıb; sandbox PASS iddiası yoxdur."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Feasibility hesabatı və bloklayıcılar review edilib; real SMTP/Payriff sübutu EVE-007.3/EVE-027.3 release gate olaraq qalır.",
+      "external_gates": [],
+      "expected_result": "Provider sübutu və bloklayıcı reyestri üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "Rəsmi mənbə/API məlumatı və təsdiqlənmiş faktlar ayrıdır."
+    },
+    {
+      "id": "EVE-004.1",
+      "parent": "EVE-004",
+      "parent_issue": 12,
+      "milestone": "M0",
+      "title": "Əməliyyat və payload müqavilələri",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-001.3"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "docs/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Əməliyyat və payload müqavilələri üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Əməliyyat və payload müqavilələri üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Əməliyyat və payload müqavilələri üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "Request/response/error/capability schema"
+    },
+    {
+      "id": "EVE-004.2",
+      "parent": "EVE-004",
+      "parent_issue": 12,
+      "milestone": "M0",
+      "title": "Status və capability uyğunluğu",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-004.1"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "docs/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Status və capability uyğunluğu üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Status və capability uyğunluğu üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Status və capability uyğunluğu üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "Request/response/error/capability schema"
+    },
+    {
+      "id": "EVE-004.3",
+      "parent": "EVE-004",
+      "parent_issue": 12,
+      "milestone": "M0",
+      "title": "OpenAPI/schema yoxlamaları",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-004.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "docs/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "OpenAPI/schema yoxlamaları üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Request/response/error/capability schema",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "OpenAPI/schema yoxlamaları üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "Request/response/error/capability schema"
+    },
+    {
+      "id": "EVE-005.1",
+      "parent": "EVE-005",
+      "parent_issue": 13,
+      "milestone": "M1",
+      "title": "Pinned runtime və layihə scaffold",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-004.3"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/lib/",
+        "src/modules/identity/",
+        "src/modules/access/",
+        "src/design/",
+        "supabase/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Pinned runtime və layihə scaffold üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Pinned runtime və layihə scaffold üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Pinned runtime və layihə scaffold üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "Təmiz checkout build/typecheck"
+    },
+    {
+      "id": "EVE-005.2",
+      "parent": "EVE-005",
+      "parent_issue": 13,
+      "milestone": "M1",
+      "title": "Mühit və secret kontraktı",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-005.1"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/lib/",
+        "src/modules/identity/",
+        "src/modules/access/",
+        "src/design/",
+        "supabase/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Mühit və secret kontraktı üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Mühit və secret kontraktı üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Mühit və secret kontraktı üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "Təmiz checkout build/typecheck"
+    },
+    {
+      "id": "EVE-005.3",
+      "parent": "EVE-005",
+      "parent_issue": 13,
+      "milestone": "M1",
+      "title": "Təmiz checkout CI/build",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-005.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "src/lib/",
+        "src/modules/identity/",
+        "src/modules/access/",
+        "src/design/",
+        "supabase/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Təmiz checkout CI/build üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Təmiz checkout build/typecheck",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Təmiz checkout CI/build üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "Təmiz checkout build/typecheck"
+    },
+    {
+      "id": "EVE-006.1",
+      "parent": "EVE-006",
+      "parent_issue": 14,
+      "milestone": "M1",
+      "title": "SQL cədvəl və tenant constraint-ləri",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-004.3",
+        "EVE-005.3"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/lib/",
+        "src/modules/identity/",
+        "src/modules/access/",
+        "src/design/",
+        "supabase/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "SQL cədvəl və tenant constraint-ləri üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "SQL cədvəl və tenant constraint-ləri üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "SQL cədvəl və tenant constraint-ləri üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "AT04–06 DB negative tests"
+    },
+    {
+      "id": "EVE-006.2",
+      "parent": "EVE-006",
+      "parent_issue": 14,
+      "milestone": "M1",
+      "title": "RLS/RPC və storage policy",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-006.1"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/lib/",
+        "src/modules/identity/",
+        "src/modules/access/",
+        "src/design/",
+        "supabase/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "RLS/RPC və storage policy üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "RLS/RPC və storage policy üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "RLS/RPC və storage policy üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "AT04–06 DB negative tests"
+    },
+    {
+      "id": "EVE-006.3",
+      "parent": "EVE-006",
+      "parent_issue": 14,
+      "milestone": "M1",
+      "title": "DB isolation və concurrency fixture-ləri",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-006.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "src/lib/",
+        "src/modules/identity/",
+        "src/modules/access/",
+        "src/design/",
+        "supabase/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "DB isolation və concurrency fixture-ləri üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "AT04–06 DB negative tests",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "DB isolation və concurrency fixture-ləri üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "AT04–06 DB negative tests"
+    },
+    {
+      "id": "EVE-007.1",
+      "parent": "EVE-007",
+      "parent_issue": 15,
+      "milestone": "M1",
+      "title": "Email request və confirm/resend",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-005.3",
+        "EVE-006.3",
+        "EVE-003.1"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/lib/",
+        "src/modules/identity/",
+        "src/modules/access/",
+        "src/design/",
+        "supabase/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Email request və confirm/resend üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Email request və confirm/resend üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Email request və confirm/resend üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "AT01–03 real SMTP staging"
+    },
+    {
+      "id": "EVE-007.2",
+      "parent": "EVE-007",
+      "parent_issue": 15,
+      "milestone": "M1",
+      "title": "Session refresh və logout-all",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-007.1"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/lib/",
+        "src/modules/identity/",
+        "src/modules/access/",
+        "src/design/",
+        "supabase/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Session refresh və logout-all üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Session refresh və logout-all üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Session refresh və logout-all üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "AT01–03 real SMTP staging"
+    },
+    {
+      "id": "EVE-007.3",
+      "parent": "EVE-007",
+      "parent_issue": 15,
+      "milestone": "M1",
+      "title": "SMTP/scanner/replay mənfi testləri",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-007.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "src/lib/",
+        "src/modules/identity/",
+        "src/modules/access/",
+        "src/design/",
+        "supabase/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "SMTP/scanner/replay mənfi testləri üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "AT01–03 real SMTP staging",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [
+        "EXT03"
+      ],
+      "expected_result": "SMTP/scanner/replay mənfi testləri üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "AT01–03 real SMTP staging"
+    },
+    {
+      "id": "EVE-008.1",
+      "parent": "EVE-008",
+      "parent_issue": 16,
+      "milestone": "M1",
+      "title": "Ev yaradılması və trial atomikliyi",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-006.3",
+        "EVE-007.2"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/lib/",
+        "src/modules/identity/",
+        "src/modules/access/",
+        "src/design/",
+        "supabase/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Ev yaradılması və trial atomikliyi üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Ev yaradılması və trial atomikliyi üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Ev yaradılması və trial atomikliyi üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "AT04–06, AT25 race"
+    },
+    {
+      "id": "EVE-008.2",
+      "parent": "EVE-008",
+      "parent_issue": 16,
+      "milestone": "M1",
+      "title": "Email invite və property permission",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-008.1"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/lib/",
+        "src/modules/identity/",
+        "src/modules/access/",
+        "src/design/",
+        "supabase/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Email invite və property permission üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Email invite və property permission üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Email invite və property permission üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "AT04–06, AT25 race"
+    },
+    {
+      "id": "EVE-008.3",
+      "parent": "EVE-008",
+      "parent_issue": 16,
+      "milestone": "M1",
+      "title": "Revoke və cross-owner negative test",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-008.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "src/lib/",
+        "src/modules/identity/",
+        "src/modules/access/",
+        "src/design/",
+        "supabase/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Revoke və cross-owner negative test üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "AT04–06, AT25 race",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Revoke və cross-owner negative test üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "AT04–06, AT25 race"
+    },
+    {
+      "id": "EVE-009.1",
+      "parent": "EVE-009",
+      "parent_issue": 17,
+      "milestone": "M1",
+      "title": "Dizayn tokenləri və UI primitivləri",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-002.2",
+        "EVE-005.3"
+      ],
+      "role": "ux_frontend",
+      "owned_path_candidates": [
+        "src/lib/",
+        "src/modules/identity/",
+        "src/modules/access/",
+        "src/design/",
+        "supabase/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Dizayn tokenləri və UI primitivləri üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Dizayn tokenləri və UI primitivləri üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Dizayn tokenləri və UI primitivləri üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "AT29 keyboard/width"
+    },
+    {
+      "id": "EVE-009.2",
+      "parent": "EVE-009",
+      "parent_issue": 17,
+      "milestone": "M1",
+      "title": "Üç naviqasiya və kontekstli plus",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-009.1"
+      ],
+      "role": "ux_frontend",
+      "owned_path_candidates": [
+        "src/lib/",
+        "src/modules/identity/",
+        "src/modules/access/",
+        "src/design/",
+        "supabase/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Üç naviqasiya və kontekstli plus üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Üç naviqasiya və kontekstli plus üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Üç naviqasiya və kontekstli plus üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "AT29 keyboard/width"
+    },
+    {
+      "id": "EVE-009.3",
+      "parent": "EVE-009",
+      "parent_issue": 17,
+      "milestone": "M1",
+      "title": "Klaviatura/empty/error/a11y yoxlaması",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-009.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "src/lib/",
+        "src/modules/identity/",
+        "src/modules/access/",
+        "src/design/",
+        "supabase/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Klaviatura/empty/error/a11y yoxlaması üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "AT29 keyboard/width",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Klaviatura/empty/error/a11y yoxlaması üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "AT29 keyboard/width"
+    },
+    {
+      "id": "EVE-010.1",
+      "parent": "EVE-010",
+      "parent_issue": 18,
+      "milestone": "M2",
+      "title": "Unified occupancy və exclusion",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-006.3",
+        "EVE-008.3"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/reservations/",
+        "src/modules/properties/",
+        "app/(panel)/calendar/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Unified occupancy və exclusion üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Unified occupancy və exclusion üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Unified occupancy və exclusion üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "AT07–09 concurrency"
+    },
+    {
+      "id": "EVE-010.2",
+      "parent": "EVE-010",
+      "parent_issue": 18,
+      "milestone": "M2",
+      "title": "Expired hold lock/catch-up",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-010.1"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/reservations/",
+        "src/modules/properties/",
+        "app/(panel)/calendar/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Expired hold lock/catch-up üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Expired hold lock/catch-up üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Expired hold lock/catch-up üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "AT07–09 concurrency"
+    },
+    {
+      "id": "EVE-010.3",
+      "parent": "EVE-010",
+      "parent_issue": 18,
+      "milestone": "M2",
+      "title": "Paralel booking/block/hold testləri",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-010.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "src/modules/reservations/",
+        "src/modules/properties/",
+        "app/(panel)/calendar/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Paralel booking/block/hold testləri üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "AT07–09 concurrency",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Paralel booking/block/hold testləri üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "AT07–09 concurrency"
+    },
+    {
+      "id": "EVE-011.1",
+      "parent": "EVE-011",
+      "parent_issue": 19,
+      "milestone": "M2",
+      "title": "Rezervasiya create RPC və initial receipt",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-009.3",
+        "EVE-010.3"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/reservations/",
+        "src/modules/properties/",
+        "app/(panel)/calendar/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Rezervasiya create RPC və initial receipt üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Rezervasiya create RPC və initial receipt üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Rezervasiya create RPC və initial receipt üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "AT07–11 E2E"
+    },
+    {
+      "id": "EVE-011.2",
+      "parent": "EVE-011",
+      "parent_issue": 19,
+      "milestone": "M2",
+      "title": "Qısa form/detail və server balance",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-011.1"
+      ],
+      "role": "ux_frontend",
+      "owned_path_candidates": [
+        "src/modules/reservations/",
+        "src/modules/properties/",
+        "app/(panel)/calendar/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Qısa form/detail və server balance üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Qısa form/detail və server balance üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Qısa form/detail və server balance üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "AT07–11 E2E"
+    },
+    {
+      "id": "EVE-011.3",
+      "parent": "EVE-011",
+      "parent_issue": 19,
+      "milestone": "M2",
+      "title": "Retry/validation mobil E2E",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-011.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "src/modules/reservations/",
+        "src/modules/properties/",
+        "app/(panel)/calendar/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Retry/validation mobil E2E üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "AT07–11 E2E",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Retry/validation mobil E2E üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "AT07–11 E2E"
+    },
+    {
+      "id": "EVE-012.1",
+      "parent": "EVE-012",
+      "parent_issue": 20,
+      "milestone": "M2",
+      "title": "Tarix/qiymət və eyni sahibdə move",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-010.3",
+        "EVE-011.3"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/reservations/",
+        "src/modules/properties/",
+        "app/(panel)/calendar/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Tarix/qiymət və eyni sahibdə move üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Tarix/qiymət və eyni sahibdə move üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Tarix/qiymət və eyni sahibdə move üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "AT10 transition matrix"
+    },
+    {
+      "id": "EVE-012.2",
+      "parent": "EVE-012",
+      "parent_issue": 20,
+      "milestone": "M2",
+      "title": "Giriş/çıxış/ləğv/no-show transitions",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-012.1"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/reservations/",
+        "src/modules/properties/",
+        "app/(panel)/calendar/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Giriş/çıxış/ləğv/no-show transitions üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Giriş/çıxış/ləğv/no-show transitions üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Giriş/çıxış/ləğv/no-show transitions üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "AT10 transition matrix"
+    },
+    {
+      "id": "EVE-012.3",
+      "parent": "EVE-012",
+      "parent_issue": 20,
+      "milestone": "M2",
+      "title": "Placement tarixçə və permission regressiyası",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-012.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "src/modules/reservations/",
+        "src/modules/properties/",
+        "app/(panel)/calendar/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Placement tarixçə və permission regressiyası üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "AT10 transition matrix",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Placement tarixçə və permission regressiyası üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "AT10 transition matrix"
+    },
+    {
+      "id": "EVE-013.1",
+      "parent": "EVE-013",
+      "parent_issue": 21,
+      "milestone": "M2",
+      "title": "Bu gün projection və prioritet sıra",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-009.3",
+        "EVE-011.3",
+        "EVE-012.3"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/reservations/",
+        "src/modules/properties/",
+        "app/(panel)/calendar/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Bu gün projection və prioritet sıra üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Bu gün projection və prioritet sıra üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Bu gün projection və prioritet sıra üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "AT29; təqvim query perf"
+    },
+    {
+      "id": "EVE-013.2",
+      "parent": "EVE-013",
+      "parent_issue": 21,
+      "milestone": "M2",
+      "title": "Agenda/ay və ev/sahib filtrləri",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-013.1"
+      ],
+      "role": "ux_frontend",
+      "owned_path_candidates": [
+        "src/modules/reservations/",
+        "src/modules/properties/",
+        "app/(panel)/calendar/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Agenda/ay və ev/sahib filtrləri üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Agenda/ay və ev/sahib filtrləri üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Agenda/ay və ev/sahib filtrləri üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "AT29; təqvim query perf"
+    },
+    {
+      "id": "EVE-013.3",
+      "parent": "EVE-013",
+      "parent_issue": 21,
+      "milestone": "M2",
+      "title": "Readiness və interval query ölçümü",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-013.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "src/modules/reservations/",
+        "src/modules/properties/",
+        "app/(panel)/calendar/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Readiness və interval query ölçümü üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "AT29; təqvim query perf",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Readiness və interval query ölçümü üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "AT29; təqvim query perf"
+    },
+    {
+      "id": "EVE-014.1",
+      "parent": "EVE-014",
+      "parent_issue": 22,
+      "milestone": "M3",
+      "title": "Rent/deposit/refund immutable ledger",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-011.3",
+        "EVE-012.3"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/finance/",
+        "src/modules/operations/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Rent/deposit/refund immutable ledger üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Rent/deposit/refund immutable ledger üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Rent/deposit/refund immutable ledger üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "AT11–12; rounding/refund"
+    },
+    {
+      "id": "EVE-014.2",
+      "parent": "EVE-014",
+      "parent_issue": 22,
+      "milestone": "M3",
+      "title": "Pul sheet və qalıq/artıq ödəniş",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-014.1"
+      ],
+      "role": "ux_frontend",
+      "owned_path_candidates": [
+        "src/modules/finance/",
+        "src/modules/operations/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Pul sheet və qalıq/artıq ödəniş üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Pul sheet və qalıq/artıq ödəniş üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Pul sheet və qalıq/artıq ödəniş üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "AT11–12; rounding/refund"
+    },
+    {
+      "id": "EVE-014.3",
+      "parent": "EVE-014",
+      "parent_issue": 22,
+      "milestone": "M3",
+      "title": "Refund/rounding/idempotency sınağı",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-014.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "src/modules/finance/",
+        "src/modules/operations/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Refund/rounding/idempotency sınağı üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "AT11–12; rounding/refund",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Refund/rounding/idempotency sınağı üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "AT11–12; rounding/refund"
+    },
+    {
+      "id": "EVE-015.1",
+      "parent": "EVE-015",
+      "parent_issue": 23,
+      "milestone": "M3",
+      "title": "Commission basis və rounding",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-014.3"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/finance/",
+        "src/modules/operations/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Commission basis və rounding üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Commission basis və rounding üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Commission basis və rounding üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "AT13 nümunə/race"
+    },
+    {
+      "id": "EVE-015.2",
+      "parent": "EVE-015",
+      "parent_issue": 23,
+      "milestone": "M3",
+      "title": "Realtor collected/transferred/offset",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-015.1"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/finance/",
+        "src/modules/operations/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Realtor collected/transferred/offset üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Realtor collected/transferred/offset üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Realtor collected/transferred/offset üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "AT13 nümunə/race"
+    },
+    {
+      "id": "EVE-015.3",
+      "parent": "EVE-015",
+      "parent_issue": 23,
+      "milestone": "M3",
+      "title": "Net istiqamət və double-income sınağı",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-015.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "src/modules/finance/",
+        "src/modules/operations/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Net istiqamət və double-income sınağı üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "AT13 nümunə/race",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Net istiqamət və double-income sınağı üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "AT13 nümunə/race"
+    },
+    {
+      "id": "EVE-016.1",
+      "parent": "EVE-016",
+      "parent_issue": 24,
+      "milestone": "M3",
+      "title": "Expense proposal və allocation",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-014.3",
+        "EVE-008.3"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/finance/",
+        "src/modules/operations/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Expense proposal və allocation üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Expense proposal və allocation üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Expense proposal və allocation üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "AT14; scope/sum constraint"
+    },
+    {
+      "id": "EVE-016.2",
+      "parent": "EVE-016",
+      "parent_issue": 24,
+      "milestone": "M3",
+      "title": "Approve/payment/recurring draft UI",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-016.1"
+      ],
+      "role": "ux_frontend",
+      "owned_path_candidates": [
+        "src/modules/finance/",
+        "src/modules/operations/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Approve/payment/recurring draft UI üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Approve/payment/recurring draft UI üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Approve/payment/recurring draft UI üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "AT14; scope/sum constraint"
+    },
+    {
+      "id": "EVE-016.3",
+      "parent": "EVE-016",
+      "parent_issue": 24,
+      "milestone": "M3",
+      "title": "Sum/cross-owner/paid-state sınağı",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-016.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "src/modules/finance/",
+        "src/modules/operations/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Sum/cross-owner/paid-state sınağı üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "AT14; scope/sum constraint",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Sum/cross-owner/paid-state sınağı üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "AT14; scope/sum constraint"
+    },
+    {
+      "id": "EVE-017.1",
+      "parent": "EVE-017",
+      "parent_issue": 25,
+      "milestone": "M3",
+      "title": "Kontakt və task state müqaviləsi",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-008.3",
+        "EVE-009.3"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/finance/",
+        "src/modules/operations/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Kontakt və task state müqaviləsi üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Kontakt və task state müqaviləsi üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Kontakt və task state müqaviləsi üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "AT15–16 token/GET"
+    },
+    {
+      "id": "EVE-017.2",
+      "parent": "EVE-017",
+      "parent_issue": 25,
+      "milestone": "M3",
+      "title": "Scoped link və WhatsApp fallback",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-017.1"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/finance/",
+        "src/modules/operations/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Scoped link və WhatsApp fallback üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Scoped link və WhatsApp fallback üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Scoped link və WhatsApp fallback üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "AT15–16 token/GET"
+    },
+    {
+      "id": "EVE-017.3",
+      "parent": "EVE-017",
+      "parent_issue": 25,
+      "milestone": "M3",
+      "title": "Prefetch/revoke/scope mənfi sınağı",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-017.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "src/modules/finance/",
+        "src/modules/operations/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Prefetch/revoke/scope mənfi sınağı üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "AT15–16 token/GET",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Prefetch/revoke/scope mənfi sınağı üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "AT15–16 token/GET"
+    },
+    {
+      "id": "EVE-018.1",
+      "parent": "EVE-018",
+      "parent_issue": 26,
+      "milestone": "M3",
+      "title": "Reservation cleaning upsert/readiness",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-012.3",
+        "EVE-017.3"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/finance/",
+        "src/modules/operations/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Reservation cleaning upsert/readiness üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Reservation cleaning upsert/readiness üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Reservation cleaning upsert/readiness üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "AT16,AT36 dedupe"
+    },
+    {
+      "id": "EVE-018.2",
+      "parent": "EVE-018",
+      "parent_issue": 26,
+      "milestone": "M3",
+      "title": "Outbox/cron/dedupe və quiet hours",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-018.1"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/finance/",
+        "src/modules/operations/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Outbox/cron/dedupe və quiet hours üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Outbox/cron/dedupe və quiet hours üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Outbox/cron/dedupe və quiet hours üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "AT16,AT36 dedupe"
+    },
+    {
+      "id": "EVE-018.3",
+      "parent": "EVE-018",
+      "parent_issue": 26,
+      "milestone": "M3",
+      "title": "Retry/timezone/gecikmə sınağı",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-018.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "src/modules/finance/",
+        "src/modules/operations/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Retry/timezone/gecikmə sınağı üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "AT16,AT36 dedupe",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Retry/timezone/gecikmə sınağı üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "AT16,AT36 dedupe"
+    },
+    {
+      "id": "EVE-019.1",
+      "parent": "EVE-019",
+      "parent_issue": 27,
+      "milestone": "M4",
+      "title": "Otaq/əşya və standart şablon",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-006.3",
+        "EVE-009.3"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/inventory/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Otaq/əşya və standart şablon üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Otaq/əşya və standart şablon üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Otaq/əşya və standart şablon üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "AT35; tenant-safe copy"
+    },
+    {
+      "id": "EVE-019.2",
+      "parent": "EVE-019",
+      "parent_issue": 27,
+      "milestone": "M4",
+      "title": "İcazəli copy və import preview",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-019.1"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/inventory/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "İcazəli copy və import preview üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "İcazəli copy və import preview üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "İcazəli copy və import preview üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "AT35; tenant-safe copy"
+    },
+    {
+      "id": "EVE-019.3",
+      "parent": "EVE-019",
+      "parent_issue": 27,
+      "milestone": "M4",
+      "title": "Duplicate/import tenant testləri",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-019.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "src/modules/inventory/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Duplicate/import tenant testləri üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "AT35; tenant-safe copy",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Duplicate/import tenant testləri üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "AT35; tenant-safe copy"
+    },
+    {
+      "id": "EVE-020.1",
+      "parent": "EVE-020",
+      "parent_issue": 28,
+      "milestone": "M4",
+      "title": "Daily context və turnover events",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-018.3",
+        "EVE-019.3"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/inventory/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Daily context və turnover events üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Daily context və turnover events üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Daily context və turnover events üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "AT17–19; catch-up"
+    },
+    {
+      "id": "EVE-020.2",
+      "parent": "EVE-020",
+      "parent_issue": 28,
+      "milestone": "M4",
+      "title": "Snapshot/side/revision müqaviləsi",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-020.1"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/inventory/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Snapshot/side/revision müqaviləsi üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Snapshot/side/revision müqaviləsi üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Snapshot/side/revision müqaviləsi üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "AT17–19; catch-up"
+    },
+    {
+      "id": "EVE-020.3",
+      "parent": "EVE-020",
+      "parent_issue": 28,
+      "milestone": "M4",
+      "title": "Eyni gündə iki təhvil immutable sınağı",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-020.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "src/modules/inventory/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Eyni gündə iki təhvil immutable sınağı üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "AT17–19; catch-up",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Eyni gündə iki təhvil immutable sınağı üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "AT17–19; catch-up"
+    },
+    {
+      "id": "EVE-021.1",
+      "parent": "EVE-021",
+      "parent_issue": 29,
+      "milestone": "M4",
+      "title": "Token landing və ad/tərəf konteksti",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-017.3",
+        "EVE-020.3",
+        "EVE-022.3"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/inventory/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Token landing və ad/tərəf konteksti üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Token landing və ad/tərəf konteksti üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Token landing və ad/tərəf konteksti üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "AT18–19,AT30 real phone"
+    },
+    {
+      "id": "EVE-021.2",
+      "parent": "EVE-021",
+      "parent_issue": 29,
+      "milestone": "M4",
+      "title": "Otaq yoxlaması və server autosave",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-021.1"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/inventory/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Otaq yoxlaması və server autosave üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Otaq yoxlaması və server autosave üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Otaq yoxlaması və server autosave üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "AT18–19,AT30 real phone"
+    },
+    {
+      "id": "EVE-021.3",
+      "parent": "EVE-021",
+      "parent_issue": 29,
+      "milestone": "M4",
+      "title": "Foto/səs fallback və offline truthful sınağı",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-021.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "src/modules/inventory/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Foto/səs fallback və offline truthful sınağı üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "AT18–19,AT30 real phone",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Foto/səs fallback və offline truthful sınağı üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "AT18–19,AT30 real phone"
+    },
+    {
+      "id": "EVE-022.1",
+      "parent": "EVE-022",
+      "parent_issue": 30,
+      "milestone": "M5",
+      "title": "Upload intent/quota rezervi",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-006.3",
+        "EVE-008.3"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/publishing/",
+        "src/modules/media/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Upload intent/quota rezervi üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Upload intent/quota rezervi üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Upload intent/quota rezervi üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "AT06,AT21,AT32 file tests"
+    },
+    {
+      "id": "EVE-022.2",
+      "parent": "EVE-022",
+      "parent_issue": 30,
+      "milestone": "M5",
+      "title": "MIME/finalize/private serving",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-022.1"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/publishing/",
+        "src/modules/media/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "MIME/finalize/private serving üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "MIME/finalize/private serving üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "MIME/finalize/private serving üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "AT06,AT21,AT32 file tests"
+    },
+    {
+      "id": "EVE-022.3",
+      "parent": "EVE-022",
+      "parent_issue": 30,
+      "milestone": "M5",
+      "title": "Revoke/EXIF/SSRF/orphan testləri",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-022.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "src/modules/publishing/",
+        "src/modules/media/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Revoke/EXIF/SSRF/orphan testləri üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "AT06,AT21,AT32 file tests",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Revoke/EXIF/SSRF/orphan testləri üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "AT06,AT21,AT32 file tests"
+    },
+    {
+      "id": "EVE-023.1",
+      "parent": "EVE-023",
+      "parent_issue": 31,
+      "milestone": "M5",
+      "title": "Guide blokları və locale draft",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-009.3",
+        "EVE-022.3"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/publishing/",
+        "src/modules/media/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Guide blokları və locale draft üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Guide blokları və locale draft üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Guide blokları və locale draft üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "AT20–21 camera scan"
+    },
+    {
+      "id": "EVE-023.2",
+      "parent": "EVE-023",
+      "parent_issue": 31,
+      "milestone": "M5",
+      "title": "Publish/safety-private təsnifatı",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-023.1"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/publishing/",
+        "src/modules/media/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Publish/safety-private təsnifatı üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Publish/safety-private təsnifatı üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Publish/safety-private təsnifatı üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "AT20–21 camera scan"
+    },
+    {
+      "id": "EVE-023.3",
+      "parent": "EVE-023",
+      "parent_issue": 31,
+      "milestone": "M5",
+      "title": "Sabit QR export və kamera testi",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-023.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "src/modules/publishing/",
+        "src/modules/media/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Sabit QR export və kamera testi üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "AT20–21 camera scan",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Sabit QR export və kamera testi üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "AT20–21 camera scan"
+    },
+    {
+      "id": "EVE-024.1",
+      "parent": "EVE-024",
+      "parent_issue": 32,
+      "milestone": "M5",
+      "title": "Public strict DTO və content preview",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-009.3",
+        "EVE-022.3"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/publishing/",
+        "src/modules/media/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Public strict DTO və content preview üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Public strict DTO və content preview üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Public strict DTO və content preview üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "AT22–24 PII audit"
+    },
+    {
+      "id": "EVE-024.2",
+      "parent": "EVE-024",
+      "parent_issue": 32,
+      "milestone": "M5",
+      "title": "Owner visibility/noindex/OG",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-024.1"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/publishing/",
+        "src/modules/media/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Owner visibility/noindex/OG üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Owner visibility/noindex/OG üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Owner visibility/noindex/OG üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "AT22–24 PII audit"
+    },
+    {
+      "id": "EVE-024.3",
+      "parent": "EVE-024",
+      "parent_issue": 32,
+      "milestone": "M5",
+      "title": "HTML/JSON/media PII sızma testi",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-024.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "src/modules/publishing/",
+        "src/modules/media/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "HTML/JSON/media PII sızma testi üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "AT22–24 PII audit",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "HTML/JSON/media PII sızma testi üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "AT22–24 PII audit"
+    },
+    {
+      "id": "EVE-025.1",
+      "parent": "EVE-025",
+      "parent_issue": 33,
+      "milestone": "M5",
+      "title": "Available nights/departures projection",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-010.3",
+        "EVE-024.3"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/publishing/",
+        "src/modules/media/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Available nights/departures projection üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Available nights/departures projection üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Available nights/departures projection üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "AT08,AT24 stale/range"
+    },
+    {
+      "id": "EVE-025.2",
+      "parent": "EVE-025",
+      "parent_issue": 33,
+      "milestone": "M5",
+      "title": "Date interval quote/copy UX",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-025.1"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/publishing/",
+        "src/modules/media/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Date interval quote/copy UX üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Date interval quote/copy UX üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Date interval quote/copy UX üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "AT08,AT24 stale/range"
+    },
+    {
+      "id": "EVE-025.3",
+      "parent": "EVE-025",
+      "parent_issue": 33,
+      "milestone": "M5",
+      "title": "Stale cache/range/checkout-edge sınağı",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-025.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "src/modules/publishing/",
+        "src/modules/media/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Stale cache/range/checkout-edge sınağı üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "AT08,AT24 stale/range",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Stale cache/range/checkout-edge sınağı üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "AT08,AT24 stale/range"
+    },
+    {
+      "id": "EVE-026.1",
+      "parent": "EVE-026",
+      "parent_issue": 34,
+      "milestone": "M6",
+      "title": "Plan catalog və same-owner order lines",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-006.3",
+        "EVE-008.3",
+        "EVE-003.2"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/billing/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Plan catalog və same-owner order lines üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Plan catalog və same-owner order lines üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Plan catalog və same-owner order lines üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "AT25,AT28 month/leap"
+    },
+    {
+      "id": "EVE-026.2",
+      "parent": "EVE-026",
+      "parent_issue": 34,
+      "milestone": "M6",
+      "title": "Calendar anchor və period application",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-026.1"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/billing/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Calendar anchor və period application üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Calendar anchor və period application üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Calendar anchor və period application üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "AT25,AT28 month/leap"
+    },
+    {
+      "id": "EVE-026.3",
+      "parent": "EVE-026",
+      "parent_issue": 34,
+      "milestone": "M6",
+      "title": "Trial/leap/ay sonu/plan keçid sınağı",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-026.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "src/modules/billing/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Trial/leap/ay sonu/plan keçid sınağı üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "AT25,AT28 month/leap",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Trial/leap/ay sonu/plan keçid sınağı üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "AT25,AT28 month/leap"
+    },
+    {
+      "id": "EVE-027.1",
+      "parent": "EVE-027",
+      "parent_issue": 35,
+      "milestone": "M6",
+      "title": "Payriff hosted checkout adapter",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-026.3",
+        "EVE-003.2"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/billing/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Payriff hosted checkout adapter üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Payriff hosted checkout adapter üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Payriff hosted checkout adapter üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "AT26–27 sandbox"
+    },
+    {
+      "id": "EVE-027.2",
+      "parent": "EVE-027",
+      "parent_issue": 35,
+      "milestone": "M6",
+      "title": "Verified inbox/reconcile transaction",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-027.1"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/billing/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Verified inbox/reconcile transaction üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Verified inbox/reconcile transaction üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Verified inbox/reconcile transaction üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "AT26–27 sandbox"
+    },
+    {
+      "id": "EVE-027.3",
+      "parent": "EVE-027",
+      "parent_issue": 35,
+      "milestone": "M6",
+      "title": "Forgery/replay/out-of-order sandbox",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-027.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "src/modules/billing/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Forgery/replay/out-of-order sandbox üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "AT26–27 sandbox",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [
+        "EXT04",
+        "EXT05"
+      ],
+      "expected_result": "Forgery/replay/out-of-order sandbox üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "AT26–27 sandbox"
+    },
+    {
+      "id": "EVE-028.1",
+      "parent": "EVE-028",
+      "parent_issue": 36,
+      "milestone": "M6",
+      "title": "Owner billing/renewal və toplu order",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-027.3",
+        "EVE-014.3",
+        "EVE-017.3",
+        "EVE-023.3",
+        "EVE-024.3"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/billing/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Owner billing/renewal və toplu order üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Owner billing/renewal və toplu order üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Owner billing/renewal və toplu order üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "AT28 bütün modullar"
+    },
+    {
+      "id": "EVE-028.2",
+      "parent": "EVE-028",
+      "parent_issue": 36,
+      "milestone": "M6",
+      "title": "Module entitlement/read-only davranışı",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-028.1"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "src/modules/billing/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Module entitlement/read-only davranışı üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Module entitlement/read-only davranışı üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Module entitlement/read-only davranışı üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "AT28 bütün modullar"
+    },
+    {
+      "id": "EVE-028.3",
+      "parent": "EVE-028",
+      "parent_issue": 36,
+      "milestone": "M6",
+      "title": "Expiry/safety/task-window regressiyası",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-028.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "src/modules/billing/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Expiry/safety/task-window regressiyası üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "AT28 bütün modullar",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Expiry/safety/task-window regressiyası üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "AT28 bütün modullar"
+    },
+    {
+      "id": "EVE-029.1",
+      "parent": "EVE-029",
+      "parent_issue": 37,
+      "milestone": "M7",
+      "title": "Scoped export və təhlükəsiz fayl",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-014.3",
+        "EVE-016.3",
+        "EVE-020.3",
+        "EVE-027.3"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "tests/",
+        "src/modules/operator/",
+        "docs/05-delivery/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Scoped export və təhlükəsiz fayl üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Scoped export və təhlükəsiz fayl üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Scoped export və təhlükəsiz fayl üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "AT32,AT35"
+    },
+    {
+      "id": "EVE-029.2",
+      "parent": "EVE-029",
+      "parent_issue": 37,
+      "milestone": "M7",
+      "title": "Operator/support/reasoned audit",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-029.1"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "tests/",
+        "src/modules/operator/",
+        "docs/05-delivery/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Operator/support/reasoned audit üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Operator/support/reasoned audit üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Operator/support/reasoned audit üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "AT32,AT35"
+    },
+    {
+      "id": "EVE-029.3",
+      "parent": "EVE-029",
+      "parent_issue": 37,
+      "milestone": "M7",
+      "title": "PII/secret/CSV injection yoxlaması",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-029.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "tests/",
+        "src/modules/operator/",
+        "docs/05-delivery/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "PII/secret/CSV injection yoxlaması üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "AT32,AT35",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "PII/secret/CSV injection yoxlaması üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "AT32,AT35"
+    },
+    {
+      "id": "EVE-030.1",
+      "parent": "EVE-030",
+      "parent_issue": 38,
+      "milestone": "M7",
+      "title": "Birləşmiş E2E/security/performance",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-001.3",
+        "EVE-002.3",
+        "EVE-003.3",
+        "EVE-004.3",
+        "EVE-005.3",
+        "EVE-006.3",
+        "EVE-007.3",
+        "EVE-008.3",
+        "EVE-009.3",
+        "EVE-010.3",
+        "EVE-011.3",
+        "EVE-012.3",
+        "EVE-013.3",
+        "EVE-014.3",
+        "EVE-015.3",
+        "EVE-016.3",
+        "EVE-017.3",
+        "EVE-018.3",
+        "EVE-019.3",
+        "EVE-020.3",
+        "EVE-021.3",
+        "EVE-022.3",
+        "EVE-023.3",
+        "EVE-024.3",
+        "EVE-025.3",
+        "EVE-026.3",
+        "EVE-027.3",
+        "EVE-028.3",
+        "EVE-029.3"
+      ],
+      "role": "ux_frontend",
+      "owned_path_candidates": [
+        "tests/",
+        "src/modules/operator/",
+        "docs/05-delivery/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Birləşmiş E2E/security/performance üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "Birləşmiş E2E/security/performance üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "Birləşmiş E2E/security/performance üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
+      "parent_acceptance_reference": "AT01–36; P0/P1=0"
+    },
+    {
+      "id": "EVE-030.2",
+      "parent": "EVE-030",
+      "parent_issue": 38,
+      "milestone": "M7",
+      "title": "DB+media restore və rollback drill",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-030.1"
+      ],
+      "role": "domain_engineer",
+      "owned_path_candidates": [
+        "tests/",
+        "src/modules/operator/",
+        "docs/05-delivery/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "DB+media restore və rollback drill üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "DB+media restore və rollback drill üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+      ],
+      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "reviewer_role": "qa_redteam",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [],
+      "expected_result": "DB+media restore və rollback drill üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "parent_acceptance_reference": "AT01–36; P0/P1=0"
+    },
+    {
+      "id": "EVE-030.3",
+      "parent": "EVE-030",
+      "parent_issue": 38,
+      "milestone": "M7",
+      "title": "Release evidence və handoff gate",
+      "status": "backlog",
+      "depends_on": [
+        "EVE-030.2"
+      ],
+      "role": "qa_redteam",
+      "owned_path_candidates": [
+        "tests/",
+        "src/modules/operator/",
+        "docs/05-delivery/"
+      ],
+      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "deliverable": "Release evidence və handoff gate üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "acceptance": [
+        "AT01–36; P0/P1=0",
+        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+      ],
+      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "reviewer_role": "integration_reviewer",
+      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
+      "external_gates": [
+        "EXT01",
+        "EXT02",
+        "EXT03",
+        "EXT04",
+        "EXT05",
+        "EXT06",
+        "EXT07",
+        "EXT08",
+        "EXT09"
+      ],
+      "expected_result": "Release evidence və handoff gate üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "parent_acceptance_reference": "AT01–36; P0/P1=0"
+    }
+  ]
+}

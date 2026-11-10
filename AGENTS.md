@@ -6,6 +6,8 @@ Bu fayl bütün repository-yə aiddir. Məqsəd Azərbaycan dilindəki məhsul m
 
 İnteqrator əvvəl README, docs/INDEX, DECISIONS, PRD, ROADMAP, BACKLOG, SECURITY və STATUS oxuyur. Aid modulun spesifikasiyası və qəbul testləri oxunmadan kod yazılmır. Mövcud repo/code/test faktiki yoxlanılır; sənəddə planlanan qovluq və script işlək hesab edilmir.
 
+Maşın müqavilələri openapi.json, data-dictionary.json, state-machines.json, field-bindings.json, configuration.json, traceability.json və work-packages.json-dır. Sənəd dəyişəndə node scripts/docs-check.mjs, node scripts/verify-contracts.mjs, Python schema validator və prototip smoke işlədilir. API/DB enum və sahə limitləri fərqli qala bilməz. 90 iş paketi mövcud 30 parent issue daxilində izlənir; provider sandbox gate-i müstəqil local scaffold/schema/UI işini bloklamır.
+
 Göstəriş prioriteti: cari istifadəçi tapşırığı → bu müqavilə və qərar reyestri → modul sənədi → task. Ziddiyyəti gizlətmək olmaz; təsirlənən müqavilələri eyni PR-də düzəlt. Provider/hüquqi faktı uydurma.
 
 ## 2. Rollar

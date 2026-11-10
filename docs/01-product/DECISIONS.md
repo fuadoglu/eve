@@ -25,10 +25,22 @@ Statuslar: **Təsbit** — istifadəçinin açıq tələbi; **İcra qərarı** �
 | D19 | Arxiv abunəni dondurmur, hesablanan sınağı yenidən vermir; aktiv müddətdə səhv arxiv geri açılır | İcra qərarı |
 | D20 | Offline yalnız məxfi olmayan statik tətbiq qabığı; private data və token səhifələri service worker cache-ə düşmür | İcra qərarı |
 | D21 | QR təhlükəsizlik mətn/şəkil dərc edilibsə, ev arxivdə olsa da xidmət fəaliyyət göstərdikcə read-only qalır; məxfi kodlar bu məzmuna daxil deyil | İcra qərarı; retention hüquqi nəzərdən keçirilir |
-| D22 | Video max 100 MB/5 dəq; foto max 15 MB giriş; ev üzrə 1 GB ilkin media kvotası; genişləndirmə ödənişi hələ yoxdur | İcra qərarı, istifadə ölçülərinə görə dəyişilə bilər |
+| D22 | Video max 100 MiB/5 dəq; foto max 15 MiB giriş; ev üzrə 1024 MiB ilkin media kvotası; genişləndirmə ödənişi hələ yoxdur | İcra qərarı, istifadə ölçülərinə görə dəyişilə bilər |
 | D23 | Avtomatik tərcümə, iCal/channel manager, marketplace, native app ilkin scope-da deyil | İcra qərarı |
 | D24 | Sahiblik transferi ilkin buraxılışda self-service deyil; başqa evə/sahibə məlumat daşıma səssiz edilmir | İcra qərarı |
 
 ## Dəyişiklik qaydası
 
 Hər yeni qərarda səbəb, təsirlənən tələb/test ID-ləri, keçid/data migration ehtiyacı qeyd edilir. Xarici asılılığın həlli implementasiya təxminindən deyil, sandbox və hesab konfiqurasiyası sübutundan gəlir. Məhsul spesifikasiyasının mövcudluğu hüquqi mətn, provayder təsdiqi və ya işləyən proqram sübutu deyil.
+
+
+## Dəqiqləşdirmə əlavəsi — v2
+
+| ID | Qərar | Status |
+|---|---|---|
+| D25 | API/DB/UI ad və enum-ları field-bindings müqaviləsi ilə yoxlanır; name120, area160; hazır vəziyyət ready/cleaning_pending/attention_required | İcra qərarı |
+| D26 | Private scoped media hər fetch-də link/expiry/revoke yoxlayan proxy-dən verilir; əvvəl yüklənən baytları geri silmək vədi yoxdur | Red-team düzəlişi |
+| D27 | Move/cancel/no_show köhnə placement guest-private keçidlərini atomik bağlayır | Red-team düzəlişi |
+| D28 | Base data app_private; api allowlist RPC; authenticated/anon base-table grant yoxdur | Giriş sərhədinin dəqiqləşdirilməsi |
+| D29 | Provider credential gate-i local domain/schema/UI işini bloklamır; sandbox sınağı ayrıca Done/release şərtidir | İcra ardıcıllığının düzəlişi |
+| D30 | Reversal və depozit allocation yalnız sahib/full; daily managerin rent receipt qeydi ilə qarışmır | İcazə dəqiqləşdirilməsi |

@@ -2,6 +2,8 @@
 
 Status: **bütün tətbiq testləri planlaşdırılıb, hələ icra edilməyib**. Hər sınaq üçün commit, mühit, fixture, addım, nəticə və artefakt yolu saxlanılır. Mock, integration, provider sandbox və real cihaz sübutları ayrıdır.
 
+Ətraflı Given/When/Then: [acceptance-scenarios.json](acceptance-scenarios.json). Testin necə icra və qeyd edildiyi: [TEST-PROTOCOL](TEST-PROTOCOL.md). Tələb əlaqələri: [TRACEABILITY](TRACEABILITY.md). Müqavilə/prototip smoke nəticəsi tətbiq testi kimi işarələnmir.
+
 | ID | Ssenari və gözlənilən nəticə |
 |---|---|
 | AT01 | Yeni email → link → ilk ev; şifrə/profil məcburiyyəti yoxdur |

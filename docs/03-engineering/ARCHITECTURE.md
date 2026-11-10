@@ -6,6 +6,8 @@ Bir Git repository-də **modul monolit**: Next.js App Router + TypeScript strict
 
 DB schema və migrations Supabase SQL ilə; user əməliyyatları user-scoped client və yoxlanmış SQL RPC-dən keçir. Generated types CI-da uyğunlaşdırılır. Tranzaksiya tələb edən biznes əməliyyatları SQL RPC-də atomikdir. SECURITY DEFINER minimal, sabit search_path və explicit capability yoxlamalıdır.
 
+Fiziki grant/RPC sərhədi üçün [ACCESS-BOUNDARY](ACCESS-BOUNDARY.md) normativdir: app_private base tables + yalnız api allowlist RPC; authenticated və anon üçün base-table grant yoxdur. Həssas sütunlar tək RLS ilə gizlədilmir.
+
 | Modul | Sahib olduğu məntiq |
 |---|---|
 | identity/access | Auth, profil, tenant, ev təyinatı, capability |

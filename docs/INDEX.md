@@ -31,6 +31,18 @@ Sənəd bazası: 2026-11-10, Asia/Baku. Dil: Azərbaycan dili. Status: **icra ü
 | [İstismar](05-delivery/RUNBOOK.md) | Deploy, rollback, backup və hadisə |
 | [GitHub task xəritəsi](05-delivery/GITHUB-TRACKING.md) | 8 epik və 30 issue-nun dəqiq keçidləri |
 | [İcra statusu](05-delivery/STATUS.md) | Faktiki nə edilib, sübutu haradadır? |
+| [Status keçidləri](01-product/STATE-MACHINES.md) | Hər action-un şərti və atomik yan təsiri |
+| [Konfiqurasiya](01-product/CONFIGURATION.md) | Limit, vahid, dəyişmə səlahiyyəti və əsaslandırma |
+| [Kliklənən mobil prototip](02-design/PROTOTYPE.md) | UI01–19 demo və istifadə qaydası |
+| [Dəqiq form axınları](02-design/FLOW-SPEC.md) | Sahə, default, düymə, xəta və fallback |
+| [OpenAPI 3.1 JSON](03-engineering/openapi.json) | Tam request/response müqaviləsi |
+| [Maşın data lüğəti](03-engineering/data-dictionary.json) | Sütun-sütun schema və invariantlar |
+| [DB giriş sərhədi](03-engineering/ACCESS-BOUNDARY.md) | Base cədvəl grant və RPC qaydaları |
+| [API→DB sahə xəritəsi](03-engineering/field-bindings.json) | Ad/limit/enum uyğunluğu |
+| [İzləmə matrisi](04-quality/TRACEABILITY.md) | Tələb–ekran–API–data–task–test əlaqələri |
+| [Test protokolu](04-quality/TEST-PROTOCOL.md) | Təkrar edilən Given/When/Then və sübut |
+| [Atomik iş paketləri](05-delivery/WORK-PACKAGES.md) | 30 issue daxilində 90 bounded vahid |
+| [Yekun sənəd auditi](04-quality/DOCUMENTATION-AUDIT.md) | Tapıntı, düzəliş, həqiqi yoxlama və açıq qapılar |
 | [Mənbələr](REFERENCES.md) | Texniki qərarların rəsmi istinadları |
 
 ## Terminlər

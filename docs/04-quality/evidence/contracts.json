@@ -1,0 +1,64 @@
+{
+  "client_date": "2026-11-11",
+  "timezone": "Asia/Baku",
+  "executed_at_utc": "2026-11-10T21:46:59.624587+00:00",
+  "kind": "documentation_contract_validation",
+  "results": [
+    {
+      "command": "node scripts/docs-check.mjs",
+      "exit_code": 0,
+      "stdout": "Docs OK: 40 Markdown files; R01-16, AT01-36, EVE-001-030.",
+      "stderr": "",
+      "status": "passed"
+    },
+    {
+      "command": "node scripts/verify-contracts.mjs",
+      "exit_code": 0,
+      "stdout": "Contracts OK: 117 operations; 52 tables; 257 field bindings; 90 acyclic packages; 16 trace rows; 36 scenarios; prototype syntax.",
+      "stderr": "",
+      "status": "passed"
+    },
+    {
+      "command": "python scripts/validate-schemas.py",
+      "exit_code": 0,
+      "stdout": "JSON Schema OK: 207 schemas; 32 positive/negative examples. Application tests not run.",
+      "stderr": "",
+      "status": "passed"
+    },
+    {
+      "command": "node scripts/test-prototype.mjs",
+      "exit_code": 0,
+      "stdout": "PASS prototype smoke: 71 assertions; 19 screens; 6 states; 6 forms; public departures; locales; inspection; submit flows.\nLIMIT: VM/fake-DOM smoke only. Browser layout, real device, usability and backend tests remain separate.",
+      "stderr": "",
+      "status": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "status": "passed"
+    }
+  ],
+  "tested_source_sha256": {
+    "docs/03-engineering/openapi.json": "07b89943240a5434967f7624242d70344b58d5aee76dcfb978ba3491c009e9fc",
+    "docs/03-engineering/data-dictionary.json": "b1b0f3ea8046314c3a920683a622df7a50634708ac8efe3ccd9753c26c56217e",
+    "docs/03-engineering/field-bindings.json": "f587c2b28400dceb78aee41db50a7d1b58ddfd7295d2f4ad48cf2448fb206b92",
+    "docs/01-product/state-machines.json": "d894467f79570ce32d253d1de249c95f5cb0209fdab6c895b2b7bb2f95ffd64f",
+    "docs/01-product/configuration.json": "9257fea0ad8b744b85e8b6d89624c4c655d8bf28ba4097ea1c371a7d2331b76c",
+    "docs/04-quality/traceability.json": "afa552bb72cc400d2a0883c5781593b3942898079e27ec36908ce0a76342da6d",
+    "docs/04-quality/acceptance-scenarios.json": "01aaf37fba9f86b652caae1ef3de59c45da727eedd23bae9fe50c0623124e928",
+    "docs/05-delivery/work-packages.json": "c2b8ed77a03b810b4bcecc6740a19aea8e22222e15330bdc1edbf5bb2c2b91e9",
+    "docs/02-design/prototype.html": "9ef3c850c276dd00106182dc5897cfe8fc8e0cbe755e191595680bfe59a0ff05"
+  },
+  "independent_review": "Prior reported documentation P1 findings rechecked closed by resume_contract_review; root security/delivery reviews recorded in audit.",
+  "limits": {
+    "application_tests": "not_run",
+    "provider_sandbox": "not_run",
+    "database_migrations_rls": "not_run",
+    "prototype_test": "VM/fake DOM only,71assertions",
+    "browser_layout": "not_verified: cloud browser could not reach workspace localhost",
+    "real_device_usability": "not_run",
+    "production_deployment": "not_performed"
+  }
+}

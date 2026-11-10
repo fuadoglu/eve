@@ -8,6 +8,8 @@ Eve layihəsini AGENTS.md və docs/INDEX.md üzrə həyata keçir. Məhsul Azər
 
 Əvvəl repo-nu faktiki yoxla, STATUS və xarici asılılıqları oxu. İşlək kod yoxdursa mock UI-nı bitmiş məhsul sayma. M0-dan başla; auth/Payriff feasibility, mobil prototip və OpenAPI-ni tamamla. Sonra ROADMAP/BACKLOG asılılıqları ilə irəlilə.
 
+Repo-da artıq OpenAPI JSON, tam data dictionary, status/config/field-binding müqavilələri və kliklənən sənəd prototipi var. Bunları yenidən sıfırdan yazma: yoxla və həmin müqavilələrə uyğun implement et. Prototip production komponenti deyil. Real istifadəçi testi, provider sandbox və DB migrations hələ ayrıca gate-dir. WORK-PACKAGES 90 bounded vahidin dependency və external gate fərqini göstərir.
+
 İnteqrator agent özündə schema/API/design/lockfile coordination saxlasın. Bounded UX, backend, integration və QA işlərini ayrı worktree/branch agentlərinə ver. Müqavilə hazır olmadan asılı agentləri ziddiyyətli fərziyyələrlə paralel başlatma.
 
 Məhsul invariantları: email-only passwordless; owner tenant+property permission; menecer müxtəlif sahiblərdə; Payriff yalnız Eve abunəsi; integer rent/deposit/realtor ledger; DB occupancy; immutable inventory snapshot; public only available dates; safety QR expiry-də açıq; scoped task link; truthful server ack.

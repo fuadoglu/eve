@@ -22,7 +22,7 @@ Eve ev sahibinin WhatsApp, dəftər və cədvəllərə bölünmüş işlərini b
 
 **Eve kirayə marketplace-i və ödəniş vasitəçisi deyil.** Payriff yalnız Eve abunəsi üçün istifadə olunur. Kirayə, beh, depozit və komissiyalar sahibin uçot qeydləridir.
 
-> **Hazırkı vəziyyət:** bu repo məhsulun icra və təhvil spesifikasiyasıdır. Tətbiq, işləyən inteqrasiyalar, prototip və tətbiq testləri hələ mövcud deyil. Nişanlar build və ya təhlükəsizlik yoxlamasının keçdiyini bildirmir.
+> **Hazırkı vəziyyət:** bu repo məhsulun icra və təhvil spesifikasiyasıdır. İşlək tətbiq və inteqrasiyalar hələ yoxdur. Kliklənən sənəd prototipi mövcuddur; real backend və provider çağırışı etmir. Tətbiq testləri hələ icra olunmayıb. Nişanlar build və ya təhlükəsizlik yoxlamasının keçdiyini bildirmir.
 
 ## 🧭 Haradan başlamalı?
 
@@ -35,6 +35,22 @@ Eve ev sahibinin WhatsApp, dəftər və cədvəllərə bölünmüş işlərini b
 | Codex / inteqrator | [AGENTS.md](AGENTS.md) → [Başlanğıc tapşırığı](docs/05-delivery/CODEX-START.md) → [Backlog](docs/05-delivery/BACKLOG.md) |
 
 Tam naviqasiya: **[Sənədlər indeksi](docs/INDEX.md)**.
+
+## 🔬 İcra üçün dəqiq müqavilələr
+
+| Müqavilə | Mənbə |
+|---|---|
+| API: sahələr, cavablar, xətalar və icazələr | [OpenAPI 3.1](docs/03-engineering/openapi.json) |
+| Cədvəllər, sütunlar, FK və RLS sərhədi | [Data dictionary](docs/03-engineering/data-dictionary.json) |
+| API→DB ad/limit/enum uyğunluğu | [Field bindings](docs/03-engineering/field-bindings.json) |
+| Düymələrin status və yan təsirləri | [State machines](docs/01-product/STATE-MACHINES.md) |
+| Ekran və forma davranışı | [Mobil prototip](docs/02-design/PROTOTYPE.md) · [Flow spec](docs/02-design/FLOW-SPEC.md) |
+| Tələbdən testə qədər əlaqə | [Traceability](docs/04-quality/TRACEABILITY.md) |
+| 30 parent issue daxilində 90 kiçik iş vahidi | [Work packages](docs/05-delivery/WORK-PACKAGES.md) |
+| Müstəqil baxışın nəticəsi və sərhədlər | [Sənəd auditi](docs/04-quality/DOCUMENTATION-AUDIT.md) |
+
+Sənədlərin praktik başlanğıcı: `node scripts/docs-check.mjs` və `node scripts/verify-contracts.mjs`. Python schema yoxlaması və demo smoke qaydası [CONTRIBUTING](CONTRIBUTING.md)-dədir.
+
 
 ## ⚡ Gündəlik istifadə
 

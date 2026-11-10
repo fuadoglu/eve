@@ -20,3 +20,6 @@
 Nə sadələşdi? Hansı invariant DB-də qorunur? Mobil istifadəçi harada ilişdi? Hansı test faktiki işləmədi? Hansı risk qaldı? Növbəti mərhələni nə bloklayır?
 
 Bu cavablar milestone issue-da qısa nəticə kimi saxlanılır. Yeni funksiya yalnız istifadəçi dəyəri və mövcud scope-a təsiri əsaslandırıldıqda əlavə edilir.
+
+
+İkinci sənədləşmə iterasiyasının konkret tapıntı və düzəlişləri [DOCUMENTATION-AUDIT](DOCUMENTATION-AUDIT.md)-dədir. X10 adı özü keyfiyyət sübutu deyil; maşın validatorları, müstəqil review və açıq qapılar birlikdə qiymətləndirilir.

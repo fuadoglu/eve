@@ -35,7 +35,7 @@ WhatsApp quraşdırılmayıbsa “Mətni və keçidi kopyala” fallback. Kopyal
 
 ## Media və QR
 
-Şəkil client compression + server validation; original EXIF təhlükəsizliyi yoxlanır. Video max 100 MB/5 dəqiqə, unsupported format üçün aydın xəta; universal transcoding provider olmadan vəd edilmir. Browser-compatible MP4 tövsiyə; arbitrary iframe deyil. Ev kvotası 1 GB, upload intent-də reserve/finalize; orphan cleanup job var.
+Şəkil client compression + server validation; original EXIF təhlükəsizliyi yoxlanır. Video max 100 MiB/5 dəqiqə, unsupported format üçün aydın xəta; universal transcoding provider olmadan vəd edilmir. Browser-compatible MP4 tövsiyə; arbitrary iframe deyil. Ev kvotası 1024 MiB, upload intent-də reserve/finalize; orphan cleanup job var.
 
 Səsli qeyd max 60 saniyə, mikrofon icazəsi könüllü; format unsupported olduqda foto/mətn fallback. Private audio və inspection foto public bucket-də deyil.
 
@@ -50,3 +50,6 @@ Outbox dedupe: recipient+kind+resource+scheduled_time. Quiet hours default 22:00
 ## Provider dəyişmə sərhədi
 
 Domain modulları Payriff/Supabase label-larını UI-a daşımır. Adapter müqaviləsi və sandbox fixture-ləri var. Real provider hesabı yoxdur deyə saxta production uğuru göstərmək olmaz; mock yalnız test mühitində açıq işarə ilə işləyir.
+
+
+Private scoped media direct signed Storage URL deyil, hər fetch-də linkin cari scope/expiry/revoke/cari placement vəziyyətini yoxlayan proxy vasitəsilə verilir. Upload üçün qısaömürlü signed upload URL başqa məqsəddir; read revoke zəmanəti kimi təqdim edilmir.
