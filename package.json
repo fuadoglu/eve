@@ -2,6 +2,7 @@
   "name": "eve",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "packageManager": "pnpm@12.18.0",
   "engines": {
     "node": ">=24.22.2 <25"
@@ -10,12 +11,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:env": "node --conditions=react-server --experimental-strip-types --test tests/unit/env.test.ts"
   },
   "dependencies": {
     "next": "16.4.6",
     "react": "19.3.1",
-    "react-dom": "19.3.1"
+    "react-dom": "19.3.1",
+    "server-only": "0.0.1"
   },
   "devDependencies": {
     "@types/node": "24.10.1",

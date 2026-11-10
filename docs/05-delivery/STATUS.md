@@ -20,6 +20,8 @@ Tarix: 2026-11-11 (Asia/Baku). Mərhələ: **icra üçün genişləndirilmiş s�
 
 EVE-005.1 üçün `feat/EVE-005-1-scaffold` lokal branch-ində Node 24.22.2, pnpm 12.18.0 və Next.js 16.4.6 ilə ilkin App Router scaffold yaradıldı. Həmin dəqiq Node/pnpm versiyaları ilə typecheck və production build keçdi. Bu dəyişiklik hələ remote-a göndərilməyib və main-a merge edilməyib. EVE-005.2 mühit/secret kontraktı və EVE-005.3 təmiz checkout CI işi açıq qalır.
 
+EVE-005.2 üçün `feat/EVE-005-2-env-contract` branch-ində boş `.env.example`, public URL/publishable key validatorı və `server-only` ilə qorunan privileged-key accessor əlavə edildi. 9 env contract testi, typecheck və production build keçdi. Müstəqil review URL path-inin rəddini tələb etdi; validator və mənfi sınaq düzəldildi, təkrar yoxlamada 9/9 keçdi. Real Supabase key və hesab istifadə olunmayıb; EVE-005.2 nəticəsi də remote/main-a göndərilməyib. Bu branch lokal EVE-005.1 commit-i üzərində stacked vəziyyətdədir.
+
 Prototip smoke-u 71 assertion ilə VM/fake-DOM yoxlamasıdır. Cloud browser workspace localhost-a qoşula bilmədiyindən screenshot/layout QA keçilmiş sayılmır. Real cihaz və 5 iştirakçılı usability testi hələ aparılmayıb.
 
 ## Hələ tamamlanmayan icra
@@ -32,4 +34,4 @@ Prototip smoke-u 71 assertion ilə VM/fake-DOM yoxlamasıdır. Cloud browser wor
 
 ## Növbəti iş
 
-EVE-005.1 scaffold nəticəsini issue/PR axınına keçirmək, sonra EVE-005.2 mühit və secret müqaviləsini, EVE-005.3 isə təmiz checkout CI/build yoxlamasını tamamlamaq lazımdır. İmplementasiya taskları sübut və merge olmadan Done işarələnmir.
+EVE-005.1 və EVE-005.2 lokal nəticələrini issue/PR axınına keçirmək, sonra EVE-005.3 təmiz checkout CI/build yoxlamasını tamamlamaq lazımdır. İmplementasiya taskları sübut və merge olmadan Done işarələnmir.

@@ -59,3 +59,5 @@ Açıq interval üzrə calendar query, pagination, property/date index-ləri, N+
 ## Mühitlər
 
 Local/staging/production ayrı Supabase/Payriff credential-ları. Preview production DB-yə yazmır. Secret yalnız server env store; .env.example placeholder. M1-də dəstəklənən stable framework/Node LTS/package manager versiyası sabitlənir, lockfile commit edilir. Migration rollback/forward-fix planı olmadan production schema dəyişmir.
+
+Supabase üçün `NEXT_PUBLIC_SUPABASE_URL` və `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` public client config-dir; publishable key RLS-i əvəz etmir. `SUPABASE_SECRET_KEY` yalnız server mühitində saxlanır və yalnız ayrıca səlahiyyət yoxlaması olan server əməliyyatında istifadə oluna bilər. Server-only accessor Next.js `server-only` sərhədi ilə işarələnir. Local build bu dəyərlər olmadan işləyə bilər; Supabase client konfiqurasiyası istənən anda çatışmayan və ya etibarsız dəyər aydın xəta verməlidir. Real key yalnız `.env.local` və ya mühit secret store-a daxil edilir; `.env.example` boş placeholder saxlayır.
