@@ -9,7 +9,9 @@ Tarix: 2026-11-10 (Asia/Baku).
 - X10 review çərçivəsi, üç istiqamətli sənəd red-team baxışının sintezi.
 - M0–M7 yol xəritəsi, EVE-001–030 task xəritəsi.
 - Codex multiagent müqaviləsi, GitHub template-ləri və başlanğıc tapşırığı.
-- README və repo daxilində sənəd naviqasiyası.
+- README, texnologiya ikon/nişanları və repo daxilində sənəd naviqasiyası.
+- GitHub-da 8 mərhələ epiki (#1–8) və 30 icra taskı (#9–38); [dəqiq xəritə](GITHUB-TRACKING.md).
+- Sənəd link/ID yoxlayıcısı və GitHub Actions workflow; real Node/CI run nəticəsi ayrıca təsdiqlənməlidir.
 
 ## Tamamlanmayan
 

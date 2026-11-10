@@ -23,3 +23,6 @@ Payriff/SMTP feasibility M0-da başlayır. Billing backend M1 sonrası, UI/expir
 Hər mərhələ issue-sunda task bağlantısı, merged PR, acceptance nəticəsi, risk, demo/screenshot və növbəti gate yazılır. “Sənədləşdirildi” = “implementasiya tamamlandı” deyil. Başlanğıcda tətbiq mərhələlərinin hamısı Backlog-dur.
 
 GitHub native Milestones yaradılması ayrıca admin əməliyyatıdır. Yalnız roadmap/epic issue yaradılıbsa bunlar native milestone kimi təqdim edilmir.
+
+
+Faktiki yaradılmış mərhələ epikləri və tasklar: [GitHub xəritəsi](GITHUB-TRACKING.md).

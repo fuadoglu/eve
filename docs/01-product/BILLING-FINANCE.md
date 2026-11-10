@@ -10,7 +10,7 @@ Hər ev: draft / trialing / active / expired / archived. Arxiv istifadə vəziyy
 
 ### Vaxt hesabı
 
-Sınaq server timestamp-dən 7×24 saatdır. Ödənişli dövr aylıqda bir calendar month, illikdə bir calendar year; ay sonu mövcud son günə clamp edilir. İstifadə olunan anchor saxlanılır ki, 31 yanvar → 28 fevral → 31 mart qaydası itirilməsin. Vaxt UTC, UI Asia/Baku. Dövr [starts_at, ends_at).
+Sınaq server timestamp-dən 7×24 saatdır. Ödənişli dövr aylıqda bir calendar month, illikdə bir calendar year; ay sonu mövcud son günə clamp edilir. İstifadə olunan anchor saxlanılır ki, 31 yanvar → 28 fevral → 31 mart qaydası itirilməsin. Calendar period anchor Asia/Baku ilə hesablanır; nəticə UTC saxlanılır, UI Asia/Baku göstərir. Dövr [starts_at, ends_at).
 
 Başlama = max(cari ödənilmiş bitmə, təsdiqli ödəniş vaxtı). Sınaq zamanı ilk alış sınağın bitmə vaxtından başlayır, qalan sınaq itmir. Uğursuz ödəniş müddəti dəyişmir. Payment entitlement atomik bir dəfə tətbiq olunur.
 

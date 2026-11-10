@@ -65,6 +65,14 @@ Kontekstli **+** düyməsi: rezervasiya, pul qeydi, xərc, tapşırıq. Əsas m�
 
 ## 🛠 Texnoloji istiqamət
 
+![Next.js](https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-1C1C1C?logo=supabase&logoColor=3ECF8E)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-0F172A?logo=tailwindcss&logoColor=38BDF8)
+![Vercel](https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white)
+
+
 | İkon | Texnologiya | Təyinat |
 |---|---|---|
 | ⚛️ | Next.js App Router + TypeScript | Bir tətbiqdə panel, server əməliyyatları və public keçidlər |
@@ -82,6 +90,8 @@ Versiyalar icra başlanarkən rəsmi dəstək/security vəziyyətinə görə se�
 ## 🧩 İcra xəritəsi
 
 **M0 Müqavilələr → M1 Təməl → M2 Təqvim → M3 Pul və işlər → M4 İnventar → M5 Paylaşım → M6 Abunə → M7 Buraxılış**
+
+**[GitHub-da 8 mərhələ epiki və 30 task](docs/05-delivery/GITHUB-TRACKING.md)** yaradılıb. Native milestone konfiqurasiyası ayrıca izlənilir.
 
 Hər mərhələnin qəbul şərti və asılılığı [ROADMAP](docs/05-delivery/ROADMAP.md)-dədir. Kodun dəyişməsi [GitHub iş qaydası](docs/05-delivery/GITHUB-WORKFLOW.md) ilə, agentlər [AGENTS.md](AGENTS.md) ilə idarə olunur.
 

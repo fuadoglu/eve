@@ -42,3 +42,6 @@ Məqsəd; scope; exclusions; yuxarıdakı dependency; owned paths; R/AT ID-ləri
 ## GitHub status qaydası
 
 Backlog → Ready → In progress → Review → Done. Blocked ayrıca səbəb/əlaqə ilə. Taskın “Done” olması merge edilmiş kod və faktiki sübut tələb edir. M0 spec task-ı bu docs commit-lə qismən hazırdır; prototype, OpenAPI və provider spike hələ icra olunmayıb.
+
+
+Faktiki GitHub issue nömrələri: [İzləmə xəritəsi](GITHUB-TRACKING.md).

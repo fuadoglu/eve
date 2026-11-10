@@ -45,7 +45,7 @@ Daimi siyahı: otaq, əşya, say, ölçü vahidi, vəziyyət; şəkil/model/zəm
 
 ### Gündəlik avtomatlaşdırma
 
-Hər ev/Bakı günü üçün inspection_day konteksi idempotent job ilə yaranır. Scheduler bağlanmış günləri catch-up edə bilər. Bu kontekst özü gecikmiş tapşırıq deyil. Təhvil hadisəsi varsa inspection_event, tərəf üçün ayrı inspection_submission yaranır. Bir gündə iki təhvil və iki tərəfin cavabı qarışmır.
+Hər aktiv və ya sınaqda olan ev/Bakı günü üçün inspection_day konteksi idempotent job ilə yaranır. Scheduler bağlanmış günləri catch-up edə bilər. Bu kontekst özü gecikmiş tapşırıq deyil. Təhvil hadisəsi varsa inspection_event, tərəf üçün ayrı inspection_submission yaranır. Bir gündə iki təhvil və iki tərəfin cavabı qarışmır.
 
 Günlük keçid həmin day's konteksti seçir; sabah köhnə keçid yeni günə səssiz keçmir. Hadisəyə scoped verən/alan linki yaradılır. Tərəf müəyyən deyilsə bir dəfə iki aydın seçim göstərilir; sistem rol uydurmur. Ümumi link eyni tərəfə ikinci müraciəti mövcud draft-a yönləndirir, tamamlanmış cavabı overwrite etmir.
 

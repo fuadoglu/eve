@@ -29,6 +29,7 @@ Sənəd bazası: 2026-11-10, Asia/Baku. Dil: Azərbaycan dili. Status: **icra ü
 | [Codex başlanğıcı](05-delivery/CODEX-START.md) | İcra edən agentə hazır giriş tapşırığı |
 | [Xarici asılılıqlar](05-delivery/EXTERNAL-DEPENDENCIES.md) | Production üçün nə hələ təmin edilməyib? |
 | [İstismar](05-delivery/RUNBOOK.md) | Deploy, rollback, backup və hadisə |
+| [GitHub task xəritəsi](05-delivery/GITHUB-TRACKING.md) | 8 epik və 30 issue-nun dəqiq keçidləri |
 | [İcra statusu](05-delivery/STATUS.md) | Faktiki nə edilib, sübutu haradadır? |
 | [Mənbələr](REFERENCES.md) | Texniki qərarların rəsmi istinadları |
 
