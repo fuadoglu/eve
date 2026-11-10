@@ -1,0 +1,300 @@
+{
+  "schema_version": 1,
+  "timezone": "Asia/Baku",
+  "notes": "Bunlar ilkin versiyalanmış məhsul/texniki seçimlərdir, providerin avtomatik tətbiq etdiyi faktlar deyil. Mutable dəyişiklik audit və regression tələb edir. Hüquqi retention ayrıca gate-dir.",
+  "policies": [
+    {
+      "key": "billing.monthly_minor",
+      "value": 999,
+      "unit": "qəpik",
+      "scope": "server_catalog",
+      "rationale": "Bir evin aylıq haqqı",
+      "requirement": "R12",
+      "acceptance": "AT26",
+      "mutable": false
+    },
+    {
+      "key": "billing.yearly_minor",
+      "value": 9999,
+      "unit": "qəpik",
+      "scope": "server_catalog",
+      "rationale": "Bir evin illik haqqı",
+      "requirement": "R12",
+      "acceptance": "AT26",
+      "mutable": false
+    },
+    {
+      "key": "trial.duration_hours",
+      "value": 168,
+      "unit": "saat",
+      "scope": "server",
+      "rationale": "İlk evə 7×24 saat",
+      "requirement": "R12",
+      "acceptance": "AT25",
+      "mutable": false
+    },
+    {
+      "key": "auth.magic_link_ttl_seconds",
+      "value": 900,
+      "unit": "saniyə",
+      "scope": "provider_config",
+      "rationale": "Qısaömürlü birdəfəlik email linki; spike ilə provider uyğunluğu yoxlanılır",
+      "requirement": "R01",
+      "acceptance": "AT03",
+      "mutable": true
+    },
+    {
+      "key": "auth.resend_cooldown_seconds",
+      "value": 60,
+      "unit": "saniyə",
+      "scope": "server",
+      "rationale": "Email spamını azaltmaq; UI sayğacı server limitini əvəz etmir",
+      "requirement": "R01",
+      "acceptance": "AT03",
+      "mutable": true
+    },
+    {
+      "key": "auth.link_requests_per_email_hour",
+      "value": 5,
+      "unit": "sorğu/saat",
+      "scope": "server",
+      "rationale": "İlkin abuse limiti; normal istifadə və SMTP ilə staging tənzimlənir",
+      "requirement": "R01",
+      "acceptance": "AT03",
+      "mutable": true
+    },
+    {
+      "key": "auth.link_requests_per_ip_hour",
+      "value": 30,
+      "unit": "sorğu/saat",
+      "scope": "server",
+      "rationale": "Paylaşılan şəbəkəni tam bağlamadan abuse nəzarəti",
+      "requirement": "R01",
+      "acceptance": "AT03",
+      "mutable": true
+    },
+    {
+      "key": "auth.session_inactivity_days",
+      "value": 90,
+      "unit": "gün",
+      "scope": "provider_config",
+      "rationale": "Uzunmüddətli giriş hədəfi; provider planı dəstəkləmirsə faktiki limit UI/sənəddə açıqlanır",
+      "requirement": "R01",
+      "acceptance": "AT02",
+      "mutable": true
+    },
+    {
+      "key": "auth.access_token_ttl_seconds",
+      "value": 900,
+      "unit": "saniyə",
+      "scope": "provider_config",
+      "rationale": "Refresh davam edir; logout-all qalıq access TTL test edilir",
+      "requirement": "R01",
+      "acceptance": "AT02",
+      "mutable": true
+    },
+    {
+      "key": "links.guest_after_checkout_hours",
+      "value": 24,
+      "unit": "saat",
+      "scope": "server",
+      "rationale": "Mövcud qonaq üçün keçid; owner daha tez revoke edə bilər",
+      "requirement": "R10",
+      "acceptance": "AT21",
+      "mutable": true
+    },
+    {
+      "key": "links.task_after_due_hours",
+      "value": 48,
+      "unit": "saat",
+      "scope": "server",
+      "rationale": "Gecikən nəticə üçün məhdud yazı pəncərəsi",
+      "requirement": "R07",
+      "acceptance": "AT16",
+      "mutable": true
+    },
+    {
+      "key": "links.maximum_days",
+      "value": 30,
+      "unit": "gün",
+      "scope": "server",
+      "rationale": "Uzaq gələcək işdə link yenilənir, səssiz sonsuz giriş yoxdur",
+      "requirement": "R07",
+      "acceptance": "AT21",
+      "mutable": true
+    },
+    {
+      "key": "media.photo_input_max_mb",
+      "value": 15,
+      "unit": "MiB",
+      "scope": "server",
+      "rationale": "Kameradan rahat yükləmə; sonra sıxılma və MIME yoxlaması",
+      "requirement": "R10",
+      "acceptance": "AT20",
+      "mutable": true
+    },
+    {
+      "key": "media.video_input_max_mb",
+      "value": 100,
+      "unit": "MiB",
+      "scope": "server",
+      "rationale": "Abunə iqtisadiyyatını və mobil sürəti qorumaq",
+      "requirement": "R10",
+      "acceptance": "AT20",
+      "mutable": true
+    },
+    {
+      "key": "media.video_max_seconds",
+      "value": 300,
+      "unit": "saniyə",
+      "scope": "server",
+      "rationale": "Qısa avadanlıq təlimatı",
+      "requirement": "R10",
+      "acceptance": "AT20",
+      "mutable": true
+    },
+    {
+      "key": "media.audio_max_seconds",
+      "value": 60,
+      "unit": "saniyə",
+      "scope": "server",
+      "rationale": "Yoxlamada qısa səsli qeyd; mikrofon könüllüdür",
+      "requirement": "R09",
+      "acceptance": "AT19",
+      "mutable": true
+    },
+    {
+      "key": "media.property_quota_mb",
+      "value": 1024,
+      "unit": "MiB",
+      "scope": "server",
+      "rationale": "İlkin ev kvotası; limitsiz video vədi yoxdur",
+      "requirement": "R10",
+      "acceptance": "AT20",
+      "mutable": true
+    },
+    {
+      "key": "calendar.auth_query_max_days",
+      "value": 93,
+      "unit": "gün",
+      "scope": "server",
+      "rationale": "Geniş sorğu və N+1 riskini məhdudlaşdırır",
+      "requirement": "R04",
+      "acceptance": "AT31",
+      "mutable": true
+    },
+    {
+      "key": "calendar.public_horizon_months",
+      "value": 12,
+      "unit": "calendar month",
+      "scope": "server",
+      "rationale": "Out-of-range boş sayılmır",
+      "requirement": "R11",
+      "acceptance": "AT24",
+      "mutable": true
+    },
+    {
+      "key": "jobs.daily_context_local_time",
+      "value": "00:05",
+      "unit": "Asia/Baku",
+      "scope": "scheduler",
+      "rationale": "Daily context; əlavə olaraq idempotent on-demand catch-up",
+      "requirement": "R09",
+      "acceptance": "AT17",
+      "mutable": true
+    },
+    {
+      "key": "jobs.reconcile_every_minutes",
+      "value": 5,
+      "unit": "dəqiqə",
+      "scope": "scheduler",
+      "rationale": "Provider limitinə uyğun batch, ödəniş doğruluğu job-dan asılı deyil",
+      "requirement": "R12",
+      "acceptance": "AT27",
+      "mutable": true
+    },
+    {
+      "key": "jobs.outbox_max_attempts",
+      "value": 8,
+      "unit": "cəhd",
+      "scope": "server",
+      "rationale": "Exponential backoff, sonra failed və operator xəbərdarlığı",
+      "requirement": "R16",
+      "acceptance": "AT36",
+      "mutable": true
+    },
+    {
+      "key": "notifications.quiet_start",
+      "value": "22:00",
+      "unit": "Asia/Baku",
+      "scope": "user_setting",
+      "rationale": "Qeyri-təcili push/email səssiz vaxtda növbədə qalır",
+      "requirement": "R16",
+      "acceptance": "AT36",
+      "mutable": true
+    },
+    {
+      "key": "notifications.quiet_end",
+      "value": "08:00",
+      "unit": "Asia/Baku",
+      "scope": "user_setting",
+      "rationale": "Səhər xülasəsi; tətbiqdaxili vəziyyət həmişə aktualdır",
+      "requirement": "R16",
+      "acceptance": "AT36",
+      "mutable": true
+    },
+    {
+      "key": "billing.expiry_reminders_days",
+      "value": [
+        3,
+        1
+      ],
+      "unit": "gün",
+      "scope": "server",
+      "rationale": "Hər ev üçün dedupe və birləşdirilmiş xülasə",
+      "requirement": "R12",
+      "acceptance": "AT28",
+      "mutable": true
+    },
+    {
+      "key": "exports.expiry_hours",
+      "value": 24,
+      "unit": "saat",
+      "scope": "server",
+      "rationale": "Private export faylı qısaömürlü URL, sonra təmizləmə",
+      "requirement": "R14",
+      "acceptance": "AT32",
+      "mutable": true
+    },
+    {
+      "key": "imports.max_rows",
+      "value": 5000,
+      "unit": "sətir",
+      "scope": "server",
+      "rationale": "Preview və transactional batch üçün ilkin hədd",
+      "requirement": "R15",
+      "acceptance": "AT35",
+      "mutable": true
+    },
+    {
+      "key": "public.cache_availability_seconds",
+      "value": 0,
+      "unit": "saniyə",
+      "scope": "server",
+      "rationale": "Availability no-store; interval seçimində təkrar yoxlanır",
+      "requirement": "R11",
+      "acceptance": "AT24",
+      "mutable": false
+    },
+    {
+      "key": "safety.expiry_paywall",
+      "value": false,
+      "unit": "boolean",
+      "scope": "server",
+      "rationale": "Abunə bitməsi əvvəl dərc olunmuş təhlükəsizlik mətnini bağlamır",
+      "requirement": "R10",
+      "acceptance": "AT21",
+      "mutable": false
+    }
+  ]
+}

@@ -1,0 +1,770 @@
+{
+  "schema_version": 1,
+  "scenarios": [
+    {
+      "id": "AT01",
+      "requirements": [
+        "R01"
+      ],
+      "layer": "e2e",
+      "priority": "P1",
+      "given": "Yeni email, boş hesab, işlək SMTP staging",
+      "when": "Emaili yaz, linki aç, ilk evi yarat",
+      "then": "Şifrə və məcburi profil yoxdur; bir owner və bir ev yaranır.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT02",
+      "requirements": [
+        "R01"
+      ],
+      "layer": "integration",
+      "priority": "P1",
+      "given": "Aktiv sessiya, bir private route və iki cihaz",
+      "when": "Tətbiqi bağla/aç, sonra cari və bütün cihazlardan çıxışı yoxla",
+      "then": "Refresh login-i qoruyur; çıxış private cache-i təmizləyir; access TTL davranışı sənədlə eynidir.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT03",
+      "requirements": [
+        "R01"
+      ],
+      "layer": "security",
+      "priority": "P1",
+      "given": "Birdəfəlik link, allowed redirect və mail scanner fixture",
+      "when": "Replay/expired/foreign redirect, prefetch və cross-device yoxla",
+      "then": "Open redirect/replay yoxdur; scanner GET login tokenini istehlak etmir; rate limit neytral cavab verir.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT04",
+      "requirements": [
+        "R02",
+        "R03"
+      ],
+      "layer": "db",
+      "priority": "P0",
+      "given": "A/B sahiblər, M A1 daily/B1 full",
+      "when": "Hər şəxs ilə ev siyahısı və seçilmiş resurslar oxunur",
+      "then": "M yalnız A1/B1; A B evlərini oxumur; owner+manager eyni hesabda işləyir.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT05",
+      "requirements": [
+        "R02",
+        "R03"
+      ],
+      "layer": "security",
+      "priority": "P0",
+      "given": "M A1 üçün açıq sessiya və private media keçidi saxlayır",
+      "when": "A A1 icazəsini ləğv edir; M köhnə tabdan yazır, owner/property ID dəyişir",
+      "then": "Növbəti sorğu rədd; B1 işləyir; cross-tenant FK və media scope yan keçilmir.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT06",
+      "requirements": [
+        "R02",
+        "R03"
+      ],
+      "layer": "security",
+      "priority": "P1",
+      "given": "M A1 daily və B1 full",
+      "when": "Rent summary, finance/export/storage-a birbaşa sorğu göndər; daily manager reversal və birbaşa Data API base-table sorğusu edir",
+      "then": "A1 reservation summary mümkündür, tenant finance yoxdur; B1 yalnız icazəli ev; A2/B2 rədd. Daily reversal və base table grant bypass rədd edilir.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT07",
+      "requirements": [
+        "R04"
+      ],
+      "layer": "db",
+      "priority": "P0",
+      "given": "Boş A1; üç paralel connection",
+      "when": "Eyni gecələr üçün booking/hold/block insert-i paralel başlat",
+      "then": "Yalnız bir active occupancy commit edir; digərləri DATE_CONFLICT, pul qalıqları yoxdur.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT08",
+      "requirements": [
+        "R04",
+        "R11"
+      ],
+      "layer": "integration",
+      "priority": "P1",
+      "given": "A1 12–15 və 15–17 gecələmə intervalları",
+      "when": "15 noyabrı checkout və sonra checkin seç",
+      "then": "[giriş,çıxış) constraint işləyir; public valid departure gecələmə availability-si ilə qarışmır.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT09",
+      "requirements": [
+        "R04"
+      ],
+      "layer": "db",
+      "priority": "P1",
+      "given": "Expired hold, cron dayandırılıb",
+      "when": "Yeni booking yaz, eyni idempotency key ilə retry et",
+      "then": "Transaction expired hold-u azad edir; retry yeni rezervasiya və receipt yaratmır.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT10",
+      "requirements": [
+        "R04",
+        "R08"
+      ],
+      "layer": "integration",
+      "priority": "P1",
+      "given": "A1 booking, pul və cleaning task; A2 eyni owner",
+      "when": "Tarix dəyiş, stale version yoxla, A2-yə move et və erkən çıxış et",
+      "then": "Yeni placement atomik; tarixçə qalır; köhnə source-only manager current guest data görmür; completed task silinmir. Köhnə placement guest-private linkləri atomik ləğv olur; completed release_remaining_days state-i geri açmır.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT11",
+      "requirements": [
+        "R05"
+      ],
+      "layer": "unit",
+      "priority": "P0",
+      "given": "30000 quote, 10000 receipt, AZN",
+      "when": "Refund, əlavə receipt və artıq ödənişi hesabla",
+      "then": "İlk debt 20000; integer rounding; artıq ödəniş gizlənmir; refund receipt qalıq həddini aşmır.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT12",
+      "requirements": [
+        "R05",
+        "R09"
+      ],
+      "layer": "integration",
+      "priority": "P1",
+      "given": "Depozit 5000 və zədə inspection qeydi",
+      "when": "Yoxlamanı bitir, sonra səlahiyyətli allocation et",
+      "then": "Yoxlama özü pul tutmur; depozit gəlir deyil; allocation və refund tarixçəlidir.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT13",
+      "requirements": [
+        "R05"
+      ],
+      "layer": "unit",
+      "priority": "P0",
+      "given": "30000 rent, 3000 fee, realtor 10000 collected",
+      "when": "7000 transfer, sonra 10000 full-transfer alternativini sına",
+      "then": "Birinci realtor owner-a 7000; ikinci owner realtor-a 3000; settlement ikinci rent deyil.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT14",
+      "requirements": [
+        "R06"
+      ],
+      "layer": "db",
+      "priority": "P1",
+      "given": "Daily manager proposal, iki same-owner və bir foreign ev",
+      "when": "Approve, partial payment və allocation sum/cross-owner manipulyasiyası et",
+      "then": "Təsdiqsiz expense nəticəyə daxil deyil; sum exact; foreign allocation rədd; payment qalıqdan artıq deyil.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT15",
+      "requirements": [
+        "R07",
+        "R16"
+      ],
+      "layer": "e2e",
+      "priority": "P1",
+      "given": "Open task, scoped link, WhatsApp fallback",
+      "when": "GET/prefetch et; paylaş düyməsi və kopyalama fallback istifadə et",
+      "then": "GET accept etmir; actual sent/read iddiası yoxdur; clipboard uğursuzluğu uğur sayılmır.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT16",
+      "requirements": [
+        "R07",
+        "R08"
+      ],
+      "layer": "integration",
+      "priority": "P1",
+      "given": "Cleaning task və lazım olan inspection; valid token",
+      "when": "Accept, report_done, confirm, duplicate completion, rework et",
+      "then": "Keçidlər qanunidir; duplicate yeni task yaratmır; readiness bütün şərtlərdən sonra; xərc ayrıca təsdiqlənir.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT17",
+      "requirements": [
+        "R09"
+      ],
+      "layer": "integration",
+      "priority": "P1",
+      "given": "Aktiv ev, bir boş gün, bir gündə iki turnover",
+      "when": "Daily job-u iki dəfə və catch-up ilə işə sal",
+      "then": "Bir day konteksi, ayrı event-lər; boş gün overdue deyil; dublikat yaranmır.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT18",
+      "requirements": [
+        "R09"
+      ],
+      "layer": "e2e",
+      "priority": "P1",
+      "given": "Eyni event üçün giver və receiver linkləri",
+      "when": "Birini tamamla, digərini ayrıca draft/tamamla",
+      "then": "Cavablar ayrı; ikinci cavab birincini dəyişmir; bildirilən ad verified identity deyil.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT19",
+      "requirements": [
+        "R09"
+      ],
+      "layer": "integration",
+      "priority": "P1",
+      "given": "Snapshot və draft, sonra permanent inventory dəyişir",
+      "when": "Autosave, complete, correction revision və expired token yazısı et",
+      "then": "Snapshot sabit, completed immutable; düzəliş yeni revision; expiry yazını bağlayır, yalan saved yoxdur.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT20",
+      "requirements": [
+        "R10"
+      ],
+      "layer": "e2e",
+      "priority": "P1",
+      "given": "AZ published, RU draft, EN published sauna guide",
+      "when": "Dil dəyiş, məzmun yenilə, QR-ni endir və telefonla skan et",
+      "then": "Yalnız published dil açılır, fallback düzgündür; eyni QR yeni məzmunu açır; real kamera testi ayrıca sübutdur.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT21",
+      "requirements": [
+        "R10"
+      ],
+      "layer": "security",
+      "priority": "P1",
+      "given": "Safety guide və guest-private qapı kodu, private media",
+      "when": "Abunəni bitir, guest linkini expire/revoke et, cache/media URL yoxla; köhnə private proxy URL-ni revoke-dan sonra yenidən aç",
+      "then": "Safety oxunur; public safety-də kod yoxdur; expired/revoked guest və media əlçatmaz; private cache yoxdur. Proxy hər yeni sorğunu rədd edir; əvvəl endirilən baytların cihazdan silinməsi vəd edilmir.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT22",
+      "requirements": [
+        "R11"
+      ],
+      "layer": "integration",
+      "priority": "P1",
+      "given": "Yeni ev, public/dates/price/map OFF",
+      "when": "Owner dərc edir; daily manager visibility və rotation dəyişməyə çalışır",
+      "then": "Yalnız owner public switch; manager məzmun redaktə edə bilir; defaults OFF saxlanır.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT23",
+      "requirements": [
+        "R11"
+      ],
+      "layer": "security",
+      "priority": "P1",
+      "given": "Published page və daxili guest/phone/block reason",
+      "when": "HTML/JSON/RSC/OG və media metadata cavablarını yoxla",
+      "then": "Allowlist-dən kənar guest/phone/email/owner/block reason yoxdur; upload təsvirində əlaqə məlumatı üçün publish preview xəbərdar edir.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT24",
+      "requirements": [
+        "R11"
+      ],
+      "layer": "integration",
+      "priority": "P1",
+      "given": "Public dates active, bir boş interval və horizon xarici tarix",
+      "when": "Meta/header/sitemap, stale interval quote və tarix copy sına",
+      "then": "noindex görünür; səbəblər eyni neytral; horizon xarici boş deyil; seçmək booking/hold yaratmır.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT25",
+      "requirements": [
+        "R12"
+      ],
+      "layer": "db",
+      "priority": "P0",
+      "given": "Trial claim olmayan owner, iki parallel ev create",
+      "when": "İki sorğu göndər; ilk evi archive/delete et və yenisini yarat",
+      "then": "Yalnız bir trial claim; 7 gün server vaxtı; ikinci ev yeni trial almır.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT26",
+      "requirements": [
+        "R12"
+      ],
+      "layer": "security",
+      "priority": "P0",
+      "given": "Server catalog order pending",
+      "when": "Forged browser success və yanlış amount/currency/merchant/provider order göndər",
+      "then": "Entitlement açılmır; provider verification olmadan paid state yoxdur; kart data saxlanmır.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT27",
+      "requirements": [
+        "R12"
+      ],
+      "layer": "integration",
+      "priority": "P0",
+      "given": "Verified provider paid event, bir order line",
+      "when": "Duplicate/out-of-order və partial failure; sonra reconcile",
+      "then": "Entitlement bir dəfə tətbiq; late pending applied-i geriyə çevirmir; reconcile atomik tamamlayır.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT28",
+      "requirements": [
+        "R12",
+        "R10"
+      ],
+      "layer": "unit",
+      "priority": "P1",
+      "given": "31 yanvar anchor, leap year, trial və aktiv period",
+      "when": "Early renewal, trial alış, aylıq/illik switch və expiry et",
+      "then": "Anchor clamp deterministik; trial qalanı itmir; expiry read-only; safety QR və valid existing task window istisnası işləyir.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT29",
+      "requirements": [
+        "R13"
+      ],
+      "layer": "usability",
+      "priority": "P1",
+      "given": "320/360/390/430 px, keyboard və screen reader",
+      "when": "Əsas axın, focus traversal, modal close və input keypad sına",
+      "then": "Horizontal page overflow yoxdur; touch target >=44; label/focus/xəta oxunur; CTA keyboard altında deyil.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT30",
+      "requirements": [
+        "R13"
+      ],
+      "layer": "e2e",
+      "priority": "P1",
+      "given": "Draft form, yavaş/xətalı şəbəkə",
+      "when": "İki dəfə submit, offline, reconnect və server 409 sına",
+      "then": "Server ack-dən əvvəl success yoxdur; retry dublikat yaratmır; yazılan məlumat itmir; saved truthful.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT31",
+      "requirements": [
+        "R13"
+      ],
+      "layer": "performance",
+      "priority": "P2",
+      "given": "Sabit mobil/network profili, staging fixture ölçüsü",
+      "when": "Public lab və panel API/DB query/bundle ölç",
+      "then": "LCP/INP/CLS və p95 hədəfinə qarşı nəticə; real trafik yoxdursa real p75 iddiası yoxdur.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT32",
+      "requirements": [
+        "R14"
+      ],
+      "layer": "security",
+      "priority": "P1",
+      "given": "Owner/full/daily export və audit fixture",
+      "when": "CSV formula, secret/token log scan və operator səbəbsiz müdaxilə sına",
+      "then": "Export scope safe; formula zərərsiz; secret yoxdur; operator audit səbəbi tələb edir.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT33",
+      "requirements": [
+        "R14"
+      ],
+      "layer": "operations",
+      "priority": "P1",
+      "given": "DB və private media backup, ayrı staging",
+      "when": "Backup-dan bərpa et; FK/count/hash və revoked token sına",
+      "then": "DB və media uyğundur; staging real charge/notification göndərmir; RPO/RTO faktiki ölçülür.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT34",
+      "requirements": [
+        "R14"
+      ],
+      "layer": "operations",
+      "priority": "P1",
+      "given": "Staging release, əvvəlki deploy və migration planı",
+      "when": "Deploy failure, rollback/forward-fix və alert trigger et",
+      "then": "Əvvəlki app işləyir; data itmir; billing inbox silinmir; alert faktiki qəbul olunur.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT35",
+      "requirements": [
+        "R15"
+      ],
+      "layer": "integration",
+      "priority": "P1",
+      "given": "CSV/XLSX şablon, səhv sətir, duplicate batch",
+      "when": "Preview et, düzəlt, confirm və təkrar import et",
+      "then": "Səhv aydındır; preview hash uyğun; silent partial import və duplicate yoxdur; foreign ev rədd.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    },
+    {
+      "id": "AT36",
+      "requirements": [
+        "R16"
+      ],
+      "layer": "integration",
+      "priority": "P1",
+      "given": "Outbox event, provider failure və quiet hours",
+      "when": "Retry, cron catch-up və duplicate enqueue et",
+      "then": "Dedupe bir nəticə; səssiz saatda qeyri-təcili kanal gözləyir; Bu gün vəziyyəti görünür; failed queue monitor edilir.",
+      "status": "planned",
+      "evidence_required": [
+        "commit_sha",
+        "environment",
+        "fixture_seed",
+        "actual_result",
+        "artifact",
+        "reviewer"
+      ],
+      "pass_rule": "Gözlənilən nəticə real qat üzrə sübut olunub; mock/sandbox/live ayrıdır."
+    }
+  ]
+}

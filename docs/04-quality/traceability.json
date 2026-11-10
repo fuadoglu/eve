@@ -1,0 +1,869 @@
+{
+  "schema_version": 1,
+  "generation": "node scripts/generate-traceability.mjs; UI/task mapping reviewed, operations/tables/tests derived from versioned contracts.",
+  "requirements": [
+    {
+      "id": "R01",
+      "title": "Şifrəsiz giriş",
+      "source": "docs/01-product/PRD.md",
+      "screens": [
+        "UI01",
+        "UI02",
+        "UI03",
+        "UI18"
+      ],
+      "operations": [
+        "acceptManagerInvite",
+        "confirmEmailLink",
+        "getProfile",
+        "logoutAllSessions",
+        "logoutCurrentSession",
+        "requestEmailLink",
+        "updateProfile"
+      ],
+      "tables": [
+        "profiles"
+      ],
+      "parent_tasks": [
+        "EVE-003",
+        "EVE-007"
+      ],
+      "packages": [
+        "EVE-003.1",
+        "EVE-003.2",
+        "EVE-003.3",
+        "EVE-007.1",
+        "EVE-007.2",
+        "EVE-007.3"
+      ],
+      "acceptance": [
+        "AT01",
+        "AT02",
+        "AT03"
+      ]
+    },
+    {
+      "id": "R02",
+      "title": "Tenant və çox ev",
+      "source": "docs/01-product/PRD.md",
+      "screens": [
+        "UI06",
+        "UI07",
+        "UI16"
+      ],
+      "operations": [
+        "archiveProperty",
+        "createProperty",
+        "getProperty",
+        "listProperties",
+        "restoreProperty",
+        "updateProperty"
+      ],
+      "tables": [
+        "owner_accounts",
+        "properties"
+      ],
+      "parent_tasks": [
+        "EVE-006",
+        "EVE-008"
+      ],
+      "packages": [
+        "EVE-006.1",
+        "EVE-006.2",
+        "EVE-006.3",
+        "EVE-008.1",
+        "EVE-008.2",
+        "EVE-008.3"
+      ],
+      "acceptance": [
+        "AT04",
+        "AT05",
+        "AT06"
+      ]
+    },
+    {
+      "id": "R03",
+      "title": "Çoxsahibli menecer",
+      "source": "docs/01-product/PRD.md",
+      "screens": [
+        "UI06",
+        "UI07",
+        "UI16"
+      ],
+      "operations": [
+        "acceptManagerInvite",
+        "getProperty",
+        "inviteManager",
+        "listMemberships",
+        "listProperties",
+        "revokeMembership",
+        "updateMembership",
+        "updateProperty"
+      ],
+      "tables": [
+        "invite_properties",
+        "manager_invites",
+        "property_memberships"
+      ],
+      "parent_tasks": [
+        "EVE-006",
+        "EVE-008"
+      ],
+      "packages": [
+        "EVE-006.1",
+        "EVE-006.2",
+        "EVE-006.3",
+        "EVE-008.1",
+        "EVE-008.2",
+        "EVE-008.3"
+      ],
+      "acceptance": [
+        "AT04",
+        "AT05",
+        "AT06"
+      ]
+    },
+    {
+      "id": "R04",
+      "title": "Rezervasiya və təqvim",
+      "source": "docs/01-product/PRD.md",
+      "screens": [
+        "UI04",
+        "UI05",
+        "UI08"
+      ],
+      "operations": [
+        "createBlock",
+        "createReservation",
+        "getCalendar",
+        "getReservation",
+        "getToday",
+        "listReservations",
+        "moveReservationProperty",
+        "removeBlock",
+        "transitionReservation",
+        "updateBlock",
+        "updateReservation"
+      ],
+      "tables": [
+        "idempotency_keys",
+        "manual_blocks",
+        "occupancy",
+        "reservation_attribution_transfers",
+        "reservation_placements",
+        "reservations"
+      ],
+      "parent_tasks": [
+        "EVE-010",
+        "EVE-011",
+        "EVE-012",
+        "EVE-013"
+      ],
+      "packages": [
+        "EVE-010.1",
+        "EVE-010.2",
+        "EVE-010.3",
+        "EVE-011.1",
+        "EVE-011.2",
+        "EVE-011.3",
+        "EVE-012.1",
+        "EVE-012.2",
+        "EVE-012.3",
+        "EVE-013.1",
+        "EVE-013.2",
+        "EVE-013.3"
+      ],
+      "acceptance": [
+        "AT07",
+        "AT08",
+        "AT09",
+        "AT10"
+      ]
+    },
+    {
+      "id": "R05",
+      "title": "Kirayə pul uçotu",
+      "source": "docs/01-product/PRD.md",
+      "screens": [
+        "UI07",
+        "UI08"
+      ],
+      "operations": [
+        "createRentEntry",
+        "createReservation",
+        "getFinanceSummary",
+        "getRealtorBalance",
+        "getReservation",
+        "listRentEntries",
+        "moveReservationProperty",
+        "recordRealtorSettlement",
+        "updateReservation"
+      ],
+      "tables": [
+        "idempotency_keys",
+        "realtor_accounts",
+        "realtor_settlements",
+        "rent_entries",
+        "reservation_attribution_transfers",
+        "reservation_placements",
+        "reservations"
+      ],
+      "parent_tasks": [
+        "EVE-011",
+        "EVE-014",
+        "EVE-015"
+      ],
+      "packages": [
+        "EVE-011.1",
+        "EVE-011.2",
+        "EVE-011.3",
+        "EVE-014.1",
+        "EVE-014.2",
+        "EVE-014.3",
+        "EVE-015.1",
+        "EVE-015.2",
+        "EVE-015.3"
+      ],
+      "acceptance": [
+        "AT11",
+        "AT12",
+        "AT13"
+      ]
+    },
+    {
+      "id": "R06",
+      "title": "Xərclər",
+      "source": "docs/01-product/PRD.md",
+      "screens": [
+        "UI07",
+        "UI09"
+      ],
+      "operations": [
+        "approveExpense",
+        "createExpense",
+        "createRecurringExpense",
+        "getFinanceSummary",
+        "listExpenses",
+        "recordExpensePayment",
+        "rejectExpense",
+        "updateExpense",
+        "updateRecurringExpense"
+      ],
+      "tables": [
+        "expense_allocations",
+        "expense_payments",
+        "expenses",
+        "recurring_expenses"
+      ],
+      "parent_tasks": [
+        "EVE-016"
+      ],
+      "packages": [
+        "EVE-016.1",
+        "EVE-016.2",
+        "EVE-016.3"
+      ],
+      "acceptance": [
+        "AT14"
+      ]
+    },
+    {
+      "id": "R07",
+      "title": "Tapşırıq və paylaşım",
+      "source": "docs/01-product/PRD.md",
+      "screens": [
+        "UI09",
+        "UI12"
+      ],
+      "operations": [
+        "acceptScopedTask",
+        "archiveContact",
+        "confirmTask",
+        "createContact",
+        "createScopedLink",
+        "createScopedUpload",
+        "createTask",
+        "createTaskShareLink",
+        "exchangeScopedLink",
+        "finalizeScopedUpload",
+        "getScopedMediaAccess",
+        "getTask",
+        "getToday",
+        "listContacts",
+        "listTasks",
+        "readScopedMediaContent",
+        "readScopedTask",
+        "reportScopedTaskDone",
+        "revokeScopedLink",
+        "transitionTask",
+        "updateContact",
+        "updateTask"
+      ],
+      "tables": [
+        "access_links",
+        "contact_properties",
+        "contacts",
+        "media_assets",
+        "media_bindings",
+        "tasks"
+      ],
+      "parent_tasks": [
+        "EVE-017",
+        "EVE-018"
+      ],
+      "packages": [
+        "EVE-017.1",
+        "EVE-017.2",
+        "EVE-017.3",
+        "EVE-018.1",
+        "EVE-018.2",
+        "EVE-018.3"
+      ],
+      "acceptance": [
+        "AT15",
+        "AT16"
+      ]
+    },
+    {
+      "id": "R08",
+      "title": "Hazırlıq və təmizlik",
+      "source": "docs/01-product/PRD.md",
+      "screens": [
+        "UI04",
+        "UI07",
+        "UI09"
+      ],
+      "operations": [
+        "confirmTask",
+        "getToday",
+        "listTasks",
+        "transitionReservation",
+        "transitionTask"
+      ],
+      "tables": [
+        "properties",
+        "tasks"
+      ],
+      "parent_tasks": [
+        "EVE-012",
+        "EVE-013",
+        "EVE-018"
+      ],
+      "packages": [
+        "EVE-012.1",
+        "EVE-012.2",
+        "EVE-012.3",
+        "EVE-013.1",
+        "EVE-013.2",
+        "EVE-013.3",
+        "EVE-018.1",
+        "EVE-018.2",
+        "EVE-018.3"
+      ],
+      "acceptance": [
+        "AT10",
+        "AT16"
+      ]
+    },
+    {
+      "id": "R09",
+      "title": "İnventar və təhvil",
+      "source": "docs/01-product/PRD.md",
+      "screens": [
+        "UI10",
+        "UI11"
+      ],
+      "operations": [
+        "applyInventoryTemplate",
+        "archiveInventoryItem",
+        "archiveRoom",
+        "completeScopedInspection",
+        "copyInventory",
+        "createInspectionCorrection",
+        "createInspectionEvent",
+        "createInventoryItem",
+        "createRoom",
+        "createScopedLink",
+        "createScopedUpload",
+        "createUploadIntent",
+        "exchangeScopedLink",
+        "finalizeMedia",
+        "finalizeScopedUpload",
+        "getInspectionEvent",
+        "getInventory",
+        "getMediaAccess",
+        "getScopedMediaAccess",
+        "readScopedInspection",
+        "readScopedMediaContent",
+        "removeMedia",
+        "revokeScopedLink",
+        "saveScopedInspection",
+        "updateInventoryItem",
+        "updateRoom"
+      ],
+      "tables": [
+        "access_links",
+        "inspection_answers",
+        "inspection_days",
+        "inspection_events",
+        "inspection_room_answers",
+        "inspection_snapshot_items",
+        "inspection_snapshot_rooms",
+        "inspection_snapshots",
+        "inspection_submissions",
+        "inventory_items",
+        "media_assets",
+        "media_bindings",
+        "rooms"
+      ],
+      "parent_tasks": [
+        "EVE-019",
+        "EVE-020",
+        "EVE-021"
+      ],
+      "packages": [
+        "EVE-019.1",
+        "EVE-019.2",
+        "EVE-019.3",
+        "EVE-020.1",
+        "EVE-020.2",
+        "EVE-020.3",
+        "EVE-021.1",
+        "EVE-021.2",
+        "EVE-021.3"
+      ],
+      "acceptance": [
+        "AT12",
+        "AT17",
+        "AT18",
+        "AT19"
+      ]
+    },
+    {
+      "id": "R10",
+      "title": "Çoxdilli QR təlimatı",
+      "source": "docs/01-product/PRD.md",
+      "screens": [
+        "UI13",
+        "UI15"
+      ],
+      "operations": [
+        "createGuide",
+        "createScopedLink",
+        "createUploadIntent",
+        "exchangeScopedLink",
+        "exportGuideQR",
+        "finalizeMedia",
+        "getGuideLocale",
+        "getMediaAccess",
+        "getScopedMediaAccess",
+        "listGuides",
+        "publishGuideLocale",
+        "readGuestGuide",
+        "readPublicGuide",
+        "readPublicGuideIndex",
+        "readScopedMediaContent",
+        "removeMedia",
+        "revokeScopedLink",
+        "saveGuideLocale",
+        "updateGuide"
+      ],
+      "tables": [
+        "access_links",
+        "guide_versions",
+        "guides",
+        "media_assets",
+        "media_bindings"
+      ],
+      "parent_tasks": [
+        "EVE-022",
+        "EVE-023"
+      ],
+      "packages": [
+        "EVE-022.1",
+        "EVE-022.2",
+        "EVE-022.3",
+        "EVE-023.1",
+        "EVE-023.2",
+        "EVE-023.3"
+      ],
+      "acceptance": [
+        "AT20",
+        "AT21",
+        "AT28"
+      ]
+    },
+    {
+      "id": "R11",
+      "title": "Public təqdimat",
+      "source": "docs/01-product/PRD.md",
+      "screens": [
+        "UI14"
+      ],
+      "operations": [
+        "createUploadIntent",
+        "finalizeMedia",
+        "getMediaAccess",
+        "getPublicSettings",
+        "quotePublicStay",
+        "readPublicAvailability",
+        "readPublicProperty",
+        "removeMedia",
+        "rotatePublicSlug",
+        "savePublicContent",
+        "updatePublicSettings"
+      ],
+      "tables": [
+        "media_assets",
+        "media_bindings",
+        "properties",
+        "public_pages"
+      ],
+      "parent_tasks": [
+        "EVE-024",
+        "EVE-025"
+      ],
+      "packages": [
+        "EVE-024.1",
+        "EVE-024.2",
+        "EVE-024.3",
+        "EVE-025.1",
+        "EVE-025.2",
+        "EVE-025.3"
+      ],
+      "acceptance": [
+        "AT08",
+        "AT22",
+        "AT23",
+        "AT24"
+      ]
+    },
+    {
+      "id": "R12",
+      "title": "Ev üzrə SaaS abunə",
+      "source": "docs/01-product/PRD.md",
+      "screens": [
+        "UI06",
+        "UI17"
+      ],
+      "operations": [
+        "archiveProperty",
+        "createBillingOrder",
+        "createProperty",
+        "getBillingCatalog",
+        "getBillingOrder",
+        "getSubscription",
+        "receivePayriffEvent",
+        "reconcileBillingOrder",
+        "restoreProperty",
+        "reviewOperatorOrder"
+      ],
+      "tables": [
+        "billing_order_lines",
+        "billing_orders",
+        "idempotency_keys",
+        "payment_events",
+        "subscription_periods",
+        "subscriptions",
+        "trial_claims"
+      ],
+      "parent_tasks": [
+        "EVE-008",
+        "EVE-026",
+        "EVE-027",
+        "EVE-028"
+      ],
+      "packages": [
+        "EVE-008.1",
+        "EVE-008.2",
+        "EVE-008.3",
+        "EVE-026.1",
+        "EVE-026.2",
+        "EVE-026.3",
+        "EVE-027.1",
+        "EVE-027.2",
+        "EVE-027.3",
+        "EVE-028.1",
+        "EVE-028.2",
+        "EVE-028.3"
+      ],
+      "acceptance": [
+        "AT25",
+        "AT26",
+        "AT27",
+        "AT28"
+      ]
+    },
+    {
+      "id": "R13",
+      "title": "Mobil UX və sürət",
+      "source": "docs/01-product/PRD.md",
+      "screens": [
+        "UI01",
+        "UI04",
+        "UI05",
+        "UI06",
+        "UI08",
+        "UI09",
+        "UI11",
+        "UI12",
+        "UI14",
+        "UI15"
+      ],
+      "operations": [
+        "acceptManagerInvite",
+        "acceptScopedTask",
+        "applyInventoryTemplate",
+        "approveExpense",
+        "archiveContact",
+        "archiveInventoryItem",
+        "archiveProperty",
+        "archiveRoom",
+        "commitImport",
+        "completeScopedInspection",
+        "confirmEmailLink",
+        "confirmTask",
+        "copyInventory",
+        "createBillingOrder",
+        "createBlock",
+        "createContact",
+        "createExpense",
+        "createExport",
+        "createGuide",
+        "createInspectionCorrection",
+        "createInspectionEvent",
+        "createInventoryItem",
+        "createProperty",
+        "createRecurringExpense",
+        "createRentEntry",
+        "createReservation",
+        "createRoom",
+        "createScopedLink",
+        "createScopedUpload",
+        "createSupportRequest",
+        "createTask",
+        "createTaskShareLink",
+        "createUploadIntent",
+        "exchangeScopedLink",
+        "exportGuideQR",
+        "finalizeMedia",
+        "finalizeScopedUpload",
+        "getBillingCatalog",
+        "getBillingOrder",
+        "getCalendar",
+        "getExport",
+        "getFinanceSummary",
+        "getGuideLocale",
+        "getInspectionEvent",
+        "getInventory",
+        "getMediaAccess",
+        "getNotificationPreferences",
+        "getOperatorHealth",
+        "getProfile",
+        "getProperty",
+        "getPropertyAudit",
+        "getPublicSettings",
+        "getRealtorBalance",
+        "getReservation",
+        "getScopedMediaAccess",
+        "getSubscription",
+        "getTask",
+        "getToday",
+        "inviteManager",
+        "listContacts",
+        "listExpenses",
+        "listGuides",
+        "listMemberships",
+        "listNotifications",
+        "listProperties",
+        "listRentEntries",
+        "listReservations",
+        "listTasks",
+        "logoutAllSessions",
+        "logoutCurrentSession",
+        "markNotificationRead",
+        "moveReservationProperty",
+        "previewImport",
+        "publishGuideLocale",
+        "quotePublicStay",
+        "readGuestGuide",
+        "readPublicAvailability",
+        "readPublicGuide",
+        "readPublicGuideIndex",
+        "readPublicProperty",
+        "readScopedInspection",
+        "readScopedMediaContent",
+        "readScopedTask",
+        "reconcileBillingOrder",
+        "recordExpensePayment",
+        "recordRealtorSettlement",
+        "registerPushSubscription",
+        "rejectExpense",
+        "removeBlock",
+        "removeMedia",
+        "reportScopedTaskDone",
+        "requestEmailLink",
+        "restoreProperty",
+        "reviewOperatorOrder",
+        "revokeMembership",
+        "revokeScopedLink",
+        "rotatePublicSlug",
+        "saveGuideLocale",
+        "savePublicContent",
+        "saveScopedInspection",
+        "transitionReservation",
+        "transitionTask",
+        "updateBlock",
+        "updateContact",
+        "updateExpense",
+        "updateGuide",
+        "updateInventoryItem",
+        "updateMembership",
+        "updateNotificationPreferences",
+        "updateProfile",
+        "updateProperty",
+        "updatePublicSettings",
+        "updateRecurringExpense",
+        "updateReservation",
+        "updateRoom",
+        "updateTask"
+      ],
+      "tables": [],
+      "parent_tasks": [
+        "EVE-002",
+        "EVE-009",
+        "EVE-030"
+      ],
+      "packages": [
+        "EVE-002.1",
+        "EVE-002.2",
+        "EVE-002.3",
+        "EVE-009.1",
+        "EVE-009.2",
+        "EVE-009.3",
+        "EVE-030.1",
+        "EVE-030.2",
+        "EVE-030.3"
+      ],
+      "acceptance": [
+        "AT29",
+        "AT30",
+        "AT31"
+      ]
+    },
+    {
+      "id": "R14",
+      "title": "Audit, export və istismar",
+      "source": "docs/01-product/PRD.md",
+      "screens": [
+        "UI18",
+        "UI19"
+      ],
+      "operations": [
+        "createExport",
+        "createSupportRequest",
+        "getExport",
+        "getOperatorHealth",
+        "getPropertyAudit",
+        "reviewOperatorOrder"
+      ],
+      "tables": [
+        "audit_events",
+        "export_jobs",
+        "support_requests"
+      ],
+      "parent_tasks": [
+        "EVE-029",
+        "EVE-030"
+      ],
+      "packages": [
+        "EVE-029.1",
+        "EVE-029.2",
+        "EVE-029.3",
+        "EVE-030.1",
+        "EVE-030.2",
+        "EVE-030.3"
+      ],
+      "acceptance": [
+        "AT32",
+        "AT33",
+        "AT34"
+      ]
+    },
+    {
+      "id": "R15",
+      "title": "İlkin quraşdırma və import",
+      "source": "docs/01-product/PRD.md",
+      "screens": [
+        "UI06",
+        "UI10",
+        "UI18"
+      ],
+      "operations": [
+        "applyInventoryTemplate",
+        "commitImport",
+        "copyInventory",
+        "createExport",
+        "createProperty",
+        "getExport",
+        "previewImport"
+      ],
+      "tables": [
+        "import_jobs",
+        "import_rows"
+      ],
+      "parent_tasks": [
+        "EVE-019",
+        "EVE-029"
+      ],
+      "packages": [
+        "EVE-019.1",
+        "EVE-019.2",
+        "EVE-019.3",
+        "EVE-029.1",
+        "EVE-029.2",
+        "EVE-029.3"
+      ],
+      "acceptance": [
+        "AT35"
+      ]
+    },
+    {
+      "id": "R16",
+      "title": "Bildirişlər",
+      "source": "docs/01-product/PRD.md",
+      "screens": [
+        "UI04",
+        "UI18"
+      ],
+      "operations": [
+        "createRecurringExpense",
+        "getNotificationPreferences",
+        "getToday",
+        "listNotifications",
+        "markNotificationRead",
+        "registerPushSubscription",
+        "updateNotificationPreferences",
+        "updateRecurringExpense"
+      ],
+      "tables": [
+        "notification_preferences",
+        "outbox",
+        "push_subscriptions",
+        "recurring_expenses"
+      ],
+      "parent_tasks": [
+        "EVE-018"
+      ],
+      "packages": [
+        "EVE-018.1",
+        "EVE-018.2",
+        "EVE-018.3"
+      ],
+      "acceptance": [
+        "AT15",
+        "AT36"
+      ]
+    }
+  ]
+}

@@ -4,7 +4,7 @@ Bu tarix vəd edən sprint planı deyil. Mərhələlər çıxış keyfiyyətinə
 
 | Milestone | Nəticə | Asılılıq | Çıxış qapısı |
 |---|---|---|---|
-| M0 — İcra müqaviləsi | Məhsul/UX/data/security spec, OpenAPI skeleton, mobil clickable prototip, dependency spike | Bu sənəd bazası | Prototip real istifadə sınağı, icra qərarları və provider qeyri-müəyyənlikləri ayrıdır |
+| M0 — İcra müqaviləsi | Məhsul/UX/data/security spec, OpenAPI müqaviləsi, mobil clickable prototip, dependency spike | Bu sənəd bazası | Prototip real istifadə sınağı, icra qərarları və provider qeyri-müəyyənlikləri ayrıdır |
 | M1 — Təməl və giriş | Next.js, local Supabase, CI, SQL/RLS, magic link, owner/manager, dizayn tokenləri | M0 | Təmiz checkout build; AT01–06; secret/data isolation |
 | M2 — Rezervasiya | Bu gün, mobil təqvim, occupancy/hold, giriş/çıxış və dəyişiklik | M1 | AT07–10 və mobil ilkin axın |
 | M3 — Pul və xidmət | Rent/deposit/realtor/expense, əlaqələr, WhatsApp task, cleaning | M2 | AT11–16; integer və scope sübutu |
@@ -16,7 +16,7 @@ Bu tarix vəd edən sprint planı deyil. Mərhələlər çıxış keyfiyyətinə
 ## Kritik yol və paralellik
 
 M0 → M1 → M2 → M3 → M4/M5 inteqrasiya → M6 yekun gate → M7.
-Payriff/SMTP feasibility M0-da başlayır. Billing backend M1 sonrası, UI/expiry inteqrasiyası digər modullarla birləşəndə tamamlanır. M4 və M5 yalnız ortaq media/API müqaviləsi sabit olduqda paralel yazılır.
+Payriff/SMTP feasibility M0-da başlayır; credential yoxdursa domain/scaffold/UI dayanmayır, real sandbox sübutu aid inteqrasiya və M7 gate-ində qalır. Billing backend M1 sonrası, UI/expiry inteqrasiyası digər modullarla birləşəndə tamamlanır. M4 və M5 yalnız ortaq media/API müqaviləsi sabit olduqda paralel yazılır.
 
 ## Milestone sübutu
 
@@ -26,3 +26,6 @@ GitHub native Milestones yaradılması ayrıca admin əməliyyatıdır. Yalnız 
 
 
 Faktiki yaradılmış mərhələ epikləri və tasklar: [GitHub xəritəsi](GITHUB-TRACKING.md).
+
+
+M0 sənəd artefaktları indi mövcuddur: maşın OpenAPI/data/status/config/trace müqavilələri və clickable demo. M0 real istifadəçi və provider feasibility nəticələri hələ ayrıca icra olunur. Paket səviyyəsində dəqiq hard dependency/external gate [WORK-PACKAGES](WORK-PACKAGES.md)-dədir.

@@ -33,7 +33,7 @@ Session server-side cookie qoruması və providerin dəstəklədiyi refresh mexa
 
 ## Keçid və məzmun
 
-256-bit random bearer token hash saxlanılır, expiry/revoke resurs və media scope-da yoxlanır. GET-də side effect yoxdur. Private token route no-referrer, no-store, üçüncü tərəf tracker yoxdur. Token analytics/log/error context-ə düşmür. Token first landing-də server scoped cookie-yə çevrilə bilər; bu halda URL təmizlənməsi və CSRF eyni scope-u qoruyur.
+256-bit random bearer token hash saxlanılır, expiry/revoke resurs və media scope-da yoxlanır. GET-də side effect yoxdur. Private token route no-referrer, no-store, üçüncü tərəf tracker yoxdur. Token analytics/log/error context-ə düşmür. Token landing-də POST /api/v1/link-session ilə doğrulanıb dar scope cookie-sinə dəyişdirilir; bu məcburi bootstrap URL təmizlənməsi və CSRF ilə eyni scope-u qoruyur, domain state-ni dəyişmir.
 
 Public, guest-private, receipt və inspection media ayrı bucket/policy-lərdir. MIME magic-byte, ölçü, extension və quota yoxlanılır; HTML/JS/SVG upload aktiv məzmun kimi bloklanır və ya təhlükəsiz sanitization tələb edir. QR generated SVG upload deyil. EXIF public fotolardan təmizlənir. Arbitrary remote URL server fetch-i SSRF-ə çevrilmir; video allowlist.
 
@@ -48,3 +48,7 @@ Privacy terms, data retention və silinmə siyasəti hüquqi təsdiqə açıqdı
 ## Məcburi hücum testləri
 
 IDOR, owner/property dəyişmə, manager revoke, daily→full escalation, storage path traversal, token replay, CSRF, XSS safe blocks, SSRF remote media, CSV formula injection, upload abuse, webhook forgery/replay, enumeration/rate-limit, cache cross-user və audit secret scan. Sübutlar ACCEPTANCE və RED-TEAM ID-lərinə bağlanır.
+
+## DB grant sərhədi
+
+[ACCESS-BOUNDARY](ACCESS-BOUNDARY.md) normativdir: base table authenticated/anon üçün açılmır; yalnız safe typed RPC. Private scoped media signed Storage URL deyil, hər request-də revoke/expiry/cari placement yoxlayan proxy-dən verilir. İstifadəçinin əvvəl yüklədiyi baytları geri almaq vədi yoxdur.

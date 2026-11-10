@@ -1,32 +1,33 @@
 # Faktiki icra vəziyyəti
 
-Tarix: 2026-11-10 (Asia/Baku).
+Tarix: 2026-11-11 (Asia/Baku). Mərhələ: **icra üçün genişləndirilmiş sənəd və müqavilə təhvili**.
 
-## Tamamlanan
+## Mövcud artefaktlar
 
-- Məhsul söhbəti əsasında Azərbaycan dilində normativ sənəd bazası.
-- Məhsul sərhədi, mobil UX, data/API/security müqavilələri.
-- X10 review çərçivəsi, üç istiqamətli sənəd red-team baxışının sintezi.
-- M0–M7 yol xəritəsi, EVE-001–030 task xəritəsi.
-- Codex multiagent müqaviləsi, GitHub template-ləri və başlanğıc tapşırığı.
-- README, texnologiya ikon/nişanları və repo daxilində sənəd naviqasiyası.
-- GitHub-da 8 mərhələ epiki (#1–8) və 30 icra taskı (#9–38); [dəqiq xəritə](GITHUB-TRACKING.md).
-- Sənəd link/ID yoxlayıcısı və GitHub Actions workflow; real Node/CI run nəticəsi ayrıca təsdiqlənməlidir.
+- Azərbaycan dilində məhsul, qərar, əməliyyat, maliyyə, paylaşım və təhlükəsizlik müqavilələri.
+- Hər endpoint üçün request/response/security metadata olan OpenAPI 3.1 JSON.
+- Cədvəl/sütun/constraint/RLS/retention data dictionary və API→DB field bindings.
+- Status keçidləri, versiyalanmış konfiqurasiya, 16 tələb üzrə izləmə matrisi.
+- UI01–19 kliklənən sənəd prototipi və dəqiq forma axınları.
+- 30 parent GitHub issue daxilində 90 atomik iş paketi, dependency və external gate fərqi.
+- 36 ətraflı Given/When/Then qəbul ssenarisi; Codex multiagent müqaviləsi.
+- Müstəqil security/delivery sənəd red-team baxışı və düzəliş reyestri.
+- Sənəd, kontrakt, schema və demo smoke script-ləri, GitHub Actions konfiqurasiyası.
 
-## Tamamlanmayan
+## Faktiki yoxlama
 
-- İşlək tətbiq və clickable prototip.
-- Executable SQL migrations/RLS və generated types.
-- OpenAPI YAML və işlək API.
-- Supabase/SMTP/Payriff/Vercel canlı konfiqurasiyası.
-- Tətbiq testləri, sandbox ödəniş sübutu və real cihaz UX ölçüləri.
-- Native GitHub milestone və branch protection aktivliyinin təsdiqi.
-- Production deployment, backup/restore və hüquqi mətn təsdiqi.
+Yerli Node/Python runtime artıq əlçatandır. Sənəd linkləri, müqavilə bütövlüyü, asılılıq qrafı, OpenAPI/JSON Schema və demo smoke real icra edilir. Son çıxışlar və source hash-ləri [evidence](../04-quality/evidence/contracts.json)-dədir. Remote CI nəticəsi ayrıca yoxlanılır; config-in mövcudluğu yaşıl run demək deyil.
 
-## Yoxlama dürüstlüyü
+Prototip smoke-u 71 assertion ilə VM/fake-DOM yoxlamasıdır. Cloud browser workspace localhost-a qoşula bilmədiyindən screenshot/layout QA keçilmiş sayılmır. Real cihaz və 5 iştirakçılı usability testi hələ aparılmayıb.
 
-Bu docs hazırlanarkən lokal shell runtime əlçatan deyil. Mətnlər GitHub connector ilə yazılır; lokal build/test və tətbiq penetration testi icra edilməyib. Sənəd linkləri/ID-ləri yaddaşdakı source xəritəsində statik yoxlanır. GitHub docs workflow faktiki run verdikdən sonra onun nəticəsi ayrıca istinad olunmalıdır; əvvəlcədən uğurlu sayılmır.
+## Hələ tamamlanmayan icra
+
+- Production tətbiqi, executable SQL migrations/RLS, real API route-ları.
+- Supabase/SMTP/Payriff/Vercel faktiki canlı konfiqurasiyası və provider sandbox sınaqları.
+- Tətbiq integration/E2E/security/performance testləri, DB+media restore və rollback.
+- Native GitHub Milestones, branch ruleset və required-check aktivliyinin təsdiqi.
+- Hüquqi retention/refund/məxfilik mətnlərinin təsdiqi və production deploy.
 
 ## Növbəti iş
 
-EVE-001–004: sənəd audit → prototip → provider/auth spike → maşınla yoxlanan OpenAPI. Codex docs/05-delivery/CODEX-START.md-dən başlayır.
+Codex əvvəl müqavilə validatorlarını işlədib hazır artefaktları audit edir; onları sıfırdan yenidən yazmır. [CODEX-START](CODEX-START.md) və [WORK-PACKAGES](WORK-PACKAGES.md) ilə M0-dakı real istifadə/provider qapıları ayrılır, müstəqil M1 scaffold/schema işi davam edir. İmplementasiya taskları sübut və merge olmadan Done işarələnmir.

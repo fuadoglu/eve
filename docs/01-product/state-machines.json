@@ -1,0 +1,988 @@
+{
+  "schema_version": 1,
+  "description": "Eve vəziyyət keçidləri; same cari vəziyyəti saxlayır, revision ayrı obyekt yaradır.",
+  "machines": [
+    {
+      "name": "reservation",
+      "states": [
+        "absent",
+        "hold",
+        "confirmed",
+        "checked_in",
+        "completed",
+        "cancelled",
+        "no_show"
+      ],
+      "terminal_states": [
+        "completed",
+        "cancelled",
+        "no_show"
+      ],
+      "transitions": [
+        {
+          "id": "reservation.create_hold",
+          "action": "create_hold",
+          "from_states": [
+            "absent"
+          ],
+          "to_state": "hold",
+          "capability": "reservation.write",
+          "preconditions": [
+            "active_entitlement",
+            "valid_interval",
+            "no_overlap"
+          ],
+          "transaction_effects": [
+            "insert_reservation_placement",
+            "insert_occupancy",
+            "enqueue_hold_expiry"
+          ],
+          "requirements": [
+            "R04"
+          ],
+          "acceptance": [
+            "AT07",
+            "AT09"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "reservation.create_confirmed",
+          "action": "create_confirmed",
+          "from_states": [
+            "absent"
+          ],
+          "to_state": "confirmed",
+          "capability": "reservation.write",
+          "preconditions": [
+            "active_entitlement",
+            "valid_interval",
+            "no_overlap"
+          ],
+          "transaction_effects": [
+            "insert_reservation_placement",
+            "insert_occupancy",
+            "optional_initial_receipt"
+          ],
+          "requirements": [
+            "R04",
+            "R05"
+          ],
+          "acceptance": [
+            "AT07",
+            "AT11"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "reservation.confirm",
+          "action": "confirm",
+          "from_states": [
+            "hold"
+          ],
+          "to_state": "confirmed",
+          "capability": "reservation.write",
+          "preconditions": [
+            "active_entitlement",
+            "hold_not_expired"
+          ],
+          "transaction_effects": [
+            "clear_hold_expiry",
+            "update_reservation_version"
+          ],
+          "requirements": [
+            "R04"
+          ],
+          "acceptance": [
+            "AT09"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "reservation.expire",
+          "action": "expire",
+          "from_states": [
+            "hold"
+          ],
+          "to_state": "cancelled",
+          "capability": "system.hold_expiry",
+          "preconditions": [
+            "hold_expired",
+            "property_lock"
+          ],
+          "transaction_effects": [
+            "release_occupancy",
+            "reason_hold_expired"
+          ],
+          "requirements": [
+            "R04"
+          ],
+          "acceptance": [
+            "AT09"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "reservation.cancel",
+          "action": "cancel",
+          "from_states": [
+            "hold",
+            "confirmed"
+          ],
+          "to_state": "cancelled",
+          "capability": "reservation.write",
+          "preconditions": [
+            "active_entitlement",
+            "explicit_financial_decision_if_money"
+          ],
+          "transaction_effects": [
+            "release_occupancy",
+            "cancel_unfinished_future_tasks",
+            "audit_financial_decision",
+            "revoke_closed_placement_guest_links_and_private_media_access"
+          ],
+          "requirements": [
+            "R04",
+            "R05"
+          ],
+          "acceptance": [
+            "AT10",
+            "AT12"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "reservation.check_in",
+          "action": "check_in",
+          "from_states": [
+            "confirmed"
+          ],
+          "to_state": "checked_in",
+          "capability": "reservation.write",
+          "preconditions": [
+            "active_entitlement",
+            "expected_version"
+          ],
+          "transaction_effects": [
+            "record_actual_checkin",
+            "update_reservation_version"
+          ],
+          "requirements": [
+            "R04"
+          ],
+          "acceptance": [
+            "AT10"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "reservation.check_out",
+          "action": "check_out",
+          "from_states": [
+            "checked_in"
+          ],
+          "to_state": "completed",
+          "capability": "reservation.write",
+          "preconditions": [
+            "active_entitlement",
+            "expected_version"
+          ],
+          "transaction_effects": [
+            "record_actual_checkout",
+            "upsert_cleaning_task",
+            "upsert_handover_event"
+          ],
+          "requirements": [
+            "R04",
+            "R08"
+          ],
+          "acceptance": [
+            "AT10",
+            "AT16"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "reservation.no_show",
+          "action": "no_show",
+          "from_states": [
+            "confirmed"
+          ],
+          "to_state": "no_show",
+          "capability": "reservation.write",
+          "preconditions": [
+            "active_entitlement",
+            "planned_arrival_passed",
+            "explicit_financial_decision_if_money"
+          ],
+          "transaction_effects": [
+            "release_occupancy",
+            "cancel_unfinished_future_tasks",
+            "revoke_closed_placement_guest_links_and_private_media_access"
+          ],
+          "requirements": [
+            "R04",
+            "R05"
+          ],
+          "acceptance": [
+            "AT10"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "reservation.change_dates",
+          "action": "change_dates",
+          "from_states": [
+            "hold",
+            "confirmed",
+            "checked_in"
+          ],
+          "to_state": "same",
+          "capability": "reservation.write",
+          "preconditions": [
+            "active_entitlement",
+            "expected_version",
+            "no_overlap",
+            "confirm_price_delta"
+          ],
+          "transaction_effects": [
+            "update_occupancy",
+            "update_quote",
+            "reschedule_unfinished_tasks"
+          ],
+          "requirements": [
+            "R04"
+          ],
+          "acceptance": [
+            "AT10"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "reservation.move_property",
+          "action": "move_property",
+          "from_states": [
+            "hold",
+            "confirmed",
+            "checked_in"
+          ],
+          "to_state": "same",
+          "capability": "reservation.write",
+          "preconditions": [
+            "source_and_target_capability",
+            "source_and_target_active",
+            "same_owner",
+            "no_overlap",
+            "expected_version"
+          ],
+          "transaction_effects": [
+            "create_immutable_placement",
+            "create_noncash_attribution_transfer",
+            "move_active_occupancy",
+            "cancel_unfinished_source_tasks",
+            "upsert_target_tasks",
+            "preserve_historic_ledger",
+            "revoke_closed_placement_guest_links_and_private_media_access"
+          ],
+          "requirements": [
+            "R03",
+            "R04",
+            "R05"
+          ],
+          "acceptance": [
+            "AT05",
+            "AT10",
+            "AT13"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "reservation.release_remaining_days",
+          "action": "release_remaining_days",
+          "from_states": [
+            "completed"
+          ],
+          "to_state": "same",
+          "capability": "reservation.write",
+          "preconditions": [
+            "active_entitlement",
+            "expected_version",
+            "actual_checkout_recorded",
+            "explicit_new_checkout_and_quote",
+            "valid_interval"
+          ],
+          "transaction_effects": [
+            "adjust_planned_checkout_without_reopening_stay",
+            "recompute_occupancy",
+            "record_price_and_balance_delta",
+            "preserve_actual_checkout_and_history"
+          ],
+          "requirements": [
+            "R04",
+            "R05"
+          ],
+          "acceptance": [
+            "AT10",
+            "AT11"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        }
+      ]
+    },
+    {
+      "name": "task",
+      "states": [
+        "absent",
+        "open",
+        "accepted",
+        "reported_done",
+        "completed",
+        "cancelled"
+      ],
+      "terminal_states": [
+        "completed",
+        "cancelled"
+      ],
+      "transitions": [
+        {
+          "id": "task.create",
+          "action": "create",
+          "from_states": [
+            "absent"
+          ],
+          "to_state": "open",
+          "capability": "task.manage",
+          "preconditions": [
+            "active_entitlement"
+          ],
+          "transaction_effects": [
+            "insert_task",
+            "dedupe_cleaning_kind"
+          ],
+          "requirements": [
+            "R07",
+            "R08"
+          ],
+          "acceptance": [
+            "AT16"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "task.accept",
+          "action": "accept",
+          "from_states": [
+            "open"
+          ],
+          "to_state": "accepted",
+          "capability": "task.accept",
+          "preconditions": [
+            "valid_scoped_access",
+            "within_write_window"
+          ],
+          "transaction_effects": [
+            "record_acceptance"
+          ],
+          "requirements": [
+            "R07"
+          ],
+          "acceptance": [
+            "AT15"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "task.report_done",
+          "action": "report_done",
+          "from_states": [
+            "open",
+            "accepted"
+          ],
+          "to_state": "reported_done",
+          "capability": "task.complete",
+          "preconditions": [
+            "valid_scoped_access",
+            "within_write_window",
+            "required_inspection_answered"
+          ],
+          "transaction_effects": [
+            "record_completion_report",
+            "enqueue_owner_notice"
+          ],
+          "requirements": [
+            "R07"
+          ],
+          "acceptance": [
+            "AT16"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "task.confirm",
+          "action": "confirm",
+          "from_states": [
+            "reported_done"
+          ],
+          "to_state": "completed",
+          "capability": "task.manage",
+          "preconditions": [
+            "current_property_capability"
+          ],
+          "transaction_effects": [
+            "confirm_result",
+            "recompute_readiness"
+          ],
+          "requirements": [
+            "R07",
+            "R08"
+          ],
+          "acceptance": [
+            "AT16"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "task.request_rework",
+          "action": "request_rework",
+          "from_states": [
+            "reported_done"
+          ],
+          "to_state": "accepted",
+          "capability": "task.manage",
+          "preconditions": [
+            "current_property_capability",
+            "reason_required"
+          ],
+          "transaction_effects": [
+            "preserve_previous_report",
+            "enqueue_rework_notice"
+          ],
+          "requirements": [
+            "R07"
+          ],
+          "acceptance": [
+            "AT16"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "task.cancel",
+          "action": "cancel",
+          "from_states": [
+            "open",
+            "accepted",
+            "reported_done"
+          ],
+          "to_state": "cancelled",
+          "capability": "task.manage",
+          "preconditions": [
+            "current_property_capability"
+          ],
+          "transaction_effects": [
+            "revoke_task_write_links",
+            "preserve_history"
+          ],
+          "requirements": [
+            "R07"
+          ],
+          "acceptance": [
+            "AT16"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        }
+      ]
+    },
+    {
+      "name": "inspection",
+      "states": [
+        "absent",
+        "draft",
+        "completed"
+      ],
+      "terminal_states": [
+        "completed"
+      ],
+      "transitions": [
+        {
+          "id": "inspection.start",
+          "action": "start",
+          "from_states": [
+            "absent"
+          ],
+          "to_state": "draft",
+          "capability": "inspection.submit",
+          "preconditions": [
+            "valid_event_side_scope",
+            "within_write_window"
+          ],
+          "transaction_effects": [
+            "freeze_inventory_snapshot",
+            "create_side_submission"
+          ],
+          "requirements": [
+            "R09"
+          ],
+          "acceptance": [
+            "AT17",
+            "AT18"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "inspection.save_answers",
+          "action": "save_answers",
+          "from_states": [
+            "draft"
+          ],
+          "to_state": "same",
+          "capability": "inspection.submit",
+          "preconditions": [
+            "valid_event_side_scope",
+            "within_write_window",
+            "expected_version"
+          ],
+          "transaction_effects": [
+            "persist_room_answers",
+            "return_server_ack"
+          ],
+          "requirements": [
+            "R09"
+          ],
+          "acceptance": [
+            "AT19",
+            "AT30"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "inspection.complete",
+          "action": "complete",
+          "from_states": [
+            "draft"
+          ],
+          "to_state": "completed",
+          "capability": "inspection.submit",
+          "preconditions": [
+            "valid_event_side_scope",
+            "within_write_window",
+            "all_rooms_answered"
+          ],
+          "transaction_effects": [
+            "freeze_submission",
+            "enqueue_problem_summary"
+          ],
+          "requirements": [
+            "R09"
+          ],
+          "acceptance": [
+            "AT19"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "inspection.create_revision",
+          "action": "create_revision",
+          "from_states": [
+            "completed"
+          ],
+          "to_state": "same",
+          "capability": "inventory.manage",
+          "preconditions": [
+            "active_entitlement",
+            "correction_reason"
+          ],
+          "transaction_effects": [
+            "create_new_draft_revision",
+            "preserve_original_completed"
+          ],
+          "requirements": [
+            "R09"
+          ],
+          "acceptance": [
+            "AT19"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        }
+      ]
+    },
+    {
+      "name": "expense",
+      "states": [
+        "absent",
+        "proposed",
+        "approved",
+        "rejected"
+      ],
+      "terminal_states": [
+        "rejected"
+      ],
+      "transitions": [
+        {
+          "id": "expense.propose",
+          "action": "propose",
+          "from_states": [
+            "absent"
+          ],
+          "to_state": "proposed",
+          "capability": "expense.propose",
+          "preconditions": [
+            "property_or_task_scope",
+            "positive_minor",
+            "same_owner_allocations"
+          ],
+          "transaction_effects": [
+            "insert_proposal"
+          ],
+          "requirements": [
+            "R06"
+          ],
+          "acceptance": [
+            "AT14"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "expense.create_approved",
+          "action": "create_approved",
+          "from_states": [
+            "absent"
+          ],
+          "to_state": "approved",
+          "capability": "finance.manage",
+          "preconditions": [
+            "active_entitlement",
+            "all_allocations_full_access",
+            "allocation_sum_exact"
+          ],
+          "transaction_effects": [
+            "insert_approved_expense",
+            "optional_expense_payment"
+          ],
+          "requirements": [
+            "R06"
+          ],
+          "acceptance": [
+            "AT14"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "expense.approve",
+          "action": "approve",
+          "from_states": [
+            "proposed"
+          ],
+          "to_state": "approved",
+          "capability": "finance.manage",
+          "preconditions": [
+            "active_entitlement",
+            "all_allocations_full_access",
+            "allocation_sum_exact"
+          ],
+          "transaction_effects": [
+            "approve_expense",
+            "audit_actor"
+          ],
+          "requirements": [
+            "R06"
+          ],
+          "acceptance": [
+            "AT14"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "expense.reject",
+          "action": "reject",
+          "from_states": [
+            "proposed"
+          ],
+          "to_state": "rejected",
+          "capability": "finance.manage",
+          "preconditions": [
+            "current_property_capability",
+            "reason_required"
+          ],
+          "transaction_effects": [
+            "preserve_rejected_proposal"
+          ],
+          "requirements": [
+            "R06"
+          ],
+          "acceptance": [
+            "AT14"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "expense.record_payment",
+          "action": "record_payment",
+          "from_states": [
+            "approved"
+          ],
+          "to_state": "same",
+          "capability": "finance.manage",
+          "preconditions": [
+            "active_entitlement",
+            "payment_not_exceed_remaining"
+          ],
+          "transaction_effects": [
+            "append_expense_payment",
+            "derive_payment_status"
+          ],
+          "requirements": [
+            "R06"
+          ],
+          "acceptance": [
+            "AT14"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        }
+      ]
+    },
+    {
+      "name": "billing_order",
+      "states": [
+        "absent",
+        "created",
+        "pending",
+        "verified_paid",
+        "entitlement_applied",
+        "failed",
+        "cancelled",
+        "expired"
+      ],
+      "terminal_states": [
+        "entitlement_applied"
+      ],
+      "transitions": [
+        {
+          "id": "billing_order.create",
+          "action": "create",
+          "from_states": [
+            "absent"
+          ],
+          "to_state": "created",
+          "capability": "billing.owner",
+          "preconditions": [
+            "owner_all_lines",
+            "catalog_price",
+            "same_owner_currency"
+          ],
+          "transaction_effects": [
+            "insert_order_and_lines"
+          ],
+          "requirements": [
+            "R12"
+          ],
+          "acceptance": [
+            "AT25",
+            "AT26"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "billing_order.checkout_created",
+          "action": "checkout_created",
+          "from_states": [
+            "created"
+          ],
+          "to_state": "pending",
+          "capability": "system.billing",
+          "preconditions": [
+            "provider_order_bound"
+          ],
+          "transaction_effects": [
+            "store_provider_order_id",
+            "return_checkout_url"
+          ],
+          "requirements": [
+            "R12"
+          ],
+          "acceptance": [
+            "AT26"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "billing_order.verify_paid",
+          "action": "verify_paid",
+          "from_states": [
+            "created",
+            "pending",
+            "failed",
+            "cancelled",
+            "expired"
+          ],
+          "to_state": "verified_paid",
+          "capability": "system.billing",
+          "preconditions": [
+            "server_provider_verification",
+            "merchant_order_amount_currency_match"
+          ],
+          "transaction_effects": [
+            "insert_unique_verified_event",
+            "mark_verified"
+          ],
+          "requirements": [
+            "R12"
+          ],
+          "acceptance": [
+            "AT26",
+            "AT27"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "billing_order.apply_entitlement",
+          "action": "apply_entitlement",
+          "from_states": [
+            "verified_paid"
+          ],
+          "to_state": "entitlement_applied",
+          "capability": "system.billing",
+          "preconditions": [
+            "line_not_applied",
+            "property_owner_unchanged",
+            "row_locks"
+          ],
+          "transaction_effects": [
+            "append_unique_subscription_periods",
+            "extend_current_end",
+            "mark_lines_applied"
+          ],
+          "requirements": [
+            "R12"
+          ],
+          "acceptance": [
+            "AT27",
+            "AT28"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "billing_order.provider_failed",
+          "action": "provider_failed",
+          "from_states": [
+            "created",
+            "pending"
+          ],
+          "to_state": "failed",
+          "capability": "system.billing",
+          "preconditions": [
+            "verified_provider_failure"
+          ],
+          "transaction_effects": [
+            "record_failure_without_period_change"
+          ],
+          "requirements": [
+            "R12"
+          ],
+          "acceptance": [
+            "AT26"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "billing_order.provider_cancelled",
+          "action": "provider_cancelled",
+          "from_states": [
+            "created",
+            "pending"
+          ],
+          "to_state": "cancelled",
+          "capability": "system.billing",
+          "preconditions": [
+            "verified_provider_cancel"
+          ],
+          "transaction_effects": [
+            "record_cancel_without_period_change"
+          ],
+          "requirements": [
+            "R12"
+          ],
+          "acceptance": [
+            "AT26"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "billing_order.payment_window_elapsed",
+          "action": "payment_window_elapsed",
+          "from_states": [
+            "created",
+            "pending"
+          ],
+          "to_state": "expired",
+          "capability": "system.billing",
+          "preconditions": [
+            "provider_status_checked",
+            "window_elapsed"
+          ],
+          "transaction_effects": [
+            "mark_order_expired_without_period_change"
+          ],
+          "requirements": [
+            "R12"
+          ],
+          "acceptance": [
+            "AT27"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        }
+      ]
+    }
+  ],
+  "derived_states": {
+    "expense_payment": [
+      "unpaid",
+      "partial",
+      "paid"
+    ],
+    "property_entitlement": [
+      "draft",
+      "trialing",
+      "active",
+      "expired"
+    ],
+    "property_readiness": [
+      "ready",
+      "cleaning_pending",
+      "attention_required"
+    ]
+  },
+  "default_rule": "Siyahıda olmayan state/action kombinasiyası 409 INVALID_TRANSITION; provider replay applied vəziyyətini geri dəyişmir."
+}
