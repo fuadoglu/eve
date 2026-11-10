@@ -22,6 +22,8 @@ EVE-005.1 üçün `feat/EVE-005-1-scaffold` lokal branch-ində Node 24.22.2, pnp
 
 EVE-005.2 üçün `feat/EVE-005-2-env-contract` branch-ində boş `.env.example`, public URL/publishable key validatorı və `server-only` ilə qorunan privileged-key accessor əlavə edildi. 9 env contract testi, typecheck və production build keçdi. Müstəqil review URL path-inin rəddini tələb etdi; validator və mənfi sınaq düzəldildi, təkrar yoxlamada 9/9 keçdi. Real Supabase key və hesab istifadə olunmayıb; EVE-005.2 nəticəsi də remote/main-a göndərilməyib. Bu branch lokal EVE-005.1 commit-i üzərində stacked vəziyyətdədir.
 
+EVE-005.3 üçün `feat/EVE-005-3-ci-build` branch-ində mövcud docs workflow təmiz checkout CI-yə genişləndirildi: Node/pnpm/Python pin, frozen-lockfile install, env test, typecheck, build, contract/schema/prototype checks; action-lar full SHA ilə pinlidir və job `contents: read` səlahiyyəti ilə işləyir. Yerli frozen install, bütün workflow əmrləri və actionlint keçdi. GitHub remote CI hələ bu branch üçün işə düşməyib; `.3` nəticəsi main-a merge edilməyib.
+
 Prototip smoke-u 71 assertion ilə VM/fake-DOM yoxlamasıdır. Cloud browser workspace localhost-a qoşula bilmədiyindən screenshot/layout QA keçilmiş sayılmır. Real cihaz və 5 iştirakçılı usability testi hələ aparılmayıb.
 
 ## Hələ tamamlanmayan icra
@@ -34,4 +36,4 @@ Prototip smoke-u 71 assertion ilə VM/fake-DOM yoxlamasıdır. Cloud browser wor
 
 ## Növbəti iş
 
-EVE-005.1 və EVE-005.2 lokal nəticələrini issue/PR axınına keçirmək, sonra EVE-005.3 təmiz checkout CI/build yoxlamasını tamamlamaq lazımdır. İmplementasiya taskları sübut və merge olmadan Done işarələnmir.
+EVE-005.1–005.3 lokal nəticələrini issue/PR axınına keçirmək lazımdır; remote CI, review və merge sübutu tamamlanmayıb. Sonrakı M1 işi EVE-006 schema/RLS-dir və 005 əsas branch-ə inteqrasiya olunandan sonra başlanmalıdır. İmplementasiya taskları sübut və merge olmadan Done işarələnmir.

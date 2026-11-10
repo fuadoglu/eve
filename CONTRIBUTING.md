@@ -4,7 +4,9 @@
 
 Sənədlər, PR/issue izahları Azərbaycan dilindədir; kod identifikatorları və API enum-ları ingiliscədir. Məhsul qərarı dəyişirsə DECISIONS, modul spec və acceptance eyni PR-də yenilənir.
 
-Issue → Ready → ayrı branch/worktree → draft PR → test/review → squash merge. Secret/PII commit edilmir. Real test olmayan “passed” yazılmır. App scaffold olmadığı üçün quraşdırma əmrləri hazırda vəd edilmir; M1 bunları təsdiqləyir.
+Issue → Ready → ayrı branch/worktree → draft PR → test/review → squash merge. Secret/PII commit edilmir. Real test olmayan “passed” yazılmır. App Node.js versiyası `.nvmrc`-də, pnpm versiyası `package.json`-ın `packageManager` sahəsində pinlənib.
+
+İlkin scaffold yoxlaması: `pnpm install --frozen-lockfile`, `pnpm test:env`, `pnpm typecheck`, `pnpm build`. Bunlar hazırda yalnız scaffold və env kontraktını sübut edir; auth, DB/RLS və məhsul axını hazır olduğunu göstərmir. CI həmin əmrləri və aşağıdakı sənəd yoxlamalarını təmiz checkout-da işə salır.
 
 Documentation link yoxlaması: node scripts/docs-check.mjs. Bu yalnız sənəd link/ID bütövlüyünü yoxlayır, tətbiq keyfiyyətini yox.
 
