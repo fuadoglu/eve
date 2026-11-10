@@ -1,0 +1,37 @@
+# Eve — sənədlər xəritəsi
+
+Sənəd bazası: 2026-11-10, Asia/Baku. Dil: Azərbaycan dili. Status: **icra üçün normativ spesifikasiya; tətbiq tamamlanmayıb**.
+
+## Oxuma qaydası
+
+Əvvəl AGENTS və qərar reyestri, sonra aid olduğunuz modulun tələbləri, texniki müqaviləsi və qəbul testləri oxunur. Tapşırıqda tələb ID-si və test ID-si göstərilir. Mübahisədə cari istifadəçi göstərişi, sonra qərar reyestri, sonra modul spesifikasiyası əsasdır; ziddiyyət səssiz həll edilmir.
+
+| Sənəd | Cavablandırdığı sual |
+|---|---|
+| [Qərar reyestri](01-product/DECISIONS.md) | Nə razılaşdırılıb, nə texniki seçimdir, nə xaricdən asılıdır? |
+| [PRD](01-product/PRD.md) | Məhsulun sərhədi və normativ tələbləri nədir? |
+| [Əməliyyat qaydaları](01-product/OPERATIONS.md) | Rezervasiya, tapşırıq, inventar necə işləyir? |
+| [Abunə və maliyyə](01-product/BILLING-FINANCE.md) | Hansı pul nəyin uçotudur, abunə necə uzanır? |
+| [Paylaşım və təlimat](01-product/SHARING-GUIDES.md) | Public səhifə, QR və məxfi keçid fərqi nədir? |
+| [Mobil UX](02-design/MOBILE-UX.md) | Sürət və sadəlik necə ölçülür? |
+| [Ekran müqavilələri](02-design/SCREENS.md) | Ekranın sahələri, düymələri, boş və xəta vəziyyətləri nədir? |
+| [Arxitektura](03-engineering/ARCHITECTURE.md) | Texnologiya və modul sərhədləri necədir? |
+| [Data modeli](03-engineering/DATA-MODEL.md) | Cədvəllər, əlaqələr və invariantlar nədir? |
+| [API müqaviləsi](03-engineering/API-CONTRACT.md) | Sorğu/cavab, səhv və idempotentlik necədir? |
+| [Təhlükəsizlik](03-engineering/SECURITY.md) | Kim hansı resursa daxil ola bilər? |
+| [İnteqrasiyalar](03-engineering/INTEGRATIONS.md) | Auth, Payriff, WhatsApp və media necə yoxlanılır? |
+| [Qəbul sınaqları](04-quality/ACCEPTANCE.md) | İşin düzgünlüyü necə sübut edilir? |
+| [Red-team](04-quality/RED-TEAM.md) | Hansı səhvlər buraxılışı dayandırır? |
+| [X10 düşüncə çərçivəsi](04-quality/X10-REVIEW.md) | Qərar hansı on baxışdan yoxlanılıb? |
+| [Yol xəritəsi](05-delivery/ROADMAP.md) | İcra asılılıqları və milestone çıxışları |
+| [Backlog](05-delivery/BACKLOG.md) | Konkret task və qəbul meyarları |
+| [GitHub qaydası](05-delivery/GITHUB-WORKFLOW.md) | Branch, commit, PR, issue, milestone |
+| [Codex başlanğıcı](05-delivery/CODEX-START.md) | İcra edən agentə hazır giriş tapşırığı |
+| [Xarici asılılıqlar](05-delivery/EXTERNAL-DEPENDENCIES.md) | Production üçün nə hələ təmin edilməyib? |
+| [İstismar](05-delivery/RUNBOOK.md) | Deploy, rollback, backup və hadisə |
+| [İcra statusu](05-delivery/STATUS.md) | Faktiki nə edilib, sübutu haradadır? |
+| [Mənbələr](REFERENCES.md) | Texniki qərarların rəsmi istinadları |
+
+## Terminlər
+
+**Ev / əmlak:** abunə olunan vahid; UI əsas naviqasiyası “Mənzillər” adlanır, bağ evi də qəbul edir. **Tenant:** bir sahibin təşkilati məlumat sərhədi. **Menecer təyinatı:** istifadəçi + konkret ev + icazə səviyyəsi. **Pul qeydi:** Eve-nin qəbul etmədiyi kirayə əməliyyatının uçotu. **Abunə ödənişi:** Payriff ilə Eve-yə ödənilən xidmət haqqı. **Təhvil yoxlaması:** inventarın dəyişməz nüsxəsi üzrə müəyyən hadisənin cavabları. **Public:** keçidi olan şəxsə açıqdır; məxfi deyil.
