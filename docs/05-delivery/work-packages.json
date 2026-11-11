@@ -268,7 +268,7 @@
       "parent_issue": 12,
       "milestone": "M0",
       "title": "Əməliyyat və payload müqavilələri",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-001.3"
       ],
