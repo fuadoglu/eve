@@ -1,5 +1,5 @@
 -- EVE-006.2 catalog guard: all 52 private tables remain FORCE RLS.
--- Only the nine reviewed read tables have executor SELECT; all others deny.
+-- Only the ten reviewed read tables have executor SELECT; all others deny.
 do $$
 declare
   table_count integer;
@@ -26,7 +26,7 @@ begin
       or has_table_privilege('app_executor',c.oid,'SELECT') is distinct from
         (c.relname in ('profiles','owner_accounts','properties',
           'property_memberships','reservations','reservation_placements',
-          'manual_blocks','contacts','contact_properties')));
+          'manual_blocks','contacts','contact_properties','rent_entries')));
   if bad_count <> 0 then
     raise exception 'private RLS/grant allowlist mismatch: % tables',bad_count;
   end if;
@@ -54,7 +54,8 @@ begin
     ('reservation_placements','reservation_placements_current_read'),
     ('manual_blocks','manual_blocks_property_read'),
     ('contacts','contacts_linked_or_owner_read'),
-    ('contact_properties','contact_properties_assigned_read')
+    ('contact_properties','contact_properties_assigned_read'),
+    ('rent_entries','rent_entries_current_or_finance_read')
   ) as expected(table_name,policy_name)
   left join pg_class c on c.relname=expected.table_name
     and c.relnamespace='app_private'::regnamespace
@@ -67,7 +68,7 @@ begin
   select count(*) into table_count
   from pg_policy p join pg_class c on c.oid=p.polrelid
   where c.relnamespace='app_private'::regnamespace;
-  if table_count <> 9 then
+  if table_count <> 10 then
     raise exception 'unexpected private table policies: %',table_count;
   end if;
 end $$;
