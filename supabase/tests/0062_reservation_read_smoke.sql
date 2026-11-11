@@ -54,7 +54,7 @@ set local role authenticated;
 set local request.jwt.claim.sub='b0000000-0000-0000-0000-000000000001';
 do $$ begin
   if (select count(*) from api.read_current_reservation('40000000-0000-0000-0000-000000000001')) <> 1
-     or (select guest_name from api.read_current_reservation('40000000-0000-0000-0000-000000000001')) <> 'Guest A' then
+     or (select guest_name from api.read_current_reservation('40000000-0000-0000-0000-000000000001')) is distinct from 'Guest A' then
     raise exception 'source manager cannot read current reservation';
   end if;
   begin
@@ -123,7 +123,7 @@ set local request.jwt.claim.sub='c0000000-0000-0000-0000-000000000001';
 do $$ begin
   if (select count(*) from api.read_current_reservation('40000000-0000-0000-0000-000000000001')) <> 1
      or (select placement_id from api.read_current_reservation('40000000-0000-0000-0000-000000000001'))
-        <> '60000000-0000-0000-0000-000000000001'::uuid then
+        is distinct from '60000000-0000-0000-0000-000000000001'::uuid then
     raise exception 'target manager cannot read moved current reservation';
   end if;
 end $$;

@@ -52,7 +52,8 @@ as $$
    and rp.property_id = r.property_id
    and rp.owner_account_id = r.owner_account_id
   where p_reservation_id is not null and (select auth.uid()) is not null
-    and r.id = p_reservation_id;
+    and r.id = p_reservation_id
+    and app_private.has_property_capability(r.property_id,r.owner_account_id,'reservation.read');
 $$;
 revoke all on function api.read_current_reservation(uuid)
   from public, anon, authenticated;
