@@ -86,7 +86,7 @@ Secret, .env, real qonaq məlumatı və provider credential repoya getmir. İsti
 
 ACCEPTANCE sənədindəki DoD məcburidir. P0/P1 açıq ikən production yoxdur. Provider sandbox və backup restore yoxdursa onların nəticəsi “blocked”dır. Feature flag gate-i aradan qaldırmır, yalnız istifadə olunmayan funksiyanı təhlükəsiz kənarda saxlaya bilər.
 
-Sənəd icrası live deploy icazəsi ilə eyni deyil; cari istifadəçinin konkret scope-u əsasdır. Bu repository tapşırığında tətbiqin kodlanması/yayımlanması deyil, sənədləşməsi edilir.
+Sənəd icrası live deploy icazəsi ilə eyni deyil; cari istifadəçinin konkret scope-u əsasdır. Repository-də sənədləşmə və tətbiq kodlaması cari istifadəçi tapşırığına əsasən icra olunur; live deploy-un scope-u da ayrıca cari göstərişlə müəyyən edilir.
 
 ## 10. Yekun hesabat
 
