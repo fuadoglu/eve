@@ -160,7 +160,7 @@ for(const line of prd.split('\n')){
 }
 assert(prdRows.size===16,'PRD must contain exactly 16 requirements');
 const traceMd=fs.readFileSync(path.join(root,'docs/04-quality/TRACEABILITY.md'),'utf8');
-const markdownRows=traceMd.split('\n').map(line=>({line,match:line.match(/^\|\s*(R\d{2})(?=\s|—|\|)/)})).filter(x=>x.match);
+const markdownRows=traceMd.split('\n').map(line=>({line,match:line.match(/^\|\s*(R\d+)/)})).filter(x=>x.match);
 assert(markdownRows.length===16,'Markdown trace must contain exactly 16 requirement rows');
 for(const row of markdownRows)assert(reqs.has(row.match[1]),`${row.match[1]}: unknown Markdown requirement`);
 for(const r of trace.requirements){
