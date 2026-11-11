@@ -10,6 +10,6 @@ Tarix: 2026-11-11. Giriş: EVE-001.3 merged `091e260`. Normativ mənbə [OpenAPI
 
 ## Mənfi yoxlama və məhdudiyyət
 
-Müvəqqəti kopyada `requestEmailLink` 202 cavabının `content` sahəsi silinəndə `response schema missing`, request body-nin `content` sahəsi silinəndə `request schema missing` ilə hər iki validator çağırışı exit 1 qaytardı. Müstəqil reviewer ortaq `Error400` ref cavabından schema çıxarılanda da exit 1 aldı. Normal müqavilə exit 0 verir. Python OpenAPI/JSON Schema validatoru və mövcud 32 müsbət/mənfi nümunə ayrıca işlədilir. Sınaqlar source fayllarını dəyişmir.
+Müvəqqəti kopyada `requestEmailLink` 202 cavabının `content` sahəsi silinəndə `response schema missing`, request body-nin `content` sahəsi silinəndə `request schema missing` ilə hər iki validator çağırışı exit 1 qaytardı. Müstəqil reviewer ortaq `Error400` ref cavabından schema çıxarılanda da exit 1 aldı. Həmin request, response və ortaq `Error` schema-sı boş `{}` ilə əvəz ediləndə də üçü exit 1 verdi; validator həll olunan tipli schema tələb edir. Normal müqavilə exit 0 verir. Python OpenAPI/JSON Schema validatoru və mövcud 32 müsbət/mənfi nümunə ayrıca işlədilir. Sınaqlar source fayllarını dəyişmir.
 
 EVE-004.2 state/capability semantikasını, EVE-004.3 bütün schema/fixture inteqrasiyasını ayrıca bağlayır. Bu mərhələdə API route, DB/RLS, real auth, Payriff və mobil istifadəçi sınağı keçilmiş sayılmır. Migration yoxdur; rollback bu sənəd və validator dəyişikliklərinin revertidir.

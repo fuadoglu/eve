@@ -28,6 +28,7 @@ function resolveLocal(node){
   }
   return node;
 }
+const hasPayloadSchema=media=>typeof resolveLocal(media?.schema)?.type==='string';
 function references(node,doc,where){
   if(!node||typeof node!=='object')return;
   if(typeof node.$ref==='string'){
@@ -54,9 +55,9 @@ for(const [url,item]of Object.entries(api.paths))for(const [method,op]of Object.
   for(const [status,response] of Object.entries(op.responses||{})){
     const payload=resolveLocal(response);
     if(status==='204')continue;
-    assert(Object.values(payload?.content||{}).some(media=>media.schema),`${op.operationId}: ${status} response schema missing`);
+    assert(Object.values(payload?.content||{}).some(hasPayloadSchema),`${op.operationId}: ${status} response schema missing`);
   }
-  if(op.requestBody)assert(Object.values(resolveLocal(op.requestBody)?.content||{}).some(media=>media.schema),`${op.operationId}: request schema missing`);
+  if(op.requestBody)assert(Object.values(resolveLocal(op.requestBody)?.content||{}).some(hasPayloadSchema),`${op.operationId}: request schema missing`);
   for(const match of url.matchAll(/\{([^}]+)\}/g)){
     const parameters=[...(item.parameters||[]),...(op.parameters||[])].map(p=>p.$ref?api.components.parameters[p.$ref.split('/').at(-1)]:p);
     assert(parameters.some(p=>p?.in==='path'&&p.name===match[1]&&p.required===true),`${op.operationId}: missing path param ${match[1]}`);
