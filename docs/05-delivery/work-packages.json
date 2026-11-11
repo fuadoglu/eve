@@ -454,7 +454,7 @@
       "parent_issue": 14,
       "milestone": "M1",
       "title": "SQL cədvəl və tenant constraint-ləri",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-004.3",
         "EVE-005.3"
