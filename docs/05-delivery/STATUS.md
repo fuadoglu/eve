@@ -1,39 +1,26 @@
 # Faktiki icra vəziyyəti
 
-Tarix: 2026-11-11 (Asia/Baku). Mərhələ: **icra üçün genişləndirilmiş sənəd və müqavilə təhvili**.
+Tarix: 2026-11-11 (Asia/Baku). Mərhələ: **M1 scaffold və CI inteqrasiyası**. Tətbiq production-ready deyil.
 
-## Mövcud artefaktlar
+## Tamamlanmış sənəd müqaviləsi
 
-- Azərbaycan dilində məhsul, qərar, əməliyyat, maliyyə, paylaşım və təhlükəsizlik müqavilələri.
-- Hər endpoint üçün request/response/security metadata olan OpenAPI 3.1 JSON.
-- Cədvəl/sütun/constraint/RLS/retention data dictionary və API→DB field bindings.
-- Status keçidləri, versiyalanmış konfiqurasiya, 16 tələb üzrə izləmə matrisi.
-- UI01–19 kliklənən sənəd prototipi və dəqiq forma axınları.
-- 30 parent GitHub issue daxilində 90 atomik iş paketi, dependency və external gate fərqi.
-- 36 ətraflı Given/When/Then qəbul ssenarisi; Codex multiagent müqaviləsi.
-- Müstəqil security/delivery sənəd red-team baxışı və düzəliş reyestri.
-- Sənəd, kontrakt, schema və demo smoke script-ləri, GitHub Actions konfiqurasiyası.
+R01–R16 tələb xəritəsi, 117 OpenAPI əməliyyatı, 52 data cədvəli, 257 field binding, 5 state machine və 36 qəbul ssenarisi yoxlanır. EVE-001 PR #43–#46 və EVE-004 PR #47–#49 main-a merge edilib. `node scripts/docs-check.mjs`, `node scripts/verify-contracts.mjs`, Python OpenAPI/JSON Schema validatoru və prototip smoke main-da keçib. Bu yoxlamalar işləyən API/DB və ya məhsul qəbul sınağı deyil.
 
-## Faktiki yoxlama
+## M1 kod və yoxlama
 
-2026-11-11-də sənəd linkləri, müqavilə bütövlüyü, OpenAPI/JSON Schema və demo smoke yerli icra edildi: docs-check, contract verification, 207 JSON Schema və 32 müsbət/mənfi nümunə, həmçinin 71 assertion-lı demo smoke uğurlu oldu. Prototip smoke-u VM/fake-DOM yoxlamasıdır; brauzer layout və real istifadəçi sınağı deyil. Python validatorı layihənin `scripts/requirements-docs.txt` asılılıqları müvəqqəti venv-ə qurulduqdan sonra keçdi.
+- EVE-005.1 PR #40 merge `3dc2d89`: pinlənmiş Node/pnpm/Next.js/TypeScript scaffold. Merged main-da frozen lockfile install, typecheck və build keçdi.
+- EVE-005.2 PR #41 merge `6c3cddb`: boş env nümunəsi, public Supabase konfiqurasiya validatoru, server-only secret accessor. Merged main-da 9/9 env testi, typecheck və build keçdi. Real Supabase hesabı/credential işlədilməyib.
+- EVE-005.3 PR #42: təmiz checkout GitHub Actions CI (frozen install, env test, typecheck, build, docs/contracts/schema/prototip) review/merge mərhələsindədir. PR CI və merge commit sübutu həmin PR-də qeyd olunur; main-a merge edilmədən Done sayılmır.
+- Sənəd prototipi VM/fake-DOM-da 71 assertion keçir. Brauzer layout, real cihaz və 5 iştirakçılı usability sınağı aparılmayıb.
 
-EVE-005.1 üçün `feat/EVE-005-1-scaffold` branch-ində Node 24.22.2, pnpm 12.18.0 və Next.js 16.4.6 ilə ilkin App Router scaffold yaradıldı. Həmin dəqiq Node/pnpm versiyaları ilə typecheck və production build keçdi. Dəyişiklik remote PR #40-da review üçün açıqdır; main-a merge edilməyib.
+## GitHub qoruması
 
-EVE-005.2 üçün `feat/EVE-005-2-env-contract` branch-ində boş `.env.example`, public URL/publishable key validatorı və `server-only` ilə qorunan privileged-key accessor əlavə edildi. 9 env contract testi, typecheck və production build keçdi. Müstəqil review URL path-inin rəddini tələb etdi; validator və mənfi sınaq düzəldildi, təkrar yoxlamada 9/9 keçdi. Real Supabase key və hesab istifadə olunmayıb. PR #41 review üçün açıq və #40 üzərinə stacked-dir; PR check rollup boşdur. GitHub Actions workflow_dispatch run [#42917173827](https://github.com/fuadoglu/eve/actions/runs/42917173827) `e06a4b1`-də docs/contracts/schema/prototype yoxlamalarını keçirdi, amma PR-required check deyil və build/typecheck-i əhatə etmir. Full build/typecheck `#42` stacked CI-da yoxlanıb. #40 squash merge olduqdan sonra integrator `main`-ı #41 branch-inə daxil etməli, PR diff-ni yoxlamalı, sonra base-i `main` edib CI-ni işə salmalıdır. Bu, köhnə scaffold commit-lərinin PR diff-də təkrarlanmasının qarşısını alır.
+Repo public-dir. M0–M7 native milestone-lar yaradılıb. `main` branch protection PR, `docs` required check, linear history və admin enforcement tələb edir; approval sayı 0-dır. Secret scanning və push protection aktivdir. Ayrıca GitHub ruleset qurulmayıb; daxili müstəqil agent review-u GitHub insan approval-u kimi göstərilmir.
 
-EVE-005.3 üçün `feat/EVE-005-3-ci-build` branch-ində mövcud docs workflow təmiz checkout CI-yə genişləndirildi: Node/pnpm/Python pin, frozen-lockfile install, env test, typecheck, build, contract/schema/prototype checks; action-lar full SHA ilə pinlidir və job `contents: read` səlahiyyəti ilə işləyir. `pull_request` trigger-i EVE-005 stacked base branch-lərini də əhatə edir. GitHub Actions run [#42916233169](https://github.com/fuadoglu/eve/actions/runs/42916233169) push, [#42916241622](https://github.com/fuadoglu/eve/actions/runs/42916241622) pull request event-ində `460ff24` commit-i, `ubuntu-24.04` runner-də tam keçdi. PR #42 review üçün açıqdır; #41 üzərinə stacked və main-a merge edilməyib.
+## Açıq production qapıları
 
-Prototip smoke-u 71 assertion ilə VM/fake-DOM yoxlamasıdır. Cloud browser workspace localhost-a qoşula bilmədiyindən screenshot/layout QA keçilmiş sayılmır. Real cihaz və 5 iştirakçılı usability testi hələ aparılmayıb.
-
-## Hələ tamamlanmayan icra
-
-- Production tətbiqi, executable SQL migrations/RLS, real API route-ları.
-- Supabase/SMTP/Payriff/Vercel faktiki canlı konfiqurasiyası və provider sandbox sınaqları.
-- Tətbiq integration/E2E/security/performance testləri, DB+media restore və rollback.
-- GitHub branch ruleset və required-check aktivliyinin təsdiqi. Private repo planı ruleset/branch protection API-sini 403 ilə rədd edir; qayda aktivliyi təsdiqlənməyib. GitHub-un [plan sənədlərinə](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets) görə private repo üçün Pro/Team/Enterprise, Free-də isə public repo tələb olunur. Native M0–M7 milestones yaradılıb və roadmap epic/task issue-lar milestone-lara bağlanıb.
-- Hüquqi retention/refund/məxfilik mətnlərinin təsdiqi və production deploy.
+Executable SQL migrations/RLS, real API route-ları, passwordless auth, tenant/property/capability mənfi testləri və bütün domain axınları hələ yoxdur. Supabase/SMTP/Payriff/Vercel hesabları, provider sandbox, hüquqi mətn təsdiqi, real usability, DB+private media restore və AT01–36 tətbiq sınaqları da açıqdır. [Xarici asılılıqlar](EXTERNAL-DEPENDENCIES.md) reyestrində ayrıca izlənir. Provider yoxluğu local schema/UI işini dayandırmır; sandbox PASS iddia edilmir.
 
 ## Növbəti iş
 
-EVE-005.1–005.3 remote PR #40–#42-də review üçün açıqdır. #40 və #42 CI nəticələri uğurludur; #41 stacked base-i səbəbilə check almır. #40 squash merge olduqdan sonra integrator `main`-ı #41 branch-inə daxil edib diff-ni yoxlamalı, PR base-i `main` edib CI-ni işə salmalıdır; eyni yanaşma #41 merge-dən sonra #42 üçün tətbiq edilir. İnsan GitHub review qərarı yoxdur; daxili müstəqil agent review-lər bloklayıcı tapıntısız bitib. Branch ruleset/required-check enforcement plan məhdudiyyəti səbəbilə təsdiqlənməyib. Squash merge və main smoke-dan sonra issue Done edilə bilər; o vaxta qədər tasklar Done deyil. Sonrakı M1 işi EVE-006 schema/RLS-dir və 005 əsas branch-ə inteqrasiya olunandan sonra başlanmalıdır.
+PR #42 CI və müstəqil baxışdan sonra squash merge edilir, merged-main smoke işlədilir. Sonra EVE-006 SQL schema/RLS paketinə keçilir. EVE-005 yalnız merge, yoxlama və status sübutu tamamlandıqda Done edilir.

@@ -355,7 +355,7 @@
       "parent_issue": 13,
       "milestone": "M1",
       "title": "Pinned runtime və layihə scaffold",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-004.3"
       ],
@@ -388,7 +388,7 @@
       "parent_issue": 13,
       "milestone": "M1",
       "title": "Mühit və secret kontraktı",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-005.1"
       ],

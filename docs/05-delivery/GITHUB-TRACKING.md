@@ -1,11 +1,9 @@
 # GitHub icra izləmə xəritəsi
 
-Tarix: 2026-11-11. **8 mərhələ epiki və 30 task issue-su yaradılıb; 8 native GitHub Milestone da yaradılıb.** Issue-lar müvafiq milestone-a bağlanıb. Hamısı açıqdır; bu kodun tamamlandığını bildirmir. Milestone başlıqları ROADMAP-dakı M0–M7 ilə eynidir.
+Tarix: 2026-11-11. **8 mərhələ epiki, 30 task issue-su və 8 native GitHub Milestone yaradılıb.** Issue-lar müvafiq milestone-a bağlanıb. EVE-004 #12 bağlanıb, qalan parent issue-lar açıqdır; bu tətbiqin tamamlandığını bildirmir. Milestone başlıqları ROADMAP-dakı M0–M7 ilə eynidir.
 
 ## Mərhələ epikləri
 
-| Mərhələ | GitHub |
-|---|---|
 | Mərhələ | Epic issue | Native milestone |
 |---|---|---|
 | M0 | [#1](https://github.com/fuadoglu/eve/issues/1) | [M0 — İcra müqaviləsi](https://github.com/fuadoglu/eve/milestone/1) |

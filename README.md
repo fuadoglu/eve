@@ -131,6 +131,6 @@ Tenant izolyasiyası, rezervasiya toqquşmaları, Payriff təkrar hadisələri v
 
 ## 📚 Layihənin hazırkı sərhədi
 
-Bu commit sənədləşmə təhvilidir; saytın yayımlanması və production aktivləşdirilməsi deyil. Sahibin domeni, provider hesabları, ödəniş müqaviləsi və hüquqi mətn təsdiqi [Xarici asılılıqlar](docs/05-delivery/EXTERNAL-DEPENDENCIES.md)-də izlənilir.
+Repo hazırda sənəd müqavilələri və ilkin Next.js scaffold-ından ibarətdir; production aktivləşdirilməsi edilməyib. Sahibin domeni, provider hesabları, ödəniş müqaviləsi və hüquqi mətn təsdiqi [Xarici asılılıqlar](docs/05-delivery/EXTERNAL-DEPENDENCIES.md)-də izlənilir.
 
 Lisenziya verilməyib; açıq mənbə istifadəsi hüququ təsis edilmir. Şəxsi məlumat və məxfi açarlar repoya daxil edilmir.
