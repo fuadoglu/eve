@@ -35,7 +35,7 @@ Qəbul edən şəxs “Tamamladım” deyəndə iş reported_done olur. Sahib/t�
 
 Kontakt sahibə məxsusdur; lazım olan evlərə bağlanır. Eyni nömrə ayrı sahiblərin kontaktı ola bilər, qeydlər birləşdirilmir.
 
-Tapşırıq sahələri: ev, işin adı, vaxt; icraçı/qeyd/media opsional. Vəziyyətlər: open → accepted → reported_done → completed; cancelled ayrıca. Gecikmə derived göstəricidir. WhatsApp düyməsi yalnız linki açır; actual sent/read statusu yoxdur. Açılış GET-i vəziyyət dəyişmir.
+Tapşırıq sahələri: ev, işin adı, vaxt; icraçı/qeyd/media opsional. Tapşırığın ilkin təlimatı ayrıca qalır: icraçının “Tamamladım” qeydi və səlahiyyətli şəxsin “Yenidən baxılmalıdır” səbəbi keçid tarixçəsinə əlavə olunur, təlimatı overwrite etmir. Bildirilən ad doğrulanmış user kimliyi deyil. EVE-017.1-də bu tarixçə üçün typed schema və yazı əməliyyatı qurulmalıdır; hazırkı base cədvəldə bu davranış hələ saxlanmır. Vəziyyətlər: open → accepted → reported_done → completed; cancelled ayrıca. Gecikmə derived göstəricidir. WhatsApp düyməsi yalnız linki açır; actual sent/read statusu yoxdur. Açılış GET-i vəziyyət dəyişmir.
 
 İşçi öz tapşırığına xərc təklif edə bilir. Təklif təsdiqlənənədək faktiki təsdiqli expense deyil. “İş tamamlandı” ilə “Xərc ödənildi” ayrı hadisələrdir.
 

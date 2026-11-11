@@ -14,13 +14,13 @@ Mixed-sensitivity base cədvəllər üçün alternativlər siyahısı yox, bir k
 | `anon` | Base data və user RPC üçün grant yoxdur; public trafik Next.js public endpoint-indən keçir |
 | Server billing/job client | Yalnız həmin server əməliyyatının explicit function grant-ı və payload yoxlaması; brauzerə credential verilmir |
 
-Domain cədvəllərdə ENABLE/FORCE RLS. RLS policy-ləri `app_executor` və doğrulanmış request actor-u (`auth.uid()`) üzrə cari membership yoxlayır. SQL funksiyasının owner-i login olmayan, table owner olmayan executor-dur; SECURITY DEFINER + sabit search_path + schema-qualified adlar. User-dən actor/owner/role parametrinə etibar edilmir. Public execute grant default-u revoke edilir, yalnız explicit funksiyalara qaytarılır.
+Domain cədvəllərdə ENABLE/FORCE RLS. RLS policy-ləri `app_executor` və Data API-nin yoxlanmış JWT-sindən `request.jwt.claim.sub`/`request.jwt.claims` oxuyan `app_private.current_actor_id()` üzrə cari membership yoxlayır. Hosted Supabase custom role-a `auth` sxemi USAGE vermədiyi üçün executor `auth.uid()` çağırmır; helper eyni doğrulanmış request actor-unu qaytarır. SQL funksiyasının owner-i login olmayan, table owner olmayan executor-dur; SECURITY DEFINER + sabit search_path + schema-qualified adlar. User-dən actor/owner/role parametrinə etibar edilmir. Public execute grant default-u revoke edilir, yalnız explicit funksiyalara qaytarılır. Birbaşa DB bağlantısında request JWT setting-inə user giriş verilmir; real Data API davranışı ayrıca sandbox testidir.
 
 Bu arxitekturada security-invoker view ilə base SELECT grant-ını birlikdə təsadüfən açmaq yoxdur. Frontend serverə eyni session-la müraciət edir; PostgREST RPC birbaşa çağırılsa da eyni capability, column, state və entitlement qaydaları funksiyada tətbiq olunur.
 
 ## Sütun və əməliyyat sərhədi
 
-Owner ID immutable-dir. Arxiv/public visibility/manager permission yalnız owner prosedurundadır; adi property patch bunları qəbul etmir. Daily manager üçün contact private_note, başqa ev allocation-u, subscription payment metadata və tenant finance RPC cavabından çıxarılır. RLS sətri açsa belə funksiya safe DTO qaytarır.
+Owner ID immutable-dir. Arxiv/public visibility/manager permission yalnız owner prosedurundadır; adi property patch bunları qəbul etmir. Daily manager üçün contact private_note, başqa ev allocation-u, subscription payment metadata və tenant finance RPC cavabından çıxarılır. RLS sətri açsa belə funksiya safe DTO qaytarır. Private təqvim blokunun səbəbi yalnız cari evə `property.read` hüququ olan authenticated RPC-də görünür; public availability proyeksiyasına ötürülmür.
 
 Public və tokenli Next.js route user funksiyasını yüksək səlahiyyətlə ümumi `SELECT *` etməyə çevirmir. Ayrı dar public/token projection funksiyası slug/token hash və expiry/public status/cari placement yoxlaması aparır. Dynamic SQL ilə table/column adı request-dən alınmır.
 

@@ -448,22 +448,22 @@
         },
         {
           "name": "display_name",
-          "type": "varchar(120)",
+          "type": "varchar(100)",
           "nullable": true,
           "default": null,
           "description": "Göstərilən ad",
           "validation": [
-            "char_length(display_name) <= 120"
+            "char_length(display_name) <= 100"
           ]
         },
         {
           "name": "phone",
-          "type": "varchar(20)",
+          "type": "varchar(16)",
           "nullable": true,
           "default": null,
           "description": "Opsional E.164 telefon",
           "validation": [
-            "char_length(phone) <= 20"
+            "char_length(phone) <= 16"
           ]
         },
         {
@@ -542,9 +542,9 @@
       "indexes": [],
       "rls": {
         "enabled": true,
-        "select": "auth.uid()=user_id",
-        "insert": "auth.uid()=user_id",
-        "update": "auth.uid()=user_id",
+        "select": "app_private.current_actor_id()=user_id",
+        "insert": "app_private.current_actor_id()=user_id",
+        "update": "app_private.current_actor_id()=user_id",
         "delete": "deny; retention_service_only"
       }
     },
@@ -632,9 +632,9 @@
       "indexes": [],
       "rls": {
         "enabled": true,
-        "select": "owner_user_id=auth.uid(); manager yalnız təhlükəsiz owner label projection",
-        "insert": "owner_user_id=auth.uid()",
-        "update": "owner_user_id=auth.uid()",
+        "select": "owner_user_id=app_private.current_actor_id(); manager yalnız təhlükəsiz owner label projection",
+        "insert": "owner_user_id=app_private.current_actor_id()",
+        "update": "owner_user_id=app_private.current_actor_id()",
         "delete": "deny; retention_service_only"
       }
     },
@@ -1066,7 +1066,7 @@
       ],
       "rls": {
         "enabled": true,
-        "select": "owner OR user_id=auth.uid()",
+        "select": "owner OR user_id=app_private.current_actor_id()",
         "insert": "owner_only",
         "update": "owner_only",
         "delete": "deny; retention_service_only"
@@ -1100,12 +1100,12 @@
         },
         {
           "name": "normalized_email",
-          "type": "varchar(320)",
+          "type": "varchar(254)",
           "nullable": false,
           "default": null,
           "description": "Dəvət emaili",
           "validation": [
-            "char_length(normalized_email) <= 320"
+            "char_length(normalized_email) <= 254"
           ]
         },
         {
@@ -1416,12 +1416,12 @@
         },
         {
           "name": "phone",
-          "type": "varchar(20)",
+          "type": "varchar(16)",
           "nullable": false,
           "default": null,
           "description": "E.164 WhatsApp nömrəsi",
           "validation": [
-            "char_length(phone) <= 20"
+            "char_length(phone) <= 16"
           ]
         },
         {
@@ -1431,7 +1431,8 @@
           "default": null,
           "description": "Xidmət növü",
           "validation": [
-            "char_length(service_type) <= 80"
+            "char_length(service_type) <= 80",
+            "service_type IN ('cleaner','repair','realtor','other')"
           ]
         },
         {
@@ -1705,22 +1706,22 @@
         },
         {
           "name": "guest_name",
-          "type": "varchar(160)",
+          "type": "varchar(150)",
           "nullable": false,
           "default": null,
           "description": "Qonağın adı",
           "validation": [
-            "char_length(guest_name) <= 160"
+            "char_length(guest_name) <= 150"
           ]
         },
         {
           "name": "guest_phone",
-          "type": "varchar(20)",
+          "type": "varchar(16)",
           "nullable": true,
           "default": null,
           "description": "Telefon",
           "validation": [
-            "char_length(guest_phone) <= 20"
+            "char_length(guest_phone) <= 16"
           ]
         },
         {
@@ -1820,12 +1821,12 @@
         },
         {
           "name": "private_note",
-          "type": "varchar(3000)",
+          "type": "varchar(2000)",
           "nullable": true,
           "default": null,
           "description": "Daxili qeyd",
           "validation": [
-            "char_length(private_note) <= 3000"
+            "char_length(private_note) <= 2000"
           ]
         },
         {
@@ -4208,12 +4209,12 @@
         },
         {
           "name": "note",
-          "type": "varchar(1000)",
+          "type": "varchar(160)",
           "nullable": true,
           "default": null,
           "description": "Qeyd",
           "validation": [
-            "char_length(note) <= 1000"
+            "char_length(note) <= 160"
           ]
         },
         {
@@ -4358,22 +4359,22 @@
         },
         {
           "name": "title",
-          "type": "varchar(180)",
+          "type": "varchar(160)",
           "nullable": false,
           "default": null,
           "description": "Görüləcək iş",
           "validation": [
-            "char_length(title) <= 180"
+            "char_length(title) <= 160"
           ]
         },
         {
           "name": "description",
-          "type": "varchar(4000)",
+          "type": "varchar(2000)",
           "nullable": true,
           "default": null,
           "description": "Təlimat",
           "validation": [
-            "char_length(description) <= 4000"
+            "char_length(description) <= 2000"
           ]
         },
         {
@@ -4837,10 +4838,11 @@
           "name": "unit",
           "type": "varchar(20)",
           "nullable": false,
-          "default": "ədəd",
+          "default": "piece",
           "description": "Ədəd/litr/kq",
           "validation": [
-            "char_length(unit) <= 20"
+            "char_length(unit) <= 20",
+            "unit IN ('piece','set','liter','kg','pack')"
           ]
         },
         {
@@ -4900,22 +4902,22 @@
         },
         {
           "name": "model",
-          "type": "varchar(160)",
+          "type": "varchar(150)",
           "nullable": true,
           "default": null,
           "description": "Model",
           "validation": [
-            "char_length(model) <= 160"
+            "char_length(model) <= 150"
           ]
         },
         {
           "name": "serial_number",
-          "type": "varchar(160)",
+          "type": "varchar(150)",
           "nullable": true,
           "default": null,
           "description": "Seriya nömrəsi",
           "validation": [
-            "char_length(serial_number) <= 160"
+            "char_length(serial_number) <= 150"
           ]
         },
         {
@@ -5181,12 +5183,12 @@
         },
         {
           "name": "handover_key",
-          "type": "varchar(160)",
+          "type": "varchar(150)",
           "nullable": false,
           "default": null,
           "description": "Hadisəni təkrar yaratmayan açar",
           "validation": [
-            "char_length(handover_key) <= 160"
+            "char_length(handover_key) <= 150"
           ]
         },
         {
@@ -5942,12 +5944,12 @@
         },
         {
           "name": "claimed_name",
-          "type": "varchar(160)",
+          "type": "varchar(100)",
           "nullable": true,
           "default": null,
           "description": "Şəxsin bildirdiyi ad",
           "validation": [
-            "char_length(claimed_name) <= 160"
+            "char_length(claimed_name) <= 100"
           ]
         },
         {
@@ -6227,17 +6229,18 @@
           "default": null,
           "description": "ok/problems/unable",
           "validation": [
-            "char_length(result) <= 20"
+            "char_length(result) <= 20",
+            "result IN ('ok','problems','unable')"
           ]
         },
         {
           "name": "reason",
-          "type": "varchar(1000)",
+          "type": "varchar(500)",
           "nullable": true,
           "default": null,
           "description": "Yoxlama mümkün deyilsə səbəb",
           "validation": [
-            "char_length(reason) <= 1000"
+            "char_length(reason) <= 500"
           ]
         },
         {
@@ -6797,12 +6800,12 @@
         },
         {
           "name": "title",
-          "type": "varchar(180)",
+          "type": "varchar(160)",
           "nullable": false,
           "default": null,
           "description": "Başlıq",
           "validation": [
-            "char_length(title) <= 180"
+            "char_length(title) <= 160"
           ]
         },
         {
@@ -7500,7 +7503,8 @@
           "default": null,
           "description": "Faktiki MIME",
           "validation": [
-            "char_length(mime) <= 100"
+            "char_length(mime) <= 100",
+            "mime IN ('image/jpeg','image/png','image/webp','video/mp4','audio/webm','audio/mp4','application/pdf')"
           ]
         },
         {
@@ -7618,6 +7622,11 @@
         }
       ],
       "checks": [
+        {
+          "name": "media_bucket_classification",
+          "expression": "(classification='public_property' AND bucket='eve-public-property') OR (classification='public_guide' AND bucket='eve-public-guide') OR (classification='private_guest' AND bucket='eve-private-guest') OR (classification='private_receipt' AND bucket='eve-private-receipt') OR (classification='private_inspection' AND bucket='eve-private-inspection') OR (classification='private_task' AND bucket='eve-private-task')",
+          "enforcement": "CHECK"
+        },
         {
           "name": "media_limits",
           "expression": "photo <=15728640 input bytes; video <=104857600 and <=300s; audio <=60s; quota reserve aggregate 1GB",
@@ -9419,7 +9428,8 @@
           "default": null,
           "description": "Mövzu",
           "validation": [
-            "char_length(category) <= 80"
+            "char_length(category) <= 80",
+            "category IN ('login','billing','usage','bug','other')"
           ]
         },
         {
@@ -9507,9 +9517,9 @@
       "indexes": [],
       "rls": {
         "enabled": true,
-        "select": "auth.uid()=user_id OR operator allowlist",
-        "insert": "auth.uid()=user_id; state operator only",
-        "update": "auth.uid()=user_id; state operator only",
+        "select": "app_private.current_actor_id()=user_id OR operator allowlist",
+        "insert": "app_private.current_actor_id()=user_id; state operator only",
+        "update": "app_private.current_actor_id()=user_id; state operator only",
         "delete": "deny; retention_service_only"
       }
     },
@@ -9633,9 +9643,9 @@
       "indexes": [],
       "rls": {
         "enabled": true,
-        "select": "auth.uid()=user_id",
-        "insert": "auth.uid()=user_id",
-        "update": "auth.uid()=user_id",
+        "select": "app_private.current_actor_id()=user_id",
+        "insert": "app_private.current_actor_id()=user_id",
+        "update": "app_private.current_actor_id()=user_id",
         "delete": "deny; retention_service_only"
       }
     },
@@ -9687,12 +9697,12 @@
         },
         {
           "name": "auth_key",
-          "type": "varchar(255)",
+          "type": "varchar(128)",
           "nullable": false,
           "default": null,
           "description": "Web Push auth material",
           "validation": [
-            "char_length(auth_key) <= 255"
+            "char_length(auth_key) <= 128"
           ]
         },
         {
@@ -9761,9 +9771,9 @@
       "indexes": [],
       "rls": {
         "enabled": true,
-        "select": "auth.uid()=user_id metadata only; key projection denied",
-        "insert": "auth.uid()=user_id",
-        "update": "auth.uid()=user_id",
+        "select": "app_private.current_actor_id()=user_id metadata only; key projection denied",
+        "insert": "app_private.current_actor_id()=user_id",
+        "update": "app_private.current_actor_id()=user_id",
         "delete": "deny; retention_service_only"
       }
     },
@@ -10424,12 +10434,24 @@
       "enforcement": "parent row lock + deferred checks"
     }
   ],
+  "storage": {
+    "decision": "D33",
+    "all_buckets_private": true,
+    "bucket_by_classification": {
+      "public_property": "eve-public-property",
+      "public_guide": "eve-public-guide",
+      "private_guest": "eve-private-guest",
+      "private_receipt": "eve-private-receipt",
+      "private_inspection": "eve-private-inspection",
+      "private_task": "eve-private-task"
+    }
+  },
   "access_boundary": {
     "base_schema": "app_private",
     "exposed_schema": "api",
     "authenticated_base_table_grants": false,
     "execution_role": "app_executor NOLOGIN NOBYPASSRLS; not table owner",
-    "functions": "allowlist SECURITY DEFINER owned by app_executor; fixed search_path; auth.uid current capability; public EXECUTE revoked",
+    "functions": "allowlist SECURITY DEFINER owned by app_executor; fixed search_path; current_actor_id from verified JWT plus current property capability; public EXECUTE revoked",
     "reference": "ACCESS-BOUNDARY.md"
   }
 }

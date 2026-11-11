@@ -142,7 +142,7 @@ Polymorphic `resource_type + resource_id` sətirinə güvənilmir. `access_links
 
 Raw token deyil, SHA-256 hash saxlanılır. Scope həmin kind-in allowlist-indən gəlir. Link GET-i vəziyyət dəyişmir; explicit POST idempotentdir. Expiry/revoke hər media sorğusunda da yoxlanır.
 
-`media_bindings` real task/expense/inspection-answer/guide-version/inventory FK-sına və ya ev qalereyasına bağlanır. Dəqiq bir target var. Storage path-in özündən səlahiyyət çıxarılmır. Expense qəbzi yalnız onun allocation-ına aid evə bağlana bilər. Public və private kateqoriyalar üçün bucket/policy ayrıdır.
+`media_bindings` real task/expense/inspection-answer/guide-version/inventory FK-sına və ya ev qalereyasına bağlanır. Dəqiq bir target var. Storage path-in özündən səlahiyyət çıxarılmır. Expense qəbzi yalnız onun allocation-ına aid evə bağlana bilər. Altı classification üçün D33-dəki ayrı bucket-lər və `media_assets` CHECK-i tətbiq olunur. Bucket-lərin hamısı Storage səviyyəsində private-dir; public yayımlama safe server projection-u, scoped private oxuma hər sorğuda yoxlanan proxy ilə aparılır.
 
 Guide classification: general_public, safety_public, guest_private. Dərc edilmiş versiya dəyişməzdir, redaktə yeni draft version yaradır. Sabit QR slug nüsxənin pointer-idir. Abunə expiry-si əvvəl yayımlanmış safety mətn/şəkli silmir; qapı kodu və Wi-Fi şifrəsi public safety blokuna daxil deyil.
 

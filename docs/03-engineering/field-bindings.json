@@ -1630,22 +1630,6 @@
       "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
     },
     {
-      "schema": "ScopedAcceptInput",
-      "api_field": "claimed_name",
-      "table": "inspection_submissions",
-      "column": "claimed_name",
-      "mode": "direct",
-      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
-    },
-    {
-      "schema": "ScopedTaskDoneInput",
-      "api_field": "note",
-      "table": "tasks",
-      "column": "description",
-      "mode": "alias",
-      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
-    },
-    {
       "schema": "Guide",
       "api_field": "stable_slug",
       "table": "guides",
@@ -3107,7 +3091,7 @@
     {
       "schema": "ScopedTaskDoneInput",
       "api_field": "claimed_name",
-      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+      "rule": "EVE-017.1: task report keçidinin claimed identity-sidir; doğrulanmış user deyil, inspection_submissions-a yazılmır."
     },
     {
       "schema": "ScopedTaskDoneInput",
@@ -3448,6 +3432,21 @@
       "schema": "ExportJob",
       "api_field": "updated_at",
       "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+    },
+    {
+      "schema": "ScopedAcceptInput",
+      "api_field": "claimed_name",
+      "rule": "EVE-017.1: task acceptance keçidinin claimed identity-sidir; doğrulanmış user deyil, inspection_submissions-a yazılmır. Task keçid tarixçəsində saxlanmalıdır."
+    },
+    {
+      "schema": "ScopedTaskDoneInput",
+      "api_field": "note",
+      "rule": "EVE-017.1: tamamlanma cəhdinin ayrıca append-only hesabat qeydidir; tasks.description ilkin təlimatını dəyişmir. Rework sonrası əvvəlki nəticə tarixçədə qalır."
+    },
+    {
+      "schema": "TaskTransitionInput",
+      "api_field": "note",
+      "rule": "EVE-017.1: report_done üçün ayrıca completion report, request_rework üçün səbəb tarixçəsinə yazılır; tasks.description təlimatına yazılmır. Digər action-larda state machine qaydası əsasdır."
     }
   ]
 }

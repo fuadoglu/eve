@@ -45,6 +45,8 @@ jobs:
         run: node scripts/docs-check.mjs
       - name: Kontraktlar və asılılıq qrafı
         run: node scripts/verify-contracts.mjs
+      - name: Supabase API və Storage config müqaviləsi
+        run: python scripts/verify-storage-config.py
       - name: Python validator mühiti
         run: |
           python -m venv .venv-docs
@@ -78,8 +80,126 @@ jobs:
           create role authenticated;
           create schema auth;
           create table auth.users (id uuid primary key);
+          create function auth.uid() returns uuid language sql stable
+          as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
+          grant usage on schema auth to anon, authenticated;
           SQL
       - name: SQL migration tətbiq et
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261111000100_eve_core_schema.sql
       - name: Tenant və constraint smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0061_core_schema_smoke.sql
+      - name: RLS və RPC migration tətbiq et
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261111000200_eve_access_policies.sql
+      - name: Role-switched giriş smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_access_policy_smoke.sql
+      - name: Storage test stub və permissive baseline
+        run: |
+          docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 <<'SQL'
+          create schema storage;
+          create table storage.buckets (id text primary key, public boolean not null);
+          create table storage.objects (id uuid primary key, bucket_id text not null, name text not null);
+          alter table storage.objects enable row level security;
+          grant usage on schema storage to anon, authenticated;
+          grant select, insert on storage.objects to anon, authenticated;
+          create policy deliberately_permissive on storage.objects
+            for all to anon, authenticated using (true) with check (true);
+          insert into storage.buckets(id,public) values
+            ('eve-public-property',false), ('eve-public-guide',false),
+            ('eve-private-guest',false), ('eve-private-receipt',false),
+            ('eve-private-inspection',false), ('eve-private-task',false),
+            ('unrelated-bucket',false);
+          SQL
+      - name: Storage boundary migration tətbiq et
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261111000300_eve_storage_boundary.sql
+      - name: Storage bucket və policy smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_storage_boundary_smoke.sql
+      - name: Cari rezervasiya read migration tətbiq et
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261111000400_eve_reservation_read.sql
+      - name: Placement-scoped rezervasiya read smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_reservation_read_smoke.sql
+      - name: Property list read migration tətbiq et
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261111000500_eve_property_list_read.sql
+      - name: Owner və menecer property list smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_property_list_smoke.sql
+      - name: Son cədvəl limit xətasında migration atomikliyi
+        run: |
+          docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 <<'SQL'
+          insert into app_private.push_subscriptions(user_id,endpoint,p256dh,auth_key)
+          values ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+                  'https://example.invalid/atomicity','synthetic',repeat('x',129));
+          SQL
+          set +e
+          output=$(docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261111000600_eve_api_length_alignment.sql 2>&1)
+          rc=$?
+          set -e
+          if [ "$rc" -eq 0 ] || ! grep -q 'value too long for type character varying(128)' <<< "$output"; then
+            echo "$output"
+            echo 'Expected late-table varchar failure was not observed'
+            exit 1
+          fi
+          docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 <<'SQL'
+          do $$ begin
+            if (select atttypmod-4 from pg_attribute
+                where attrelid='app_private.profiles'::regclass and attname='display_name') <> 120
+               or (select atttypmod-4 from pg_attribute
+                where attrelid='app_private.push_subscriptions'::regclass and attname='auth_key') <> 255 then
+              raise exception 'failed migration left earlier column changes behind';
+            end if;
+          end $$;
+          delete from app_private.push_subscriptions
+            where endpoint='https://example.invalid/atomicity';
+          SQL
+      - name: API və DB string limit migration tətbiq et
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261111000600_eve_api_length_alignment.sql
+      - name: API və DB string limit smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_api_length_smoke.sql
+      - name: Cari rezervasiya list migration tətbiq et
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261111000700_eve_reservation_list_read.sql
+      - name: Cari rezervasiya list isolation smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_reservation_list_smoke.sql
+      - name: Private təqvim blok oxu migration tətbiq et
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261111000800_eve_manual_block_read.sql
+      - name: Private blok səbəbi və tenant isolation smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_manual_block_read_smoke.sql
+      - name: Son enum xətasında migration atomikliyi
+        run: |
+          docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 <<'SQL'
+          insert into app_private.support_requests(id,user_id,category,message)
+          values ('e5000000-0000-0000-0000-000000000001',
+                  'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa','invalid','Synthetic migration guard');
+          SQL
+          set +e
+          output=$(docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261111000900_eve_api_enum_alignment.sql 2>&1)
+          rc=$?
+          set -e
+          if [ "$rc" -eq 0 ] || ! grep -q 'support_requests_category_allowed' <<< "$output"; then
+            echo "$output"
+            echo 'Expected final-table enum failure was not observed'
+            exit 1
+          fi
+          docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 <<'SQL'
+          do $$ begin
+            if exists (select 1 from pg_constraint
+                where conrelid='app_private.contacts'::regclass
+                  and conname='contacts_service_type_allowed')
+               or coalesce((select pg_get_expr(d.adbin,d.adrelid)
+                   from pg_attrdef d join pg_attribute a
+                     on a.attrelid=d.adrelid and a.attnum=d.adnum
+                   where d.adrelid='app_private.inventory_items'::regclass
+                     and a.attname='unit'),'') not like '%ədəd%' then
+              raise exception 'failed enum migration left earlier changes behind';
+            end if;
+          end $$;
+          delete from app_private.support_requests
+            where id='e5000000-0000-0000-0000-000000000001';
+          SQL
+      - name: API enum və default migration tətbiq et
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261111000900_eve_api_enum_alignment.sql
+      - name: API enum və default smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_api_enum_smoke.sql
+      - name: Scoped kontakt oxu migration tətbiq et
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261111001000_eve_contact_read.sql
+      - name: Kontakt private note və tenant isolation smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_contact_read_smoke.sql
+      - name: 52 cədvəlin RLS və grant coverage smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_rls_coverage_smoke.sql
