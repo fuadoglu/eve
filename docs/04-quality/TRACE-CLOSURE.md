@@ -16,6 +16,8 @@ Mənfi sınaqda müvəqqəti kopyada R01 trace-ə mövcud olmayan operation ID �
 
 Reviewer acceptance əlaqələri üçün ayrıca boşluq tapdı: validator yalnız AT ID-nin mövcudluğunu yoxlayırdı. Validator indi hər R üçün trace siyahısını `acceptance-scenarios.json` requirements sahəsindən çıxarılan siyahı ilə müqayisə edir. Müvəqqəti kopyada R01-dən AT01 çıxarılanda `R01: acceptance trace stale` xətası ilə exit 1 alındı; normal müqavilə keçdi.
 
+Validator PRD qəbul ID-lərinin trace-də mövcudluğunu və Markdown trace sətirlərinin machine trace-ə uyğunluğunu da yoxlayır. Ayrı müvəqqəti kopyalarda PRD-nin R01 qəbul siyahısına AT04 əlavə edildikdə və R01 Markdown sətri dəyişdirildikdə müvafiq stale xətaları ilə exit 1 alındı. Bu yoxlamalar biznes mənası üzrə insan review-ni əvəz etmir.
+
 ## Qalan sübut
 
 Bu sənəd real auth, tenant/RLS, pul, provider, cihaz və ya usability yoxlamalarını keçmiş saymır. EVE-001 parent issue yalnız digər qəbul və müstəqil review şərtləri, merge və main smoke tamamlandıqdan sonra bağlanır. Provider və production qapıları [xarici asılılıqlar reyestrində](../05-delivery/EXTERNAL-DEPENDENCIES.md) qalır.
