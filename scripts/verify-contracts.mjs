@@ -125,7 +125,7 @@ for(const b of bindings.bindings){
   assert(field&&column,`${b.schema}.${b.api_field}: broken field binding`);
   if(!field||!column)continue;
   const varchar=/^varchar\((\d+)\)$/.exec(column.type);
-  if(varchar&&field.type==='string')assert(field.maxLength&&field.maxLength<=Number(varchar[1]),`${b.schema}.${b.api_field}: API length exceeds ${b.table}.${b.column}`);
+  if(varchar&&field.type==='string')assert(field.maxLength===Number(varchar[1]),`${b.schema}.${b.api_field}: API/DB length mismatch at ${b.table}.${b.column}`);
   if(column.type.startsWith('enum:')){
     const values=db.enums[column.type.slice(5)]?.values||[];
     assert(field.enum&&field.enum.every(x=>values.includes(x)),`${b.schema}.${b.api_field}: enum outside DB`);

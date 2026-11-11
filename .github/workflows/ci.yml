@@ -121,3 +121,35 @@ jobs:
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261111000500_eve_property_list_read.sql
       - name: Owner və menecer property list smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_property_list_smoke.sql
+      - name: Son cədvəl limit xətasında migration atomikliyi
+        run: |
+          docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 <<'SQL'
+          insert into app_private.push_subscriptions(user_id,endpoint,p256dh,auth_key)
+          values ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+                  'https://example.invalid/atomicity','synthetic',repeat('x',129));
+          SQL
+          set +e
+          output=$(docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261111000600_eve_api_length_alignment.sql 2>&1)
+          rc=$?
+          set -e
+          if [ "$rc" -eq 0 ] || ! grep -q 'value too long for type character varying(128)' <<< "$output"; then
+            echo "$output"
+            echo 'Expected late-table varchar failure was not observed'
+            exit 1
+          fi
+          docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 <<'SQL'
+          do $$ begin
+            if (select atttypmod-4 from pg_attribute
+                where attrelid='app_private.profiles'::regclass and attname='display_name') <> 120
+               or (select atttypmod-4 from pg_attribute
+                where attrelid='app_private.push_subscriptions'::regclass and attname='auth_key') <> 255 then
+              raise exception 'failed migration left earlier column changes behind';
+            end if;
+          end $$;
+          delete from app_private.push_subscriptions
+            where endpoint='https://example.invalid/atomicity';
+          SQL
+      - name: API və DB string limit migration tətbiq et
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261111000600_eve_api_length_alignment.sql
+      - name: API və DB string limit smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_api_length_smoke.sql

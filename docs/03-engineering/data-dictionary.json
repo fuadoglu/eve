@@ -448,22 +448,22 @@
         },
         {
           "name": "display_name",
-          "type": "varchar(120)",
+          "type": "varchar(100)",
           "nullable": true,
           "default": null,
           "description": "Göstərilən ad",
           "validation": [
-            "char_length(display_name) <= 120"
+            "char_length(display_name) <= 100"
           ]
         },
         {
           "name": "phone",
-          "type": "varchar(20)",
+          "type": "varchar(16)",
           "nullable": true,
           "default": null,
           "description": "Opsional E.164 telefon",
           "validation": [
-            "char_length(phone) <= 20"
+            "char_length(phone) <= 16"
           ]
         },
         {
@@ -1100,12 +1100,12 @@
         },
         {
           "name": "normalized_email",
-          "type": "varchar(320)",
+          "type": "varchar(254)",
           "nullable": false,
           "default": null,
           "description": "Dəvət emaili",
           "validation": [
-            "char_length(normalized_email) <= 320"
+            "char_length(normalized_email) <= 254"
           ]
         },
         {
@@ -1416,12 +1416,12 @@
         },
         {
           "name": "phone",
-          "type": "varchar(20)",
+          "type": "varchar(16)",
           "nullable": false,
           "default": null,
           "description": "E.164 WhatsApp nömrəsi",
           "validation": [
-            "char_length(phone) <= 20"
+            "char_length(phone) <= 16"
           ]
         },
         {
@@ -1705,22 +1705,22 @@
         },
         {
           "name": "guest_name",
-          "type": "varchar(160)",
+          "type": "varchar(150)",
           "nullable": false,
           "default": null,
           "description": "Qonağın adı",
           "validation": [
-            "char_length(guest_name) <= 160"
+            "char_length(guest_name) <= 150"
           ]
         },
         {
           "name": "guest_phone",
-          "type": "varchar(20)",
+          "type": "varchar(16)",
           "nullable": true,
           "default": null,
           "description": "Telefon",
           "validation": [
-            "char_length(guest_phone) <= 20"
+            "char_length(guest_phone) <= 16"
           ]
         },
         {
@@ -1820,12 +1820,12 @@
         },
         {
           "name": "private_note",
-          "type": "varchar(3000)",
+          "type": "varchar(2000)",
           "nullable": true,
           "default": null,
           "description": "Daxili qeyd",
           "validation": [
-            "char_length(private_note) <= 3000"
+            "char_length(private_note) <= 2000"
           ]
         },
         {
@@ -4208,12 +4208,12 @@
         },
         {
           "name": "note",
-          "type": "varchar(1000)",
+          "type": "varchar(160)",
           "nullable": true,
           "default": null,
           "description": "Qeyd",
           "validation": [
-            "char_length(note) <= 1000"
+            "char_length(note) <= 160"
           ]
         },
         {
@@ -4358,22 +4358,22 @@
         },
         {
           "name": "title",
-          "type": "varchar(180)",
+          "type": "varchar(160)",
           "nullable": false,
           "default": null,
           "description": "Görüləcək iş",
           "validation": [
-            "char_length(title) <= 180"
+            "char_length(title) <= 160"
           ]
         },
         {
           "name": "description",
-          "type": "varchar(4000)",
+          "type": "varchar(2000)",
           "nullable": true,
           "default": null,
           "description": "Təlimat",
           "validation": [
-            "char_length(description) <= 4000"
+            "char_length(description) <= 2000"
           ]
         },
         {
@@ -4900,22 +4900,22 @@
         },
         {
           "name": "model",
-          "type": "varchar(160)",
+          "type": "varchar(150)",
           "nullable": true,
           "default": null,
           "description": "Model",
           "validation": [
-            "char_length(model) <= 160"
+            "char_length(model) <= 150"
           ]
         },
         {
           "name": "serial_number",
-          "type": "varchar(160)",
+          "type": "varchar(150)",
           "nullable": true,
           "default": null,
           "description": "Seriya nömrəsi",
           "validation": [
-            "char_length(serial_number) <= 160"
+            "char_length(serial_number) <= 150"
           ]
         },
         {
@@ -5181,12 +5181,12 @@
         },
         {
           "name": "handover_key",
-          "type": "varchar(160)",
+          "type": "varchar(150)",
           "nullable": false,
           "default": null,
           "description": "Hadisəni təkrar yaratmayan açar",
           "validation": [
-            "char_length(handover_key) <= 160"
+            "char_length(handover_key) <= 150"
           ]
         },
         {
@@ -5942,12 +5942,12 @@
         },
         {
           "name": "claimed_name",
-          "type": "varchar(160)",
+          "type": "varchar(100)",
           "nullable": true,
           "default": null,
           "description": "Şəxsin bildirdiyi ad",
           "validation": [
-            "char_length(claimed_name) <= 160"
+            "char_length(claimed_name) <= 100"
           ]
         },
         {
@@ -6232,12 +6232,12 @@
         },
         {
           "name": "reason",
-          "type": "varchar(1000)",
+          "type": "varchar(500)",
           "nullable": true,
           "default": null,
           "description": "Yoxlama mümkün deyilsə səbəb",
           "validation": [
-            "char_length(reason) <= 1000"
+            "char_length(reason) <= 500"
           ]
         },
         {
@@ -6797,12 +6797,12 @@
         },
         {
           "name": "title",
-          "type": "varchar(180)",
+          "type": "varchar(160)",
           "nullable": false,
           "default": null,
           "description": "Başlıq",
           "validation": [
-            "char_length(title) <= 180"
+            "char_length(title) <= 160"
           ]
         },
         {
@@ -9692,12 +9692,12 @@
         },
         {
           "name": "auth_key",
-          "type": "varchar(255)",
+          "type": "varchar(128)",
           "nullable": false,
           "default": null,
           "description": "Web Push auth material",
           "validation": [
-            "char_length(auth_key) <= 255"
+            "char_length(auth_key) <= 128"
           ]
         },
         {
