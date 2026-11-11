@@ -776,10 +776,13 @@
         "entitlement_applied",
         "failed",
         "cancelled",
-        "expired"
+        "expired",
+        "refund_review",
+        "refunded",
+        "chargeback_review"
       ],
       "terminal_states": [
-        "entitlement_applied"
+        "refunded"
       ],
       "transitions": [
         {
@@ -959,6 +962,58 @@
           ],
           "acceptance": [
             "AT27"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "billing_order.review_refund",
+          "action": "review_refund",
+          "from_states": [
+            "entitlement_applied"
+          ],
+          "to_state": "refund_review",
+          "capability": "operator.allowlisted",
+          "preconditions": [
+            "operator_allowlisted",
+            "reason_and_expected_version_required"
+          ],
+          "transaction_effects": [
+            "record_review_marker_and_reason_audit",
+            "preserve_payment_and_entitlement"
+          ],
+          "requirements": [
+            "R12",
+            "R14"
+          ],
+          "acceptance": [
+            "AT32"
+          ],
+          "invalid_error": "INVALID_TRANSITION",
+          "idempotent": true
+        },
+        {
+          "id": "billing_order.review_chargeback",
+          "action": "review_chargeback",
+          "from_states": [
+            "entitlement_applied"
+          ],
+          "to_state": "chargeback_review",
+          "capability": "operator.allowlisted",
+          "preconditions": [
+            "operator_allowlisted",
+            "reason_and_expected_version_required"
+          ],
+          "transaction_effects": [
+            "record_review_marker_and_reason_audit",
+            "preserve_payment_and_entitlement"
+          ],
+          "requirements": [
+            "R12",
+            "R14"
+          ],
+          "acceptance": [
+            "AT32"
           ],
           "invalid_error": "INVALID_TRANSITION",
           "idempotent": true

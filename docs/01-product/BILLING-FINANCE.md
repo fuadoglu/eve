@@ -22,7 +22,7 @@ created → pending → verified_paid → entitlement_applied. failed/cancelled/
 
 Success URL yalnız “Ödəniş yoxlanılır” göstərir. Aktivləşmə serverdə merchant, order, amount, currency və paid status uyğunlaşdırmasından sonra olur. Webhook API-si təsdiqlənməyibsə imza formatı uydurulmur; rəsmi provider status sorğusu ilə təsdiq tələb olunur.
 
-Refund/chargeback ayrıca state-dir. İlkin buraxılışda manual operator review: faktiki qaytarılan line, təsirlənən period və istifadə edilmiş xidmət yoxlanır; əvvəlki başqa ödənişlərin müddəti silinmir. Qismən refund və istehlak olunmuş müddətin qaytarılması siyasəti hüquqi/provider təsdiqi olmadan avtomatlaşdırılmır.
+Refund/chargeback review order-in ayrıca state-idir; səbəbli operator review marker-i ödənişin qaytarıldığı və ya abunə müddətinin dəyişdiyi demək deyil. İlkin buraxılışda manual operator review faktiki qaytarılan line, təsirlənən period və istifadə edilmiş xidməti araşdırır; əvvəlki başqa ödənişlərin müddəti silinmir. `refunded` state-i EXT05 provider və EXT07 hüquqi təsdiqədək rezervdir və ona keçid açılmır. Qismən refund və istehlak olunmuş müddətin qaytarılması siyasəti hüquqi/provider təsdiqi olmadan avtomatlaşdırılmır.
 
 ### Müddət bitdikdə
 

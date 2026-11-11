@@ -8,7 +8,7 @@
       "parent_issue": 9,
       "milestone": "M0",
       "title": "Mənbə və tələb inventarı",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [],
       "role": "domain_engineer",
       "owned_path_candidates": [
@@ -18,7 +18,7 @@
       "deliverable": "Mənbə və tələb inventarı üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
       "acceptance": [
         "Mənbə və tələb inventarı üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
-        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Bu EVE-001 sənəd vahidində real SMTP/Payriff/istifadəçi sübutu tələb olunmur; həmin gate-lər aid sonrakı provider və release paketlərində qalır.",
         "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
       ],
       "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
@@ -35,7 +35,7 @@
       "parent_issue": 9,
       "milestone": "M0",
       "title": "Ziddiyyət və sərhəd auditi",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-001.1"
       ],
@@ -47,7 +47,7 @@
       "deliverable": "Ziddiyyət və sərhəd auditi üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
       "acceptance": [
         "Ziddiyyət və sərhəd auditi üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
-        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Bu EVE-001 sənəd vahidində real SMTP/Payriff/istifadəçi sübutu tələb olunmur; həmin gate-lər aid sonrakı provider və release paketlərində qalır.",
         "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
       ],
       "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
@@ -64,7 +64,7 @@
       "parent_issue": 9,
       "milestone": "M0",
       "title": "Qərar və traceability bağlanması",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-001.2"
       ],
@@ -268,7 +268,7 @@
       "parent_issue": 12,
       "milestone": "M0",
       "title": "Əməliyyat və payload müqavilələri",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-001.3"
       ],
@@ -297,7 +297,7 @@
       "parent_issue": 12,
       "milestone": "M0",
       "title": "Status və capability uyğunluğu",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-004.1"
       ],
@@ -326,7 +326,7 @@
       "parent_issue": 12,
       "milestone": "M0",
       "title": "OpenAPI/schema yoxlamaları",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-004.2"
       ],

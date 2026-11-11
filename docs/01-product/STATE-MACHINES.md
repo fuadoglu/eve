@@ -54,7 +54,7 @@ proposed → approved / rejected. Rejected əvvəlki qeyd üzərinə approved ol
 
 ## Abunə order-i və hüquq
 
-created → pending → verified_paid → entitlement_applied. failed/cancelled/expired halları providerin son doğrulanmış statusuna görədir. Gecikmiş həqiqi paid status server verification-dan sonra verified_paid-ə keçə bilər; eyni order line yalnız bir dəfə tətbiq edilir. entitlement_applied-dən köhnə pending/failed hadisə geriyə qaytarmır. Refund/chargeback review ayrıca qeyddir, əvvəlki faktlar silinmir.
+created → pending → verified_paid → entitlement_applied. failed/cancelled/expired halları providerin son doğrulanmış statusuna görədir. Gecikmiş həqiqi paid status server verification-dan sonra verified_paid-ə keçə bilər; eyni order line yalnız bir dəfə tətbiq edilir. entitlement_applied-dən köhnə pending/failed hadisə geriyə qaytarmır. Səbəbli və versiyalı operator `review_refund`/`review_chargeback` əməliyyatı yalnız `entitlement_applied`-dən müvafiq review state-inə keçir, audit yazır; ödəniş faktını və abunə müddətini dəyişmir. `refunded` enum-da rezervdir: EXT05/EXT07 təsdiqinə qədər bu state-ə keçid açılmır. Ətraflı [D32](DECISIONS.md).
 
 Evin effective entitlement-i: trialing / active / expired; draft evdə entitlement yoxdur. archived evin istifadə vəziyyətidir, ödənilmiş müddəti dondurmur. read-only hüququ mütləq tam hüquqsuzluq deyil: owner export və təhlükəsizlik QR istisnaları saxlanır. Ətraflı [abunə qaydası](BILLING-FINANCE.md).
 
