@@ -14,6 +14,8 @@ schemas=doc['components']['schemas']
 for name,schema in schemas.items():
     Draft202012Validator.check_schema(schema)
 count=0
+positive=0
+negative=0
 for example in doc.get('x-contract-examples',[]):
     assert example['schema'] in schemas, example['schema']
     wrapped={'$ref':'#/components/schemas/'+example['schema'],'components':doc['components']}
@@ -22,5 +24,7 @@ for example in doc.get('x-contract-examples',[]):
     actual=not errors
     assert actual==example['valid'], f"{example['schema']}: expected valid={example['valid']}; errors={[e.message for e in errors]}"
     count+=1
-assert count>=4,'Müsbət və mənfi kontrakt nümunələri tələb olunur'
-print(f'JSON Schema OK: {len(schemas)} schemas; {count} positive/negative examples. Application tests not run.')
+    positive+=actual
+    negative+=not actual
+assert positive>0 and negative>0,'Both positive and negative contract examples required'
+print(f'JSON Schema OK: {len(schemas)} schemas; {positive} positive and {negative} negative examples. Application tests not run.')

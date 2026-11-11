@@ -9,6 +9,9 @@ Sənəd bazası: 2026-11-10, Asia/Baku. Dil: Azərbaycan dili. Status: **icra ü
 | Sənəd | Cavablandırdığı sual |
 |---|---|
 | [Qərar reyestri](01-product/DECISIONS.md) | Nə razılaşdırılıb, nə texniki seçimdir, nə xaricdən asılıdır? |
+| [Mənbə və tələb inventarı](01-product/SOURCE-INVENTORY.md) | Rəsmi məhsul mənbələri və R01–R16 xəritəsi haradadır? |
+| [Tələb və sərhəd auditi](04-quality/REQUIREMENT-AUDIT.md) | PRD/trace fərqləri və kritik sərhədlər necə yoxlanılıb? |
+| [Traceability bağlanması](04-quality/TRACE-CLOSURE.md) | Qərar və acceptance xəritəsinin təkrar və mənfi yoxlaması necə aparılıb? |
 | [PRD](01-product/PRD.md) | Məhsulun sərhədi və normativ tələbləri nədir? |
 | [Əməliyyat qaydaları](01-product/OPERATIONS.md) | Rezervasiya, tapşırıq, inventar necə işləyir? |
 | [Abunə və maliyyə](01-product/BILLING-FINANCE.md) | Hansı pul nəyin uçotudur, abunə necə uzanır? |
@@ -18,9 +21,12 @@ Sənəd bazası: 2026-11-10, Asia/Baku. Dil: Azərbaycan dili. Status: **icra ü
 | [Arxitektura](03-engineering/ARCHITECTURE.md) | Texnologiya və modul sərhədləri necədir? |
 | [Data modeli](03-engineering/DATA-MODEL.md) | Cədvəllər, əlaqələr və invariantlar nədir? |
 | [API müqaviləsi](03-engineering/API-CONTRACT.md) | Sorğu/cavab, səhv və idempotentlik necədir? |
+| [Əməliyyat/payload auditi](03-engineering/OPERATION-PAYLOAD-AUDIT.md) | EVE-004.1 üçün mövcud API əməliyyatları necə yoxlanıb? |
+| [State/capability auditi](03-engineering/STATE-CAPABILITY-AUDIT.md) | EVE-004.2 üçün DB enum, keçid və API icazə sərhədləri necə tutuşdurulub? |
 | [Təhlükəsizlik](03-engineering/SECURITY.md) | Kim hansı resursa daxil ola bilər? |
 | [İnteqrasiyalar](03-engineering/INTEGRATIONS.md) | Auth, Payriff, WhatsApp və media necə yoxlanılır? |
 | [Qəbul sınaqları](04-quality/ACCEPTANCE.md) | İşin düzgünlüyü necə sübut edilir? |
+| [OpenAPI/schema qəbulu](04-quality/OPENAPI-SCHEMA-CLOSURE.md) | EVE-004.3 contract və mənfi sınaq sübutu nədir? |
 | [Red-team](04-quality/RED-TEAM.md) | Hansı səhvlər buraxılışı dayandırır? |
 | [X10 düşüncə çərçivəsi](04-quality/X10-REVIEW.md) | Qərar hansı on baxışdan yoxlanılıb? |
 | [Yol xəritəsi](05-delivery/ROADMAP.md) | İcra asılılıqları və milestone çıxışları |

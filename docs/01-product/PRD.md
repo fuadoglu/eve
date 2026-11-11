@@ -12,8 +12,8 @@ Ev sahibi rezervasiya, beh, təmizlik, usta, inventar və təlimatları ayrı ye
 | R02 | Çox ev və sahib tenant izolyasiyası | AT04–06 |
 | R03 | Çoxsahibli menecer və ev üzrə icazələr | AT04–06 |
 | R04 | Rezervasiya, hold, blok, giriş/çıxış, paralel toqquşma müdafiəsi | AT07–10 |
-| R05 | Kirayə uçotu, depozit, refund, realtor qarşılıqlı hesabı | AT11–14 |
-| R06 | Kateqoriyalı xərc, təkrarlanan xatırlatma, təsdiq | AT13–14 |
+| R05 | Kirayə uçotu, depozit, refund, realtor qarşılıqlı hesabı | AT11–13 |
+| R06 | Kateqoriyalı xərc, təkrarlanan xatırlatma, təsdiq | AT14 |
 | R07 | Tapşırıq keçidi, WhatsApp paylaşımı, qəbul/tamamlama | AT15–16 |
 | R08 | Hazırlıq statusu, çıxış təmizliyi, idempotent əlaqə | AT10, AT16 |
 | R09 | Daimi inventar, tarixli/təhvil əsaslı yoxlama, ayrı tərəf cavabları | AT17–19 |
