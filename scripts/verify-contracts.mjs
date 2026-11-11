@@ -130,6 +130,12 @@ for(const b of bindings.bindings){
     const values=db.enums[column.type.slice(5)]?.values||[];
     assert(field.enum&&field.enum.every(x=>values.includes(x)),`${b.schema}.${b.api_field}: enum outside DB`);
   }
+  if(varchar&&field.enum){
+    const check=(column.validation||[]).find(v=>v.startsWith(column.name+' IN ('));
+    const values=check?[...check.matchAll(/'((?:''|[^'])*)'/g)].map(m=>m[1].replaceAll("''","'")):[];
+    assert(same(field.enum,values),`${b.schema}.${b.api_field}: API/DB varchar enum mismatch at ${b.table}.${b.column}`);
+  }
+  if(Object.hasOwn(field,'default'))assert(field.default===column.default,`${b.schema}.${b.api_field}: API/DB default mismatch at ${b.table}.${b.column}`);
 }
 for(const b of bindings.enum_bindings){
   const field=scalar(api.components.schemas[b.schema]?.properties?.[b.api_field]);

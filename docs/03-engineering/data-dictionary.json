@@ -1431,7 +1431,8 @@
           "default": null,
           "description": "Xidmət növü",
           "validation": [
-            "char_length(service_type) <= 80"
+            "char_length(service_type) <= 80",
+            "service_type IN ('cleaner','repair','realtor','other')"
           ]
         },
         {
@@ -4837,10 +4838,11 @@
           "name": "unit",
           "type": "varchar(20)",
           "nullable": false,
-          "default": "ədəd",
+          "default": "piece",
           "description": "Ədəd/litr/kq",
           "validation": [
-            "char_length(unit) <= 20"
+            "char_length(unit) <= 20",
+            "unit IN ('piece','set','liter','kg','pack')"
           ]
         },
         {
@@ -6227,7 +6229,8 @@
           "default": null,
           "description": "ok/problems/unable",
           "validation": [
-            "char_length(result) <= 20"
+            "char_length(result) <= 20",
+            "result IN ('ok','problems','unable')"
           ]
         },
         {
@@ -7500,7 +7503,8 @@
           "default": null,
           "description": "Faktiki MIME",
           "validation": [
-            "char_length(mime) <= 100"
+            "char_length(mime) <= 100",
+            "mime IN ('image/jpeg','image/png','image/webp','video/mp4','audio/webm','audio/mp4','application/pdf')"
           ]
         },
         {
@@ -9424,7 +9428,8 @@
           "default": null,
           "description": "Mövzu",
           "validation": [
-            "char_length(category) <= 80"
+            "char_length(category) <= 80",
+            "category IN ('login','billing','usage','bug','other')"
           ]
         },
         {
