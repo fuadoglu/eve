@@ -10,7 +10,7 @@ R01–R16 tələb xəritəsi, 117 OpenAPI əməliyyatı, 52 data cədvəli, 257 
 
 - EVE-005.1 PR #40 merge `3dc2d89`: pinlənmiş Node/pnpm/Next.js/TypeScript scaffold. Merged main-da frozen lockfile install, typecheck və build keçdi.
 - EVE-005.2 PR #41 merge `6c3cddb`: boş env nümunəsi, public Supabase konfiqurasiya validatoru, server-only secret accessor. Merged main-da 9/9 env testi, typecheck və build keçdi. Real Supabase hesabı/credential işlədilməyib.
-- EVE-005.3 PR #42: təmiz checkout GitHub Actions CI (frozen install, env test, typecheck, build, docs/contracts/schema/prototip) review/merge mərhələsindədir. PR CI və merge commit sübutu həmin PR-də qeyd olunur; main-a merge edilmədən Done sayılmır.
+- EVE-005.3 PR #42 merge `4f03c0b`: təmiz checkout GitHub Actions CI frozen install, env test, typecheck, build, docs/contracts/schema/prototip yoxladı. Push CI #43063235229 və PR CI #43063244758 son head-də keçdi; merged main-da eyni yoxlamalar yerli exit 0 verdi.
 - Sənəd prototipi VM/fake-DOM-da 71 assertion keçir. Brauzer layout, real cihaz və 5 iştirakçılı usability sınağı aparılmayıb.
 
 ## GitHub qoruması
@@ -23,4 +23,4 @@ Executable SQL migrations/RLS, real API route-ları, passwordless auth, tenant/p
 
 ## Növbəti iş
 
-PR #42 CI və müstəqil baxışdan sonra squash merge edilir, merged-main smoke işlədilir. Sonra EVE-006 SQL schema/RLS paketinə keçilir. EVE-005 yalnız merge, yoxlama və status sübutu tamamlandıqda Done edilir.
+EVE-005 tamamlanıb; növbəti iş EVE-006 SQL schema/RLS paketidir. Local schema işi provider credential-larını gözləmir.
