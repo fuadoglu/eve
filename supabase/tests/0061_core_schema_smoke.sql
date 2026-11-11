@@ -31,6 +31,13 @@ begin
   exception when check_violation then null;
   end;
 
+  begin
+    insert into app_private.properties(owner_account_id,name,area,settings)
+      values (account_a,'Y','Bakı','[]'::jsonb);
+    raise exception 'non-object settings unexpectedly accepted';
+  exception when check_violation then null;
+  end;
+
   if has_schema_privilege('authenticated','app_private','USAGE')
      or has_table_privilege('authenticated','app_private.properties','SELECT')
      or has_schema_privilege('anon','app_private','USAGE') then

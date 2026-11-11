@@ -44,7 +44,8 @@ create table app_private.properties (
   default_check_out time not null default '12:00',
   nightly_rate_minor bigint constraint properties_nightly_rate_minor_safe
     check (nightly_rate_minor is null or (nightly_rate_minor >= 0 and nightly_rate_minor <= 9007199254740991)),
-  settings jsonb not null default '{}'::jsonb,
+  settings jsonb not null default '{}'::jsonb
+    constraint properties_settings_object check (jsonb_typeof(settings) = 'object'),
   readiness app_private.readiness not null default 'ready',
   inventory_version integer not null default 1 check (inventory_version >= 1),
   archived_at timestamptz,
@@ -72,6 +73,10 @@ create table app_private.property_memberships (
   constraint property_memberships_property_owner_fk foreign key (property_id, owner_account_id)
     references app_private.properties(id, owner_account_id) on delete restrict
 );
+create index property_memberships_user_id_revoked_at_idx
+  on app_private.property_memberships (user_id, revoked_at);
+create index property_memberships_property_id_revoked_at_idx
+  on app_private.property_memberships (property_id, revoked_at);
 
 alter table app_private.profiles enable row level security;
 alter table app_private.profiles force row level security;
