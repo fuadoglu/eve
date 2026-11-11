@@ -22,7 +22,21 @@ Eve ev sahibinin WhatsApp, dəftər və cədvəllərə bölünmüş işlərini b
 
 **Eve kirayə marketplace-i və ödəniş vasitəçisi deyil.** Payriff yalnız Eve abunəsi üçün istifadə olunur. Kirayə, beh, depozit və komissiyalar sahibin uçot qeydləridir.
 
-> **Hazırkı vəziyyət:** bu repo məhsulun icra və təhvil spesifikasiyasıdır. İşlək tətbiq və inteqrasiyalar hələ yoxdur. Kliklənən sənəd prototipi mövcuddur; real backend və provider çağırışı etmir. Tətbiq testləri hələ icra olunmayıb. Nişanlar build və ya təhlükəsizlik yoxlamasının keçdiyini bildirmir.
+> **Hazırkı vəziyyət:** repo məhsul spesifikasiyası və ilkin Next.js/TypeScript scaffold-ından ibarətdir. Giriş, verilənlər bazası, domain axınları və provider inteqrasiyaları hələ qurulmayıb. Kliklənən sənəd prototipi tətbiqdən ayrıdır və real backend/provider çağırışı etmir. Mövcud env validatorı scaffold konfiqurasiyasını yoxlayır; bu, tətbiq axınlarının və ya təhlükəsizliyin buraxılış sınağı deyil.
+
+## Yerli scaffold
+
+Node.js `24.22.2` (`.nvmrc`) və pnpm `12.18.0` (`package.json`) istifadə olunur. İlk quraşdırma və yoxlamalar:
+
+```sh
+pnpm install --frozen-lockfile
+pnpm dev
+pnpm test:env
+pnpm typecheck
+pnpm build
+```
+
+Scaffold səhifəsini Supabase credential-ları olmadan başlatmaq olar. `.env.example` boş placeholder-lardır; real key-ləri `.env.local`-a və ya mühitin secret store-una əlavə edin, repoya yox.
 
 ## 🧭 Haradan başlamalı?
 
@@ -117,6 +131,6 @@ Tenant izolyasiyası, rezervasiya toqquşmaları, Payriff təkrar hadisələri v
 
 ## 📚 Layihənin hazırkı sərhədi
 
-Bu commit sənədləşmə təhvilidir; saytın yayımlanması və production aktivləşdirilməsi deyil. Sahibin domeni, provider hesabları, ödəniş müqaviləsi və hüquqi mətn təsdiqi [Xarici asılılıqlar](docs/05-delivery/EXTERNAL-DEPENDENCIES.md)-də izlənilir.
+Repo hazırda sənəd müqavilələri və ilkin Next.js scaffold-ından ibarətdir; production aktivləşdirilməsi edilməyib. Sahibin domeni, provider hesabları, ödəniş müqaviləsi və hüquqi mətn təsdiqi [Xarici asılılıqlar](docs/05-delivery/EXTERNAL-DEPENDENCIES.md)-də izlənilir.
 
 Lisenziya verilməyib; açıq mənbə istifadəsi hüququ təsis edilmir. Şəxsi məlumat və məxfi açarlar repoya daxil edilmir.

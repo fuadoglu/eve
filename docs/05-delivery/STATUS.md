@@ -1,33 +1,26 @@
 # Faktiki icra vəziyyəti
 
-Tarix: 2026-11-11 (Asia/Baku). Mərhələ: **icra üçün genişləndirilmiş sənəd və müqavilə təhvili**.
+Tarix: 2026-11-11 (Asia/Baku). Mərhələ: **M1 scaffold və CI inteqrasiyası**. Tətbiq production-ready deyil.
 
-## Mövcud artefaktlar
+## Tamamlanmış sənəd müqaviləsi
 
-- Azərbaycan dilində məhsul, qərar, əməliyyat, maliyyə, paylaşım və təhlükəsizlik müqavilələri.
-- Hər endpoint üçün request/response/security metadata olan OpenAPI 3.1 JSON.
-- Cədvəl/sütun/constraint/RLS/retention data dictionary və API→DB field bindings.
-- Status keçidləri, versiyalanmış konfiqurasiya, 16 tələb üzrə izləmə matrisi.
-- UI01–19 kliklənən sənəd prototipi və dəqiq forma axınları.
-- 30 parent GitHub issue daxilində 90 atomik iş paketi, dependency və external gate fərqi.
-- 36 ətraflı Given/When/Then qəbul ssenarisi; Codex multiagent müqaviləsi.
-- Müstəqil security/delivery sənəd red-team baxışı və düzəliş reyestri.
-- Sənəd, kontrakt, schema və demo smoke script-ləri, GitHub Actions konfiqurasiyası.
+R01–R16 tələb xəritəsi, 117 OpenAPI əməliyyatı, 52 data cədvəli, 257 field binding, 5 state machine və 36 qəbul ssenarisi yoxlanır. EVE-001 PR #43–#46 və EVE-004 PR #47–#49 main-a merge edilib. `node scripts/docs-check.mjs`, `node scripts/verify-contracts.mjs`, Python OpenAPI/JSON Schema validatoru və prototip smoke main-da keçib. Bu yoxlamalar işləyən API/DB və ya məhsul qəbul sınağı deyil.
 
-## Faktiki yoxlama
+## M1 kod və yoxlama
 
-Yerli Node/Python runtime artıq əlçatandır. Sənəd linkləri, müqavilə bütövlüyü, asılılıq qrafı, OpenAPI/JSON Schema və demo smoke real icra edilir. Son çıxışlar və source hash-ləri [evidence](../04-quality/evidence/contracts.json)-dədir. Remote CI nəticəsi ayrıca yoxlanılır; config-in mövcudluğu yaşıl run demək deyil.
+- EVE-005.1 PR #40 merge `3dc2d89`: pinlənmiş Node/pnpm/Next.js/TypeScript scaffold. Merged main-da frozen lockfile install, typecheck və build keçdi.
+- EVE-005.2 PR #41 merge `6c3cddb`: boş env nümunəsi, public Supabase konfiqurasiya validatoru, server-only secret accessor. Merged main-da 9/9 env testi, typecheck və build keçdi. Real Supabase hesabı/credential işlədilməyib.
+- EVE-005.3 PR #42: təmiz checkout GitHub Actions CI (frozen install, env test, typecheck, build, docs/contracts/schema/prototip) review/merge mərhələsindədir. PR CI və merge commit sübutu həmin PR-də qeyd olunur; main-a merge edilmədən Done sayılmır.
+- Sənəd prototipi VM/fake-DOM-da 71 assertion keçir. Brauzer layout, real cihaz və 5 iştirakçılı usability sınağı aparılmayıb.
 
-Prototip smoke-u 71 assertion ilə VM/fake-DOM yoxlamasıdır. Cloud browser workspace localhost-a qoşula bilmədiyindən screenshot/layout QA keçilmiş sayılmır. Real cihaz və 5 iştirakçılı usability testi hələ aparılmayıb.
+## GitHub qoruması
 
-## Hələ tamamlanmayan icra
+Repo public-dir. M0–M7 native milestone-lar yaradılıb. `main` branch protection PR, `docs` required check, linear history və admin enforcement tələb edir; approval sayı 0-dır. Secret scanning və push protection aktivdir. Ayrıca GitHub ruleset qurulmayıb; daxili müstəqil agent review-u GitHub insan approval-u kimi göstərilmir.
 
-- Production tətbiqi, executable SQL migrations/RLS, real API route-ları.
-- Supabase/SMTP/Payriff/Vercel faktiki canlı konfiqurasiyası və provider sandbox sınaqları.
-- Tətbiq integration/E2E/security/performance testləri, DB+media restore və rollback.
-- Native GitHub Milestones, branch ruleset və required-check aktivliyinin təsdiqi.
-- Hüquqi retention/refund/məxfilik mətnlərinin təsdiqi və production deploy.
+## Açıq production qapıları
+
+Executable SQL migrations/RLS, real API route-ları, passwordless auth, tenant/property/capability mənfi testləri və bütün domain axınları hələ yoxdur. Supabase/SMTP/Payriff/Vercel hesabları, provider sandbox, hüquqi mətn təsdiqi, real usability, DB+private media restore və AT01–36 tətbiq sınaqları da açıqdır. [Xarici asılılıqlar](EXTERNAL-DEPENDENCIES.md) reyestrində ayrıca izlənir. Provider yoxluğu local schema/UI işini dayandırmır; sandbox PASS iddia edilmir.
 
 ## Növbəti iş
 
-Codex əvvəl müqavilə validatorlarını işlədib hazır artefaktları audit edir; onları sıfırdan yenidən yazmır. [CODEX-START](CODEX-START.md) və [WORK-PACKAGES](WORK-PACKAGES.md) ilə M0-dakı real istifadə/provider qapıları ayrılır, müstəqil M1 scaffold/schema işi davam edir. İmplementasiya taskları sübut və merge olmadan Done işarələnmir.
+PR #42 CI və müstəqil baxışdan sonra squash merge edilir, merged-main smoke işlədilir. Sonra EVE-006 SQL schema/RLS paketinə keçilir. EVE-005 yalnız merge, yoxlama və status sübutu tamamlandıqda Done edilir.

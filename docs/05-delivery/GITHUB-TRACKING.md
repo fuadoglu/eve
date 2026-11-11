@@ -1,19 +1,19 @@
 # GitHub icra izləmə xəritəsi
 
-Tarix: 2026-11-10. **8 mərhələ epiki və 30 task issue-su yaradılıb.** Hamısı açıqdır; bu kodun tamamlandığını bildirmir. Native GitHub Milestones ayrıca yaradılmayıb; aşağıdakılar issue-lardır.
+Tarix: 2026-11-11. **8 mərhələ epiki, 30 task issue-su və 8 native GitHub Milestone yaradılıb.** Issue-lar müvafiq milestone-a bağlanıb. EVE-004 #12 bağlanıb, qalan parent issue-lar açıqdır; bu tətbiqin tamamlandığını bildirmir. Milestone başlıqları ROADMAP-dakı M0–M7 ilə eynidir.
 
 ## Mərhələ epikləri
 
-| Mərhələ | GitHub |
-|---|---|
-| M0 | [#1](https://github.com/fuadoglu/eve/issues/1) |
-| M1 | [#2](https://github.com/fuadoglu/eve/issues/2) |
-| M2 | [#3](https://github.com/fuadoglu/eve/issues/3) |
-| M3 | [#4](https://github.com/fuadoglu/eve/issues/4) |
-| M4 | [#5](https://github.com/fuadoglu/eve/issues/5) |
-| M5 | [#6](https://github.com/fuadoglu/eve/issues/6) |
-| M6 | [#7](https://github.com/fuadoglu/eve/issues/7) |
-| M7 | [#8](https://github.com/fuadoglu/eve/issues/8) |
+| Mərhələ | Epic issue | Native milestone |
+|---|---|---|
+| M0 | [#1](https://github.com/fuadoglu/eve/issues/1) | [M0 — İcra müqaviləsi](https://github.com/fuadoglu/eve/milestone/1) |
+| M1 | [#2](https://github.com/fuadoglu/eve/issues/2) | [M1 — Təməl və giriş](https://github.com/fuadoglu/eve/milestone/2) |
+| M2 | [#3](https://github.com/fuadoglu/eve/issues/3) | [M2 — Rezervasiya](https://github.com/fuadoglu/eve/milestone/3) |
+| M3 | [#4](https://github.com/fuadoglu/eve/issues/4) | [M3 — Pul və xidmət](https://github.com/fuadoglu/eve/milestone/4) |
+| M4 | [#5](https://github.com/fuadoglu/eve/issues/5) | [M4 — İnventar](https://github.com/fuadoglu/eve/milestone/5) |
+| M5 | [#6](https://github.com/fuadoglu/eve/issues/6) | [M5 — Paylaşım](https://github.com/fuadoglu/eve/milestone/6) |
+| M6 | [#7](https://github.com/fuadoglu/eve/issues/7) | [M6 — Abunə](https://github.com/fuadoglu/eve/milestone/7) |
+| M7 | [#8](https://github.com/fuadoglu/eve/issues/8) | [M7 — Buraxılış](https://github.com/fuadoglu/eve/milestone/8) |
 
 ## İcra taskları
 
