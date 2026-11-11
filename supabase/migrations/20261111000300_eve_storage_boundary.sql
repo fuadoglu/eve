@@ -2,8 +2,6 @@
 -- Bucket provisioning is handled by supabase/config.toml, not by DML on Storage metadata.
 -- Public-safe media is still stored in private buckets and served only after a
 -- server publish check; private media is served by a per-request scoped proxy.
-begin;
-
 do $$
 begin
   if to_regclass('storage.objects') is null or to_regclass('storage.buckets') is null then
@@ -51,5 +49,3 @@ create policy eve_media_direct_client_deny on storage.objects
     'eve-public-property', 'eve-public-guide', 'eve-private-guest',
     'eve-private-receipt', 'eve-private-inspection', 'eve-private-task'
   ));
-
-commit;
