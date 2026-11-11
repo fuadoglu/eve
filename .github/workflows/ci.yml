@@ -153,3 +153,7 @@ jobs:
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261111000600_eve_api_length_alignment.sql
       - name: API və DB string limit smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_api_length_smoke.sql
+      - name: Cari rezervasiya list migration tətbiq et
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261111000700_eve_reservation_list_read.sql
+      - name: Cari rezervasiya list isolation smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_reservation_list_smoke.sql
