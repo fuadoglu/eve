@@ -22,7 +22,7 @@ Eve ev sahibinin WhatsApp, dəftər və cədvəllərə bölünmüş işlərini b
 
 **Eve kirayə marketplace-i və ödəniş vasitəçisi deyil.** Payriff yalnız Eve abunəsi üçün istifadə olunur. Kirayə, beh, depozit və komissiyalar sahibin uçot qeydləridir.
 
-> **Hazırkı vəziyyət:** məhsul spesifikasiyası, ilkin Next.js/TypeScript scaffold-u və PostgreSQL schema migration-u mövcuddur. RLS/RPC və Storage sərhədinin bir hissəsi draft PR-də lokal SQL/CI sınağındadır; real Supabase mühitinə tətbiq edilməyib. Giriş, API route-ları, domain axınları və provider inteqrasiyaları hələ qurulmayıb. Kliklənən sənəd prototipi tətbiqdən ayrıdır və real backend/provider çağırışı etmir. Env validatorı yalnız scaffold konfiqurasiyasını yoxlayır; bunlar buraxılış sınağı deyil.
+> **Hazırkı vəziyyət:** məhsul spesifikasiyası, ilkin Next.js/TypeScript scaffold-u və PostgreSQL schema migration-u mövcuddur. RLS/RPC və Storage sərhədinin bir hissəsi PR #53 ilə main-a merge edilib və lokal SQL/CI sınağından keçib; real Supabase mühitinə tətbiq edilməyib. Giriş, API route-ları, domain axınları və provider inteqrasiyaları hələ qurulmayıb. Kliklənən sənəd prototipi tətbiqdən ayrıdır və real backend/provider çağırışı etmir. Env validatorı yalnız scaffold konfiqurasiyasını yoxlayır; bunlar buraxılış sınağı deyil.
 
 ## Yerli scaffold
 
