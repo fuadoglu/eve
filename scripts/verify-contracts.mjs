@@ -138,6 +138,12 @@ for(const b of bindings.enum_bindings){
   if(field?.enum&&values)assert(b.mode==='subset'?field.enum.every(x=>values.includes(x)):same(field.enum,values),`${b.schema}.${b.api_field}: enum binding mismatch`);
 }
 for(const b of bindings.computed_fields)assert(api.components.schemas[b.schema]?.properties?.[b.api_field]&&b.rule,`${b.schema}.${b.api_field}: computed contract missing`);
+unique([...bindings.bindings,...bindings.computed_fields].map(b=>b.schema+'.'+b.api_field),'Direct/computed field mappings');
+for(const [schema,field] of [['ScopedAcceptInput','claimed_name'],['ScopedTaskDoneInput','note'],['TaskTransitionInput','note']]){
+  const key=schema+'.'+field;
+  assert(!bindings.bindings.some(b=>b.schema===schema&&b.api_field===field),`${key}: task transition history cannot write a base field`);
+  assert(bindings.computed_fields.some(b=>b.schema===schema&&b.api_field===field&&b.rule.includes('EVE-017.1')),`${key}: task transition history contract missing`);
+}
 const machineEnums={reservation:'reservation_state',task:'task_state',inspection:'submission_state',expense:'expense_approval',billing_order:'order_state'};
 const stateCapabilityApis={
   'reservation.write':['reservation.write','reservation.write_both_properties'],
