@@ -421,7 +421,7 @@
       "parent_issue": 13,
       "milestone": "M1",
       "title": "Təmiz checkout CI/build",
-      "status": "backlog",
+      "status": "in_progress",
       "depends_on": [
         "EVE-005.2"
       ],
