@@ -16,9 +16,7 @@ Tarix: 2026-11-11 (Asia/Baku). Mərhələ: **icra üçün genişləndirilmiş s�
 
 ## Faktiki yoxlama
 
-2026-11-11-də sənəd linkləri, müqavilə bütövlüyü, OpenAPI/JSON Schema və demo smoke yerli icra edildi: docs-check, contract verification, 207 JSON Schema və 32 müsbət/mənfi nümunə, həmçinin 71 assertion-lı demo smoke uğurlu oldu. Prototip smoke-u VM/fake-DOM yoxlamasıdır; brauzer layout və real istifadəçi sınağı deyil. Python validatorı layihənin `scripts/requirements-docs.txt` asılılıqları müvəqqəti venv-ə qurulduqdan sonra keçdi.
-
-EVE-005.1 üçün `feat/EVE-005-1-scaffold` lokal branch-ində Node 24.22.2, pnpm 12.18.0 və Next.js 16.4.6 ilə ilkin App Router scaffold yaradıldı. Həmin dəqiq Node/pnpm versiyaları ilə typecheck və production build keçdi. Bu dəyişiklik hələ remote-a göndərilməyib və main-a merge edilməyib. EVE-005.2 mühit/secret kontraktı və EVE-005.3 təmiz checkout CI işi açıq qalır.
+Yerli Node/Python runtime artıq əlçatandır. Sənəd linkləri, müqavilə bütövlüyü, asılılıq qrafı, OpenAPI/JSON Schema və demo smoke real icra edilir. Son çıxışlar və source hash-ləri [evidence](../04-quality/evidence/contracts.json)-dədir. Remote CI nəticəsi ayrıca yoxlanılır; config-in mövcudluğu yaşıl run demək deyil.
 
 Prototip smoke-u 71 assertion ilə VM/fake-DOM yoxlamasıdır. Cloud browser workspace localhost-a qoşula bilmədiyindən screenshot/layout QA keçilmiş sayılmır. Real cihaz və 5 iştirakçılı usability testi hələ aparılmayıb.
 
@@ -32,4 +30,4 @@ Prototip smoke-u 71 assertion ilə VM/fake-DOM yoxlamasıdır. Cloud browser wor
 
 ## Növbəti iş
 
-EVE-005.1 scaffold nəticəsini issue/PR axınına keçirmək, sonra EVE-005.2 mühit və secret müqaviləsini, EVE-005.3 isə təmiz checkout CI/build yoxlamasını tamamlamaq lazımdır. İmplementasiya taskları sübut və merge olmadan Done işarələnmir.
+Codex əvvəl müqavilə validatorlarını işlədib hazır artefaktları audit edir; onları sıfırdan yenidən yazmır. [CODEX-START](CODEX-START.md) və [WORK-PACKAGES](WORK-PACKAGES.md) ilə M0-dakı real istifadə/provider qapıları ayrılır, müstəqil M1 scaffold/schema işi davam edir. İmplementasiya taskları sübut və merge olmadan Done işarələnmir.
