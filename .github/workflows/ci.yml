@@ -78,8 +78,15 @@ jobs:
           create role authenticated;
           create schema auth;
           create table auth.users (id uuid primary key);
+          create function auth.uid() returns uuid language sql stable
+          as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
+          grant usage on schema auth to public;
           SQL
       - name: SQL migration tətbiq et
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261111000100_eve_core_schema.sql
       - name: Tenant və constraint smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0061_core_schema_smoke.sql
+      - name: RLS və RPC migration tətbiq et
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261111000200_eve_access_policies.sql
+      - name: Role-switched giriş smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_access_policy_smoke.sql
