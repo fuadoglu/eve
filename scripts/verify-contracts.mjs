@@ -118,13 +118,45 @@ for(const b of bindings.enum_bindings){
   if(field?.enum&&values)assert(b.mode==='subset'?field.enum.every(x=>values.includes(x)):same(field.enum,values),`${b.schema}.${b.api_field}: enum binding mismatch`);
 }
 for(const b of bindings.computed_fields)assert(api.components.schemas[b.schema]?.properties?.[b.api_field]&&b.rule,`${b.schema}.${b.api_field}: computed contract missing`);
+const machineEnums={reservation:'reservation_state',task:'task_state',inspection:'submission_state',expense:'expense_approval',billing_order:'order_state'};
+const stateCapabilityApis={
+  'reservation.write':['reservation.write','reservation.write_both_properties'],
+  'system.hold_expiry':[],
+  'task.manage':['task.manage'],
+  'task.accept':['task.manage','link.task.accept'],
+  'task.complete':['task.manage','link.task.report_done'],
+  'inspection.submit':['inventory.manage','link.inspection.write','link.inspection.complete'],
+  'inventory.manage':['inventory.manage'],
+  'expense.propose':['expense.propose'],
+  'finance.manage':['finance.manage'],
+  'billing.owner':['owner'],
+  'system.billing':[],
+  'operator.allowlisted':['operator.allowlisted']
+};
+const apiCapabilities=new Set(operations.map(op=>op['x-capability']));
+for(const [capability,aliases] of Object.entries(stateCapabilityApis))for(const alias of aliases)assert(apiCapabilities.has(alias),`${capability}: API capability ${alias} missing`);
+const operatorReview=operations.find(op=>op.operationId==='reviewOperatorOrder');
+assert(operatorReview?.['x-capability']==='operator.allowlisted','reviewOperatorOrder: operator capability required');
 for(const m of state.machines){
   unique(m.states,`${m.name} states`);
   unique(m.transitions.map(t=>t.id),`${m.name} transitions`);
+  const values=db.enums[machineEnums[m.name]]?.values;
+  assert(values&&same(m.states.filter(s=>s!=='absent'),values),`${m.name}: DB state enum mismatch`);
+  assert(m.terminal_states.every(s=>m.states.includes(s)),`${m.name}: unknown terminal state`);
   for(const t of m.transitions){
     assert(t.from_states.every(s=>m.states.includes(s)),`${t.id}: invalid source`);
     assert(t.to_state==='same'||m.states.includes(t.to_state),`${t.id}: invalid destination`);
     assert(t.preconditions.length&&t.transaction_effects.length&&t.capability,`${t.id}: incomplete behavior`);
+    assert(Object.hasOwn(stateCapabilityApis,t.capability),`${t.id}: unmapped capability ${t.capability}`);
+    if(t.id==='billing_order.review_refund'||t.id==='billing_order.review_chargeback'){
+      const expectedState=t.id==='billing_order.review_refund'?'refund_review':'chargeback_review';
+      assert(t.capability===operatorReview?.['x-capability'],`${t.id}: operator capability mismatch`);
+      assert(t.from_states.length===1&&t.from_states[0]==='entitlement_applied',`${t.id}: invalid review source`);
+      assert(t.to_state===expectedState,`${t.id}: invalid review destination`);
+      assert(t.preconditions.includes('operator_allowlisted')&&t.preconditions.includes('reason_and_expected_version_required'),`${t.id}: review authorization preconditions missing`);
+      assert(same(t.transaction_effects,['record_review_marker_and_reason_audit','preserve_payment_and_entitlement']),`${t.id}: review effects must preserve payment and entitlement`);
+    }
+    assert(!t.from_states.some(s=>m.terminal_states.includes(s)&&t.to_state!=='same'),`${t.id}: terminal state transition`);
     for(const r of t.requirements)assert(reqs.has(r),`${t.id}: requirement ${r}`);
     for(const a of t.acceptance)assert(tests.has(a),`${t.id}: acceptance ${a}`);
   }

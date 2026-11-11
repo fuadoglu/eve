@@ -37,7 +37,7 @@ Status: **bütün tətbiq testləri planlaşdırılıb, hələ icra edilməyib**
 | AT29 | 320/360/390/430 px, keyboard safe-area, 44 px target, focus/reader/error; horizontal page scroll yoxdur |
 | AT30 | Təkrar submit, offline/reconnect, slow API həqiqi status verir; daxil edilən mətn itmir |
 | AT31 | Public mobil lab və panel p95 metrikası PRD büdcəsinə qarşı; real trafiksiz p75 iddiası yoxdur |
-| AT32 | Audit secret scan; CSV formula injection; export yalnız icazəli scope; operator reason audit |
+| AT32 | Audit secret scan; CSV formula injection; export yalnız icazəli scope; operator reason/version audit, refund/chargeback review müddəti dəyişmir |
 | AT33 | DB + private media staging restore, qarşılıqlı FK və token revoke yoxlanılır |
 | AT34 | Deploy failure, feature flag, migration forward-fix/rollback rehearsal; monitoring alert real trigger |
 | AT35 | Import preview səhv sətir göstərir; confirm hash/idempotency; inventar şablonundan ilk setup |

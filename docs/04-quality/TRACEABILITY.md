@@ -15,7 +15,7 @@ Maşın mənbəyi: [traceability.json](traceability.json). API/data/test dəyiş
 | R09 — İnventar və təhvil | UI10, UI11 | 26 / 13 | EVE-019, EVE-020, EVE-021 | AT12, AT17, AT18, AT19 |
 | R10 — Çoxdilli QR təlimatı | UI13, UI15 | 19 / 5 | EVE-022, EVE-023 | AT20, AT21, AT28 |
 | R11 — Public təqdimat | UI14 | 11 / 4 | EVE-024, EVE-025 | AT08, AT22, AT23, AT24 |
-| R12 — Ev üzrə SaaS abunə | UI06, UI17 | 10 / 7 | EVE-008, EVE-026, EVE-027, EVE-028 | AT25, AT26, AT27, AT28 |
+| R12 — Ev üzrə SaaS abunə | UI06, UI17 | 10 / 7 | EVE-008, EVE-026, EVE-027, EVE-028 | AT25, AT26, AT27, AT28, AT32 |
 | R13 — Mobil UX və sürət | UI01, UI04, UI05, UI06, UI08, UI09, UI11, UI12, UI14, UI15 | 116 / 0 | EVE-002, EVE-009, EVE-030 | AT29, AT30, AT31 |
 | R14 — Audit, export və istismar | UI18, UI19 | 6 / 3 | EVE-029, EVE-030 | AT32, AT33, AT34 |
 | R15 — İlkin quraşdırma və import | UI06, UI10, UI18 | 7 / 2 | EVE-019, EVE-029 | AT35 |
