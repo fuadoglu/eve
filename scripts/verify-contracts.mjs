@@ -17,6 +17,18 @@ const same=(a,b)=>JSON.stringify([...a].sort())===JSON.stringify([...b].sort());
 const unique=(a,label)=>assert(new Set(a).size===a.length,`${label}: duplicate`);
 const reqs=new Set(Array.from({length:16},(_,i)=>'R'+String(i+1).padStart(2,'0')));
 const tests=new Set(Array.from({length:36},(_,i)=>'AT'+String(i+1).padStart(2,'0')));
+function resolveLocal(node){
+  const seen=new Set();
+  while(node?.$ref){
+    if(seen.has(node.$ref)){errors.push(`Cyclic OpenAPI ref ${node.$ref}`);return undefined;}
+    seen.add(node.$ref);
+    let target=api;
+    for(const part of node.$ref.slice(2).split('/'))target=target?.[part.replace(/~1/g,'/').replace(/~0/g,'~')];
+    node=target;
+  }
+  return node;
+}
+const hasPayloadSchema=media=>typeof resolveLocal(media?.schema)?.type==='string';
 function references(node,doc,where){
   if(!node||typeof node!=='object')return;
   if(typeof node.$ref==='string'){
@@ -36,9 +48,16 @@ for(const [url,item]of Object.entries(api.paths))for(const [method,op]of Object.
   operations.push({...op,url,method});
   assert(op.operationId&&op.summary,`${method} ${url}: identity`);
   assert(op['x-capability']&&op['x-entitlement'],`${op.operationId}: auth metadata`);
+  assert(op.security!==undefined||api.security!==undefined,`${op.operationId}: security missing`);
   assert(op['x-requirements']?.length,`${op.operationId}: requirements`);
   for(const r of op['x-requirements']||[])assert(reqs.has(r),`${op.operationId}: unknown ${r}`);
   assert(Object.keys(op.responses||{}).some(s=>/^2\d\d$/.test(s)),`${op.operationId}: success response`);
+  for(const [status,response] of Object.entries(op.responses||{})){
+    const payload=resolveLocal(response);
+    if(status==='204')continue;
+    assert(Object.values(payload?.content||{}).some(hasPayloadSchema),`${op.operationId}: ${status} response schema missing`);
+  }
+  if(op.requestBody)assert(Object.values(resolveLocal(op.requestBody)?.content||{}).some(hasPayloadSchema),`${op.operationId}: request schema missing`);
   for(const match of url.matchAll(/\{([^}]+)\}/g)){
     const parameters=[...(item.parameters||[]),...(op.parameters||[])].map(p=>p.$ref?api.components.parameters[p.$ref.split('/').at(-1)]:p);
     assert(parameters.some(p=>p?.in==='path'&&p.name===match[1]&&p.required===true),`${op.operationId}: missing path param ${match[1]}`);
