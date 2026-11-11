@@ -11,7 +11,7 @@ R01–R16 tələb xəritəsi, 117 OpenAPI əməliyyatı, 52 data cədvəli, 257 
 - EVE-005.1 PR #40 merge `3dc2d89`: pinlənmiş Node/pnpm/Next.js/TypeScript scaffold. Merged main-da frozen lockfile install, typecheck və build keçdi.
 - EVE-005.2 PR #41 merge `6c3cddb`: boş env nümunəsi, public Supabase konfiqurasiya validatoru, server-only secret accessor. Merged main-da 9/9 env testi, typecheck və build keçdi. Real Supabase hesabı/credential işlədilməyib.
 - EVE-005.3 PR #42 merge `4f03c0b`: təmiz checkout GitHub Actions CI frozen install, env test, typecheck, build, docs/contracts/schema/prototip yoxladı. Push CI #43063235229 və PR CI #43063244758 son head-də keçdi; merged main-da eyni yoxlamalar yerli exit 0 verdi.
-- EVE-006.1 draft PR #51: dictionary üzrə 52 cədvəl, 32 enum, 588 sütun, 128 FK, 89 adi və 4 filtered unique, 2 exclusion constraint SQL-də qurulub. Boş lokal PostgreSQL 17 bazasına tətbiq və `0061_core_schema_smoke.sql` exit 0: müsbət üzvlük, cross-owner FK, rate/JSON CHECK və occupancy overlap mənfi nümunələri. Bu draft hələ merge edilməyib; Supabase auth/RLS policy, RPC, storage və race sübutu deyil. Cross-row trigger/RPC invariantları EVE-006.2/.3 mərhələlərində açıqdır.
+- EVE-006.1 PR #51: dictionary üzrə 52 cədvəl, 32 enum, 588 sütun, 128 FK, 89 adi və 4 filtered unique, 2 exclusion constraint SQL-də qurulub. Boş lokal PostgreSQL 17 bazasına tətbiq və `0061_core_schema_smoke.sql` exit 0: müsbət üzvlük, cross-owner FK, rate/JSON CHECK və occupancy overlap mənfi nümunələri. PR CI #43065260936 `sql_schema` və `docs` keçdi; müstəqil struktur review bloklayıcı tapmadı. Bu, Supabase auth/RLS policy, RPC, storage və race sübutu deyil. Cross-row trigger/RPC invariantları EVE-006.2/.3 mərhələlərində açıqdır.
 - Sənəd prototipi VM/fake-DOM-da 71 assertion keçir. Brauzer layout, real cihaz və 5 iştirakçılı usability sınağı aparılmayıb.
 
 ## GitHub qoruması
@@ -20,8 +20,8 @@ Repo public-dir. M0–M7 native milestone-lar yaradılıb. `main` branch protect
 
 ## Açıq production qapıları
 
-Merged executable SQL migration, RLS/RPC/storage policy, real API route-ları, passwordless auth, tenant/property/capability inteqrasiya testləri və bütün domain axınları hələ yoxdur. Supabase/SMTP/Payriff/Vercel hesabları, provider sandbox, hüquqi mətn təsdiqi, real usability, DB+private media restore və AT01–36 tətbiq sınaqları da açıqdır. [Xarici asılılıqlar](EXTERNAL-DEPENDENCIES.md) reyestrində ayrıca izlənir. Provider yoxluğu local schema/UI işini dayandırmır; sandbox PASS iddia edilmir.
+RLS/RPC/storage policy, real API route-ları, passwordless auth, tenant/property/capability inteqrasiya testləri və bütün domain axınları hələ yoxdur. SQL migration Supabase mühitinə tətbiq edilməyib. Supabase/SMTP/Payriff/Vercel hesabları, provider sandbox, hüquqi mətn təsdiqi, real usability, DB+private media restore və AT01–36 tətbiq sınaqları da açıqdır. [Xarici asılılıqlar](EXTERNAL-DEPENDENCIES.md) reyestrində ayrıca izlənir. Provider yoxluğu local schema/UI işini dayandırmır; sandbox PASS iddia edilmir.
 
 ## Növbəti iş
 
-EVE-006.1 draft PR #51 üçün müstəqil review, CI və merge; sonra EVE-006.2 RLS/RPC/storage policy, ardınca EVE-006.3 DB isolation/concurrency fixture-ləri. Local iş provider credential-larını gözləmir.
+EVE-006.2 RLS/RPC/storage policy, ardınca EVE-006.3 DB isolation/concurrency fixture-ləri. Local iş provider credential-larını gözləmir.
