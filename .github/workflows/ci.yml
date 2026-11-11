@@ -45,6 +45,8 @@ jobs:
         run: node scripts/docs-check.mjs
       - name: Kontraktlar və asılılıq qrafı
         run: node scripts/verify-contracts.mjs
+      - name: Supabase API və Storage config müqaviləsi
+        run: python scripts/verify-storage-config.py
       - name: Python validator mühiti
         run: |
           python -m venv .venv-docs

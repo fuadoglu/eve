@@ -1,0 +1,40 @@
+# EVE-006.2 local Supabase configuration. Remote settings require separate verification.
+project_id = "eve"
+
+[api]
+enabled = true
+schemas = ["api"]
+extra_search_path = ["extensions"]
+max_rows = 1000
+
+[db]
+major_version = 17
+
+[storage]
+enabled = true
+file_size_limit = "100MiB"
+
+# D33: all buckets stay private; server routes must enforce safe public/scoped reads.
+[storage.buckets.eve-public-property]
+public = false
+file_size_limit = "100MiB"
+
+[storage.buckets.eve-public-guide]
+public = false
+file_size_limit = "100MiB"
+
+[storage.buckets.eve-private-guest]
+public = false
+file_size_limit = "100MiB"
+
+[storage.buckets.eve-private-receipt]
+public = false
+file_size_limit = "100MiB"
+
+[storage.buckets.eve-private-inspection]
+public = false
+file_size_limit = "100MiB"
+
+[storage.buckets.eve-private-task]
+public = false
+file_size_limit = "100MiB"

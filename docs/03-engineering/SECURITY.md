@@ -35,7 +35,7 @@ Session server-side cookie qoruması və providerin dəstəklədiyi refresh mexa
 
 256-bit random bearer token hash saxlanılır, expiry/revoke resurs və media scope-da yoxlanır. GET-də side effect yoxdur. Private token route no-referrer, no-store, üçüncü tərəf tracker yoxdur. Token analytics/log/error context-ə düşmür. Token landing-də POST /api/v1/link-session ilə doğrulanıb dar scope cookie-sinə dəyişdirilir; bu məcburi bootstrap URL təmizlənməsi və CSRF ilə eyni scope-u qoruyur, domain state-ni dəyişmir.
 
-Public, guest-private, receipt və inspection media ayrı bucket/policy-lərdir. MIME magic-byte, ölçü, extension və quota yoxlanılır; HTML/JS/SVG upload aktiv məzmun kimi bloklanır və ya təhlükəsiz sanitization tələb edir. QR generated SVG upload deyil. EXIF public fotolardan təmizlənir. Arbitrary remote URL server fetch-i SSRF-ə çevrilmir; video allowlist.
+Public kateqoriyalı, guest-private, receipt, inspection və task media D33-də ayrı private bucket-lərdədir; Storage public download açılmır. MIME magic-byte, ölçü, extension və quota yoxlanılır; HTML/JS/SVG upload aktiv məzmun kimi bloklanır və ya təhlükəsiz sanitization tələb edir. QR generated SVG upload deyil. EXIF public fotolardan təmizlənir. Arbitrary remote URL server fetch-i SSRF-ə çevrilmir; video allowlist.
 
 ## Audit və privacy
 

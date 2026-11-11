@@ -7619,6 +7619,11 @@
       ],
       "checks": [
         {
+          "name": "media_bucket_classification",
+          "expression": "(classification='public_property' AND bucket='eve-public-property') OR (classification='public_guide' AND bucket='eve-public-guide') OR (classification='private_guest' AND bucket='eve-private-guest') OR (classification='private_receipt' AND bucket='eve-private-receipt') OR (classification='private_inspection' AND bucket='eve-private-inspection') OR (classification='private_task' AND bucket='eve-private-task')",
+          "enforcement": "CHECK"
+        },
+        {
           "name": "media_limits",
           "expression": "photo <=15728640 input bytes; video <=104857600 and <=300s; audio <=60s; quota reserve aggregate 1GB",
           "enforcement": "RPC + FILE VALIDATOR"
@@ -10424,6 +10429,18 @@
       "enforcement": "parent row lock + deferred checks"
     }
   ],
+  "storage": {
+    "decision": "D33",
+    "all_buckets_private": true,
+    "bucket_by_classification": {
+      "public_property": "eve-public-property",
+      "public_guide": "eve-public-guide",
+      "private_guest": "eve-private-guest",
+      "private_receipt": "eve-private-receipt",
+      "private_inspection": "eve-private-inspection",
+      "private_task": "eve-private-task"
+    }
+  },
   "access_boundary": {
     "base_schema": "app_private",
     "exposed_schema": "api",
