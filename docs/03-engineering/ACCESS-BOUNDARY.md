@@ -20,7 +20,7 @@ Bu arxitekturada security-invoker view ilə base SELECT grant-ını birlikdə t�
 
 ## Sütun və əməliyyat sərhədi
 
-Owner ID immutable-dir. Arxiv/public visibility/manager permission yalnız owner prosedurundadır; adi property patch bunları qəbul etmir. Daily manager üçün contact private_note, başqa ev allocation-u, subscription payment metadata və tenant finance RPC cavabından çıxarılır. RLS sətri açsa belə funksiya safe DTO qaytarır.
+Owner ID immutable-dir. Arxiv/public visibility/manager permission yalnız owner prosedurundadır; adi property patch bunları qəbul etmir. Daily manager üçün contact private_note, başqa ev allocation-u, subscription payment metadata və tenant finance RPC cavabından çıxarılır. RLS sətri açsa belə funksiya safe DTO qaytarır. Private təqvim blokunun səbəbi yalnız cari evə `property.read` hüququ olan authenticated RPC-də görünür; public availability proyeksiyasına ötürülmür.
 
 Public və tokenli Next.js route user funksiyasını yüksək səlahiyyətlə ümumi `SELECT *` etməyə çevirmir. Ayrı dar public/token projection funksiyası slug/token hash və expiry/public status/cari placement yoxlaması aparır. Dynamic SQL ilə table/column adı request-dən alınmır.
 
