@@ -326,7 +326,7 @@
       "parent_issue": 12,
       "milestone": "M0",
       "title": "OpenAPI/schema yoxlamaları",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-004.2"
       ],

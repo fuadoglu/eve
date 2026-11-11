@@ -42,6 +42,23 @@ function references(node,doc,where){
 references(api,api,'OpenAPI');
 assert(/^3\.1\./.test(api.openapi),'OpenAPI must be 3.1');
 const methods=new Set(['get','post','put','patch','delete','head','options']);
+const publicOperations=new Map([
+  ['requestEmailLink','anonymous.email_link'],['confirmEmailLink','anonymous.email_confirm'],
+  ['readPublicProperty','public.published.read'],['readPublicAvailability','public.availability.read'],
+  ['quotePublicStay','public.quote'],['readPublicGuide','public.guide.read'],
+  ['receivePayriffEvent','provider.verify'],['readPublicGuideIndex','public.guide.read'],
+  ['exchangeScopedLink','anonymous.link_exchange']
+]);
+const scopedOperations=new Map([
+  ['readScopedTask','link.task.read'],['acceptScopedTask','link.task.accept'],
+  ['reportScopedTaskDone','link.task.report_done'],['readScopedInspection','link.inspection.read'],
+  ['saveScopedInspection','link.inspection.write'],['completeScopedInspection','link.inspection.complete'],
+  ['createScopedUpload','link.media.write'],['finalizeScopedUpload','link.media.write'],
+  ['readGuestGuide','link.guest_guide.read'],['getScopedMediaAccess','link.media.read'],
+  ['readScopedMediaContent','link.media.read']
+]);
+const expectedSecurity={session:[{SessionCookie:[]}],scoped:[{ScopedLink:[]}],public:[]};
+assert(JSON.stringify(api.security)===JSON.stringify(expectedSecurity.session),'OpenAPI: global SessionCookie security required');
 const operations=[];
 for(const [url,item]of Object.entries(api.paths))for(const [method,op]of Object.entries(item)){
   if(!methods.has(method))continue;
@@ -49,6 +66,9 @@ for(const [url,item]of Object.entries(api.paths))for(const [method,op]of Object.
   assert(op.operationId&&op.summary,`${method} ${url}: identity`);
   assert(op['x-capability']&&op['x-entitlement'],`${op.operationId}: auth metadata`);
   assert(op.security!==undefined||api.security!==undefined,`${op.operationId}: security missing`);
+  const securityClass=publicOperations.has(op.operationId)?'public':scopedOperations.has(op.operationId)?'scoped':'session';
+  assert(JSON.stringify(op.security??api.security)===JSON.stringify(expectedSecurity[securityClass]),`${op.operationId}: security boundary mismatch`);
+  if(securityClass!=='session')assert(op['x-capability']===(securityClass==='public'?publicOperations:scopedOperations).get(op.operationId),`${op.operationId}: security capability mismatch`);
   assert(op['x-requirements']?.length,`${op.operationId}: requirements`);
   for(const r of op['x-requirements']||[])assert(reqs.has(r),`${op.operationId}: unknown ${r}`);
   assert(Object.keys(op.responses||{}).some(s=>/^2\d\d$/.test(s)),`${op.operationId}: success response`);
