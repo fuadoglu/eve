@@ -160,11 +160,14 @@ for(const line of prd.split('\n')){
 }
 assert(prdRows.size===16,'PRD must contain exactly 16 requirements');
 const traceMd=fs.readFileSync(path.join(root,'docs/04-quality/TRACEABILITY.md'),'utf8');
+const markdownRows=traceMd.split('\n').map(line=>({line,match:line.match(/^\|\s*(R\d{2})(?=\s|—|\|)/)})).filter(x=>x.match);
+assert(markdownRows.length===16,'Markdown trace must contain exactly 16 requirement rows');
+for(const row of markdownRows)assert(reqs.has(row.match[1]),`${row.match[1]}: unknown Markdown requirement`);
 for(const r of trace.requirements){
   assert(prdRows.has(r.id)&&prdRows.get(r.id).every(a=>r.acceptance.includes(a)),`${r.id}: PRD acceptance trace stale`);
   const expected=`| ${r.id} — ${r.title} | ${r.screens.join(', ')} | ${r.operations.length} / ${r.tables.length} | ${r.parent_tasks.join(', ')} | ${r.acceptance.join(', ')} |`;
-  const matching=traceMd.split('\n').filter(line=>new RegExp(`^\\|\\s*${r.id}\\s*—`).test(line));
-  assert(matching.length===1&&matching[0]===expected,`${r.id}: Markdown trace stale`);
+  const matching=markdownRows.filter(row=>row.match[1]===r.id);
+  assert(matching.length===1&&matching[0].line===expected,`${r.id}: Markdown trace stale`);
 }
 const prototype=fs.readFileSync(path.join(root,'docs/02-design/prototype.html'),'utf8');
 let scripts=0;
