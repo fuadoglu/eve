@@ -21,3 +21,5 @@ Validator PRD qəbul siyahısının sintaksisini, qəbul ID-lərinin trace-də m
 ## Qalan sübut
 
 Bu sənəd real auth, tenant/RLS, pul, provider, cihaz və ya usability yoxlamalarını keçmiş saymır. EVE-001 parent issue yalnız digər qəbul və müstəqil review şərtləri, merge və main smoke tamamlandıqdan sonra bağlanır. Provider və production qapıları [xarici asılılıqlar reyestrində](../05-delivery/EXTERNAL-DEPENDENCIES.md) qalır.
+
+Reyestrdə EXT01–09 xarici təminatçı, hüquqi, istifadəçi və istismar sübutu kimi açıq qalır. EXT10 üçün native milestones və `main` branch protection faktiki aktivdir; ayrıca ruleset və məcburi GitHub insan approval-u qurulmayıb. Agent review və GitHub check ayrı sübutlardır.

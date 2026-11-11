@@ -13,7 +13,7 @@ Bunlar yeni funksiya istəyi deyil; real sistemi işə salmaq üçün tələb ol
 | EXT07 | Xidmət şərtləri, məxfilik, saxlama/silinmə, refund və qəbz/vergi qaydaları | Sahib + hüquqi/maliyyə mütəxəssisi | Hüquqi təsdiq yoxdur; sənədlər rəy deyil |
 | EXT08 | Dəstək emaili və xidmət vaxtı | Sahib | Verilməyib; UI dummy şəxsi nömrə qoymur |
 | EXT09 | 5 real UX test iştirakçısı | Məhsul/UX | Təyin edilməyib; prototype usability gate |
-| EXT10 | GitHub native milestones, branch ruleset və required checks | Repo admin | Aktivliyi ayrıca təsdiq olunmalıdır; epic issue/native milestone fərqlidir |
+| EXT10 | GitHub native milestones, branch protection/ruleset və required checks | Repo admin | M0–M7 native milestones yaradılıb; `main` üçün branch protection, PR tələbi, `docs` required check və admin enforcement aktivdir. Ruleset ayrıca qurulmayıb. GitHub approval sayı 0-dır; müstəqil agent review PR-də qeyd olunur. Secret scanning və push protection aktivdir. |
 
 ## Seçilmiş ilkin konfiqurasiya
 
