@@ -148,6 +148,7 @@ for(const line of prd.split('\n')){
   const row=line.match(/^\|\s*(R\d{2})\s*\|[^|]*\|\s*([^|]+)\|/);
   if(!row)continue;
   assert(!prdRows.has(row[1]),`${row[1]}: duplicate PRD requirement`);
+  assert(/^AT\d{2}(?:[–-]\d{2})?(?:\s*,\s*AT\d{2}(?:[–-]\d{2})?)*$/.test(row[2].trim()),`${row[1]}: invalid PRD acceptance syntax`);
   const ids=[];
   for(const m of row[2].matchAll(/AT(\d{2})(?:[–-](\d{2}))?/g)){
     const start=Number(m[1]),end=m[2]?Number(m[2]):start;
@@ -162,7 +163,8 @@ const traceMd=fs.readFileSync(path.join(root,'docs/04-quality/TRACEABILITY.md'),
 for(const r of trace.requirements){
   assert(prdRows.has(r.id)&&prdRows.get(r.id).every(a=>r.acceptance.includes(a)),`${r.id}: PRD acceptance trace stale`);
   const expected=`| ${r.id} — ${r.title} | ${r.screens.join(', ')} | ${r.operations.length} / ${r.tables.length} | ${r.parent_tasks.join(', ')} | ${r.acceptance.join(', ')} |`;
-  assert(traceMd.split('\n').includes(expected),`${r.id}: Markdown trace stale`);
+  const matching=traceMd.split('\n').filter(line=>new RegExp(`^\\|\\s*${r.id}\\s*—`).test(line));
+  assert(matching.length===1&&matching[0]===expected,`${r.id}: Markdown trace stale`);
 }
 const prototype=fs.readFileSync(path.join(root,'docs/02-design/prototype.html'),'utf8');
 let scripts=0;
