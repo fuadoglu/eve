@@ -145,8 +145,11 @@ for(const r of trace.requirements){
 const prd=fs.readFileSync(path.join(root,'docs/01-product/PRD.md'),'utf8');
 const prdRows=new Map();
 for(const line of prd.split('\n')){
-  const row=line.match(/^\|\s*(R\d{2})\s*\|[^|]*\|\s*([^|]+)\|/);
-  if(!row)continue;
+  const candidate=line.match(/^ {0,3}\|\s*(R\d+)/);
+  if(!candidate)continue;
+  assert(reqs.has(candidate[1]),`${candidate[1]}: unknown PRD requirement`);
+  const row=line.match(/^ {0,3}\|\s*(R\d+)\s*\|[^|]*\|\s*([^|]+)\|/);
+  if(!row){errors.push(`${candidate[1]}: invalid PRD requirement row`);continue;}
   assert(!prdRows.has(row[1]),`${row[1]}: duplicate PRD requirement`);
   assert(/^AT\d{2}(?:[–-]\d{2})?(?:\s*,\s*AT\d{2}(?:[–-]\d{2})?)*$/.test(row[2].trim()),`${row[1]}: invalid PRD acceptance syntax`);
   const ids=[];

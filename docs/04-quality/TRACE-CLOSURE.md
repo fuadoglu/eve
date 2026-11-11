@@ -18,6 +18,8 @@ Reviewer acceptance əlaqələri üçün ayrıca boşluq tapdı: validator yaln�
 
 Validator PRD qəbul siyahısının sintaksisini, qəbul ID-lərinin trace-də mövcudluğunu və hər tələb üçün tək Markdown sətrinin machine trace-ə uyğunluğunu da yoxlayır. Ayrı müvəqqəti kopyalarda R01-ə uyğun olmayan AT04 əlavə edildikdə, `AT01–bogus` aralığı yazıldıqda, R01 Markdown sətri dəyişdirildikdə, alternativ formatlarda və 0–3 boşluq indent ilə ikinci R01 sətri, həmçinin naməlum R17/R001 sətri əlavə edildikdə müvafiq xətalarla exit 1 alındı. Bu yoxlamalar biznes mənası üzrə insan review-ni əvəz etmir.
 
+Müstəqil inteqrasiya baxışı PRD parserində üçrəqəmli naməlum `R001` sətrinin səssiz keçdiyini tapdı. Parser bütün rəqəmli R cədvəl sətirlərini yoxlayacaq şəkildə düzəldildi: müvəqqəti kopyada `| R001 | Naməlum tələb | AT01 |` əlavə edildikdə `R001: unknown PRD requirement` ilə exit 1, normal müqavilədə exit 0 alındı. Reviewer R01–R16, D31, AT11–14, cross-coverage və əsas domain sənədlərində əlavə konkret ziddiyyət tapmadı; bu rəy tətbiq, provider və bütün biznes mənasının tam auditini təsdiqləmir.
+
 ## Qalan sübut
 
 Bu sənəd real auth, tenant/RLS, pul, provider, cihaz və ya usability yoxlamalarını keçmiş saymır. EVE-001 parent issue yalnız digər qəbul və müstəqil review şərtləri, merge və main smoke tamamlandıqdan sonra bağlanır. Provider və production qapıları [xarici asılılıqlar reyestrində](../05-delivery/EXTERNAL-DEPENDENCIES.md) qalır.
