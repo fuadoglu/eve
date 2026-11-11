@@ -137,9 +137,40 @@ for(const r of trace.requirements){
   assert(reqs.has(r.id)&&r.screens.length&&r.parent_tasks.length&&r.acceptance.length,`${r.id}: trace incomplete`);
   assert(same(r.operations,operations.filter(o=>o['x-requirements'].includes(r.id)).map(o=>o.operationId)),`${r.id}: operation trace stale`);
   assert(same(r.tables,db.tables.filter(t=>t.requirements.includes(r.id)).map(t=>t.name)),`${r.id}: table trace stale`);
+  assert(same(r.acceptance,scenarios.scenarios.filter(s=>s.requirements.includes(r.id)).map(s=>s.id)),`${r.id}: acceptance trace stale`);
   for(const p of r.packages)assert(packages.has(p),`${r.id}: missing package ${p}`);
   for(const a of r.acceptance)assert(tests.has(a),`${r.id}: missing acceptance ${a}`);
   for(const s of r.screens)assert(/^UI\d{2}$/.test(s)&&Number(s.slice(2))<=19,`${r.id}: invalid screen ${s}`);
+}
+const prd=fs.readFileSync(path.join(root,'docs/01-product/PRD.md'),'utf8');
+const prdRows=new Map();
+for(const line of prd.split('\n')){
+  const candidate=line.match(/^ {0,3}\|\s*(R\d+)/);
+  if(!candidate)continue;
+  assert(reqs.has(candidate[1]),`${candidate[1]}: unknown PRD requirement`);
+  const row=line.match(/^ {0,3}\|\s*(R\d+)\s*\|[^|]*\|\s*([^|]+)\|/);
+  if(!row){errors.push(`${candidate[1]}: invalid PRD requirement row`);continue;}
+  assert(!prdRows.has(row[1]),`${row[1]}: duplicate PRD requirement`);
+  assert(/^AT\d{2}(?:[–-]\d{2})?(?:\s*,\s*AT\d{2}(?:[–-]\d{2})?)*$/.test(row[2].trim()),`${row[1]}: invalid PRD acceptance syntax`);
+  const ids=[];
+  for(const m of row[2].matchAll(/AT(\d{2})(?:[–-](\d{2}))?/g)){
+    const start=Number(m[1]),end=m[2]?Number(m[2]):start;
+    assert(end>=start&&end<=36,`${row[1]}: invalid PRD acceptance range`);
+    for(let i=start;i<=end;i++)ids.push('AT'+String(i).padStart(2,'0'));
+  }
+  assert(ids.length>0,`${row[1]}: PRD acceptance missing`);
+  prdRows.set(row[1],ids);
+}
+assert(prdRows.size===16,'PRD must contain exactly 16 requirements');
+const traceMd=fs.readFileSync(path.join(root,'docs/04-quality/TRACEABILITY.md'),'utf8');
+const markdownRows=traceMd.split('\n').map(line=>({line,match:line.match(/^ {0,3}\|\s*(R\d+)/)})).filter(x=>x.match);
+assert(markdownRows.length===16,'Markdown trace must contain exactly 16 requirement rows');
+for(const row of markdownRows)assert(reqs.has(row.match[1]),`${row.match[1]}: unknown Markdown requirement`);
+for(const r of trace.requirements){
+  assert(prdRows.has(r.id)&&prdRows.get(r.id).every(a=>r.acceptance.includes(a)),`${r.id}: PRD acceptance trace stale`);
+  const expected=`| ${r.id} — ${r.title} | ${r.screens.join(', ')} | ${r.operations.length} / ${r.tables.length} | ${r.parent_tasks.join(', ')} | ${r.acceptance.join(', ')} |`;
+  const matching=markdownRows.filter(row=>row.match[1]===r.id);
+  assert(matching.length===1&&matching[0].line===expected,`${r.id}: Markdown trace stale`);
 }
 const prototype=fs.readFileSync(path.join(root,'docs/02-design/prototype.html'),'utf8');
 let scripts=0;

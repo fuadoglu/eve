@@ -11,6 +11,7 @@ Sənəd bazası: 2026-11-10, Asia/Baku. Dil: Azərbaycan dili. Status: **icra ü
 | [Qərar reyestri](01-product/DECISIONS.md) | Nə razılaşdırılıb, nə texniki seçimdir, nə xaricdən asılıdır? |
 | [Mənbə və tələb inventarı](01-product/SOURCE-INVENTORY.md) | Rəsmi məhsul mənbələri və R01–R16 xəritəsi haradadır? |
 | [Tələb və sərhəd auditi](04-quality/REQUIREMENT-AUDIT.md) | PRD/trace fərqləri və kritik sərhədlər necə yoxlanılıb? |
+| [Traceability bağlanması](04-quality/TRACE-CLOSURE.md) | Qərar və acceptance xəritəsinin təkrar və mənfi yoxlaması necə aparılıb? |
 | [PRD](01-product/PRD.md) | Məhsulun sərhədi və normativ tələbləri nədir? |
 | [Əməliyyat qaydaları](01-product/OPERATIONS.md) | Rezervasiya, tapşırıq, inventar necə işləyir? |
 | [Abunə və maliyyə](01-product/BILLING-FINANCE.md) | Hansı pul nəyin uçotudur, abunə necə uzanır? |

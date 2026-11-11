@@ -35,7 +35,7 @@
       "parent_issue": 9,
       "milestone": "M0",
       "title": "Ziddiyyət və sərhəd auditi",
-      "status": "review",
+      "status": "done",
       "depends_on": [
         "EVE-001.1"
       ],
@@ -64,7 +64,7 @@
       "parent_issue": 9,
       "milestone": "M0",
       "title": "Qərar və traceability bağlanması",
-      "status": "backlog",
+      "status": "in_progress",
       "depends_on": [
         "EVE-001.2"
       ],
