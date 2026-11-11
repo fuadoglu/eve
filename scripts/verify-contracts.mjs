@@ -137,6 +137,7 @@ for(const r of trace.requirements){
   assert(reqs.has(r.id)&&r.screens.length&&r.parent_tasks.length&&r.acceptance.length,`${r.id}: trace incomplete`);
   assert(same(r.operations,operations.filter(o=>o['x-requirements'].includes(r.id)).map(o=>o.operationId)),`${r.id}: operation trace stale`);
   assert(same(r.tables,db.tables.filter(t=>t.requirements.includes(r.id)).map(t=>t.name)),`${r.id}: table trace stale`);
+  assert(same(r.acceptance,scenarios.scenarios.filter(s=>s.requirements.includes(r.id)).map(s=>s.id)),`${r.id}: acceptance trace stale`);
   for(const p of r.packages)assert(packages.has(p),`${r.id}: missing package ${p}`);
   for(const a of r.acceptance)assert(tests.has(a),`${r.id}: missing acceptance ${a}`);
   for(const s of r.screens)assert(/^UI\d{2}$/.test(s)&&Number(s.slice(2))<=19,`${r.id}: invalid screen ${s}`);
