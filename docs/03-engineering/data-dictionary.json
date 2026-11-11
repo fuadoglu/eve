@@ -542,9 +542,9 @@
       "indexes": [],
       "rls": {
         "enabled": true,
-        "select": "auth.uid()=user_id",
-        "insert": "auth.uid()=user_id",
-        "update": "auth.uid()=user_id",
+        "select": "app_private.current_actor_id()=user_id",
+        "insert": "app_private.current_actor_id()=user_id",
+        "update": "app_private.current_actor_id()=user_id",
         "delete": "deny; retention_service_only"
       }
     },
@@ -632,9 +632,9 @@
       "indexes": [],
       "rls": {
         "enabled": true,
-        "select": "owner_user_id=auth.uid(); manager yalnız təhlükəsiz owner label projection",
-        "insert": "owner_user_id=auth.uid()",
-        "update": "owner_user_id=auth.uid()",
+        "select": "owner_user_id=app_private.current_actor_id(); manager yalnız təhlükəsiz owner label projection",
+        "insert": "owner_user_id=app_private.current_actor_id()",
+        "update": "owner_user_id=app_private.current_actor_id()",
         "delete": "deny; retention_service_only"
       }
     },
@@ -1066,7 +1066,7 @@
       ],
       "rls": {
         "enabled": true,
-        "select": "owner OR user_id=auth.uid()",
+        "select": "owner OR user_id=app_private.current_actor_id()",
         "insert": "owner_only",
         "update": "owner_only",
         "delete": "deny; retention_service_only"
@@ -9512,9 +9512,9 @@
       "indexes": [],
       "rls": {
         "enabled": true,
-        "select": "auth.uid()=user_id OR operator allowlist",
-        "insert": "auth.uid()=user_id; state operator only",
-        "update": "auth.uid()=user_id; state operator only",
+        "select": "app_private.current_actor_id()=user_id OR operator allowlist",
+        "insert": "app_private.current_actor_id()=user_id; state operator only",
+        "update": "app_private.current_actor_id()=user_id; state operator only",
         "delete": "deny; retention_service_only"
       }
     },
@@ -9638,9 +9638,9 @@
       "indexes": [],
       "rls": {
         "enabled": true,
-        "select": "auth.uid()=user_id",
-        "insert": "auth.uid()=user_id",
-        "update": "auth.uid()=user_id",
+        "select": "app_private.current_actor_id()=user_id",
+        "insert": "app_private.current_actor_id()=user_id",
+        "update": "app_private.current_actor_id()=user_id",
         "delete": "deny; retention_service_only"
       }
     },
@@ -9766,9 +9766,9 @@
       "indexes": [],
       "rls": {
         "enabled": true,
-        "select": "auth.uid()=user_id metadata only; key projection denied",
-        "insert": "auth.uid()=user_id",
-        "update": "auth.uid()=user_id",
+        "select": "app_private.current_actor_id()=user_id metadata only; key projection denied",
+        "insert": "app_private.current_actor_id()=user_id",
+        "update": "app_private.current_actor_id()=user_id",
         "delete": "deny; retention_service_only"
       }
     },
@@ -10446,7 +10446,7 @@
     "exposed_schema": "api",
     "authenticated_base_table_grants": false,
     "execution_role": "app_executor NOLOGIN NOBYPASSRLS; not table owner",
-    "functions": "allowlist SECURITY DEFINER owned by app_executor; fixed search_path; auth.uid current capability; public EXECUTE revoked",
+    "functions": "allowlist SECURITY DEFINER owned by app_executor; fixed search_path; current_actor_id from verified JWT plus current property capability; public EXECUTE revoked",
     "reference": "ACCESS-BOUNDARY.md"
   }
 }

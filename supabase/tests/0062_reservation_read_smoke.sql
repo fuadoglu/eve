@@ -2,6 +2,13 @@
 -- this does not validate the full move transaction or Supabase JWT/Data API.
 do $$
 begin
+  if exists (
+    select 1 from pg_auth_members m
+    where m.member='app_executor'::regrole
+      or (m.roleid='app_executor'::regrole and
+          (m.inherit_option or m.set_option or
+           m.member not in (current_user::regrole, coalesce(to_regrole('postgres'),current_user::regrole))))
+  ) then raise exception 'unsafe executor role membership leaked after reservation migration'; end if;
   if has_table_privilege('authenticated','app_private.reservations','SELECT')
      or has_table_privilege('authenticated','app_private.reservation_placements','SELECT')
      or has_function_privilege('anon','api.read_current_reservation(uuid)','EXECUTE') then
