@@ -2358,7 +2358,7 @@
           "enforcement": "CHECK"
         },
         {
-          "name": "reservation_attribution_transfers_deposit_net_snapshot_minor_safe",
+          "name": "reservation_attribution_transfers_deposit_net_minor_safe",
           "expression": "deposit_net_snapshot_minor IS NULL OR (deposit_net_snapshot_minor >= 0 AND deposit_net_snapshot_minor <= 9007199254740991)",
           "enforcement": "CHECK"
         }

@@ -53,3 +53,33 @@ jobs:
         run: .venv-docs/bin/python scripts/validate-schemas.py
       - name: Prototipin davranış smoke yoxlaması
         run: node scripts/test-prototype.mjs
+
+  sql_schema:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: local_schema_test_only
+          POSTGRES_DB: eve_schema_test
+        options: >-
+          --health-cmd "pg_isready -U postgres -d eve_schema_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Repository-ni aç
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Lokal auth stub və client rollarını yarat
+        run: |
+          docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 <<'SQL'
+          create role anon;
+          create role authenticated;
+          create schema auth;
+          create table auth.users (id uuid primary key);
+          SQL
+      - name: SQL migration tətbiq et
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261111000100_eve_core_schema.sql
+      - name: Tenant və constraint smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0061_core_schema_smoke.sql
