@@ -22,6 +22,7 @@ Sənəd bazası: 2026-11-10, Asia/Baku. Dil: Azərbaycan dili. Status: **icra ü
 | [Data modeli](03-engineering/DATA-MODEL.md) | Cədvəllər, əlaqələr və invariantlar nədir? |
 | [API müqaviləsi](03-engineering/API-CONTRACT.md) | Sorğu/cavab, səhv və idempotentlik necədir? |
 | [Əməliyyat/payload auditi](03-engineering/OPERATION-PAYLOAD-AUDIT.md) | EVE-004.1 üçün mövcud API əməliyyatları necə yoxlanıb? |
+| [State/capability auditi](03-engineering/STATE-CAPABILITY-AUDIT.md) | EVE-004.2 üçün DB enum, keçid və API icazə sərhədləri necə tutuşdurulub? |
 | [Təhlükəsizlik](03-engineering/SECURITY.md) | Kim hansı resursa daxil ola bilər? |
 | [İnteqrasiyalar](03-engineering/INTEGRATIONS.md) | Auth, Payriff, WhatsApp və media necə yoxlanılır? |
 | [Qəbul sınaqları](04-quality/ACCEPTANCE.md) | İşin düzgünlüyü necə sübut edilir? |
