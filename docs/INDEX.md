@@ -26,6 +26,7 @@ Sənəd bazası: 2026-11-10, Asia/Baku. Dil: Azərbaycan dili. Status: **icra ü
 | [Təhlükəsizlik](03-engineering/SECURITY.md) | Kim hansı resursa daxil ola bilər? |
 | [İnteqrasiyalar](03-engineering/INTEGRATIONS.md) | Auth, Payriff, WhatsApp və media necə yoxlanılır? |
 | [Qəbul sınaqları](04-quality/ACCEPTANCE.md) | İşin düzgünlüyü necə sübut edilir? |
+| [OpenAPI/schema qəbulu](04-quality/OPENAPI-SCHEMA-CLOSURE.md) | EVE-004.3 contract və mənfi sınaq sübutu nədir? |
 | [Red-team](04-quality/RED-TEAM.md) | Hansı səhvlər buraxılışı dayandırır? |
 | [X10 düşüncə çərçivəsi](04-quality/X10-REVIEW.md) | Qərar hansı on baxışdan yoxlanılıb? |
 | [Yol xəritəsi](05-delivery/ROADMAP.md) | İcra asılılıqları və milestone çıxışları |
