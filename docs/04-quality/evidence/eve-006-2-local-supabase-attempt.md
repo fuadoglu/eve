@@ -14,7 +14,7 @@ Tarix: 2026-11-12, Asia/Baku. Branch: `feat/EVE-006-2-access-closure`. Mühit: m
 
 ## Qapı
 
-EVE-006.2 `in_progress` qalır. Əsas repository migration-ları ilə Data API/Storage və hosted provider testləri keçmiş kimi yazılmır. Tarixdəki migration 002 və eyni nümunəli altı sonrakı migration redaktə edilmədi. Təzə quraşdırma 002-də dayandığına görə sonrakı forward migration bunu təkbaşına düzəldə bilmir. Repo STATUS-a görə persistent Supabase tətbiqi yoxdur, lakin istifadəçi təsdiqi alınmadan bu fakt qəti sayılmır; AGENTS.md tətbiq edilmiş migration redaktəsini qadağan edir. Dəyişiklik qərarı həmin faktın təsdiqi və ayrıca review-dən asılıdır. Gələcək domain write/media RPC-ləri öz asılı paketlərində default-deny qaydası ilə açılır.
+EVE-006.2 `in_progress` qalır. Bu ilkin lokal sınaqda hosted Data API/Storage HTTP və provider-inteqrasiya testləri aparılmayıb. Migration 002 və eyni nümunəli altı sonrakı migration faylındakı PR #65 dəyişikliyi yalnız fresh-install grant sırasını dəyişir. İlkin CLI baxışı yalnız cari hesabın layihələrini əhatə edib; başqa təşkilat/hesab barədə nəticə çıxarılmır. Sonrakı hosted sınaq və istifadəçinin 2026-11-12 scope qərarı bu branch-in migration tarixçəsini ayrıca hosted test layihəsi ilə bağlayır; həmin qərarın sərhədi və başqa hesabların yoxlanmadığı aşağıda göstərilib. Gələcək domain write/media RPC-ləri öz asılı paketlərində default-deny qaydası ilə açılır.
 
 ## Yalnız müvəqqəti checkout-da patch sınağı
 
@@ -35,3 +35,53 @@ Sintetik A/B/M fixture-i ilə doqquz lokal HTTP/DB yoxlaması exit 0 verdi: sahi
 | M JWT | Private task bucket-ə birbaşa object POST | HTTP `400`, daxildə `AccessDenied`/RLS rəddi |
 
 Bu, müvəqqəti skriptlə aparılmış **kəşfiyyat sınağıdır**: skript və raw cavab logu repoda saxlanmayıb. Formal AT04–06 qəbul sınağında təkrarlanan fixture, redaktə olunmuş request/response logu, reviewer və main-dakı eyni migration commit-i ayrıca tələb olunur.
+
+## PR #65 branch-ində təkrarlanan lokal sınaq
+
+`fix/EVE-006-2-migration-grant-order` / `a015ee5` branch-ində, 2026-11-12 tarixində, eyni yeddi SQL grant dəyişməsi ilə Supabase CLI 3.1.0-ın yalnız lokal DB/Kong/PostgREST/Storage stack-i **təzədən** quruldu. Migration 001–011 ardıcıl tətbiq olundu (exit 0). Bu, davamlı və ya hosted mühit deyil. `supabase/tests/0062_api_surface_smoke.sql` və `0062_rls_coverage_smoke.sql` lokal DB-də `supabase_admin` ilə exit 0 verdi. `0062_rent_read_smoke.sql`-in sintetik A/B/M, move və ledger fixture-i də həmin rolda exit 0 verdi. `postgres` ilə ilkin cəhd fixture-in sonundakı `SET ROLE app_executor` sətrində dayandı: lokal Supabase `postgres` rolu müvəqqəti üzvlük ləğv ediləndən sonra bu rola keçə bilmir; DB təzədən qurulub smoke superuser `supabase_admin` ilə icra edildi. Həmin ilkin cəhd PASS sayılmır.
+
+Təkrarlama: yalnız təmiz, **sintetik** lokal Eve stack-ində `npx -y supabase@3.1.0 start -x gotrue,realtime,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor`; sonra `docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 < supabase/tests/0062_rent_read_smoke.sql`; sonra `python3 scripts/test-local-supabase-http.py`. Mövcud lokal verilənləri silmək üçün bu əmrləri başqa layihədə işlətmək olmaz. Skript yalnız `127.0.0.1:54321` və `supabase_*_eve` konteynerlərini işlədir, lokal JWT açarını yaddaşda oxuyur, açar/token/raw cavab yazmır. Sintetik Storage obyektini `service_role` ilə yaradıb oxuyur, authenticated birbaşa oxunu rəddini yoxlayır və sonda silir.
+
+Müstəqil QA baxışından sonra anonim sorğu imzalı `anon` JWT ilə, revoke öncəsi/sonrası sorğular isə **eyni bearer** ilə təkrarlandı; kirayə DTO-da fixture-in entry ID/məbləği də yoxlandı. Skript exit 0 ilə aşağıdakı **17** redaktə olunmuş nəticəni verdi; identifikatorlar yalnız fixture-dəki sintetik sabitlərdir:
+
+| ID | Sorğu və gözlənən sərhəd | Lokal nəticə |
+|---|---|---|
+| AT04 | A sahib → A1 `property.read` | `200 true` |
+| AT04 | B sahib → A1 `property.read` | `200 false` |
+| AT06 | A2 daily → `finance.read` | `200 false` |
+| AT06 | A2 daily → cari rezervasiyanın kirayə yazısı | `200`, 1 safe DTO; target entry/4000 qəpik düz; guest/note/actor yoxdur |
+| AT06 | A sahib → öz rezervasiyasının tarixi | `200`, 3 safe DTO |
+| AT04 | B sahib → A rezervasiyasının pulu | `200 []` |
+| AT04 | B1 full menecer → verilmiş evin pulu | `200`, 1 safe DTO |
+| AT05 | M A1 üzvlüyü aktivkən `property.read` | `200 true` |
+| AT05 | Eyni JWT, üzvlük revoke sonrası növbəti sorğu | `200 false` |
+| AT04 | Base `properties` Data API GET | `404` |
+| AT04 | `Accept-Profile: app_private` ilə GET | `406` |
+| AT04 | İmzalı `anon` JWT ilə RPC POST | `401`, PostgREST `42501` |
+| AT06 | Daily birbaşa private bucket upload | HTTP `400`, daxildə `AccessDenied`/`403` |
+| AT06 | Lokal service fixture obyektinin yaradılması | `200` |
+| AT06 | Həmin obyektin service ilə mövcudluq yoxlaması | `200`, sintetik baytlar |
+| AT06 | Daily eyni private obyektin birbaşa oxusu | HTTP qeyri-`200`, `NoSuchKey` |
+| AT06 | Service fixture obyektinin silinməsi | `200` |
+
+Bu, branch-in lokal Data API/Storage deny-first davranış sübutudur. Export route-u, scoped media proxy-si, hosted mühit, tam AT04–06 və production qəbulunu təsdiqləmir. PR #65-in merge scope-u hosted test layihəsinin migration tarixçəsi və istifadəçinin qərarı ilə müəyyən edilir; EVE-006.2 `Done` isə ayrıca acceptance sübutu və merged commit tələb edir.
+
+## PR #65 son head: read API və altı bucket matrisi
+
+`5a5f8c8` head-indəki genişləndirilmiş `scripts/test-local-supabase-http.py` GitHub Actions CI #43232944670-də, təmiz sintetik Supabase stack-ində exit 0 verdi: **67 lokal HTTP/DB assertion**. Bu run-da `docs`, `sql_schema`, `supabase_local` job-larının hər üçü `success` oldu. Əlavə yoxlamalar beş read RPC-nin HTTP DTO/scope davranışını, xarici reservation ID və gözlənilməyən owner override parametrinin rəddini, A1-dən sonrakı property cursor səhifəsinin yalnız A2-ni qaytarmasını, eyni manager bearer-i ilə A1 revoke sonrası A1-in itirilib B1-in qalmasını əhatə edir. Manual block və contact fixture-ləri yalnız sintetik A2/B1 sətirləridir.
+
+Altı D33 bucket-in hər birində authenticated və signed `anon` upload rəddi, service-role ilə yaradılmış eyni obyektin authenticated və anon birbaşa read rəddi yoxlanılır; service fixture hər bucket-dən sonra silinir. Bu, lokal CI stack-i üçün HTTP deny-first sübutdur. Hosted/prod konfiqurasiya, signed URL, scoped media proxy və full AT04–06 sübutu deyil; hosted SQL nəticələri aşağıda ayrıca verilib. Cari desktop mühitində Docker daemon olmadığı üçün eyni stack-i lokalda təkrar başlatmaq mümkün olmadı; nəticə yalnız GitHub Actions CI-dan götürülüb.
+
+### Main sync və CI təkrarı
+
+2026-11-12-də PR #68 merge olduqdan sonra branch `origin/main` ilə sinxronlaşdırıldı. Merge commit `0ef5b8a` üzrə CI #43278886453 `docs`, `sql_schema`, `supabase_local` job-larını uğurla tamamladı; sintetik lokal stack-də 67 HTTP/DB assertion yenidən icra edildi. Bu, main sync regression sübutudur, hosted Supabase və ya migration history sübutu deyil. Work-package ledger 18/90 Done göstərir; EVE-006.2 `in_progress`, parent #14 açıq qalır.
+
+## PR #65 — izolyasiya olunmuş hosted Supabase sınağı
+
+2026-11-12-də istifadəçinin icazəsi ilə Eve staging/production-dan ayrı, yeni Free plan Supabase layihəsi yaradıldı. Layihə yalnız PR #65 migration/sınaq üçün nəzərdə tutulub; real istifadəçi və production məlumatı yoxdur. PR branch-indəki migration 001–011 boş bazaya tətbiq olundu. `supabase migration list`-də lokal və remote versiyalar 001–011 hamısı uyğun göründü. `0062_api_surface_smoke.sql` və `0062_rls_coverage_smoke.sql` uzaq bazada exit 0 verdi.
+
+`0062_rent_read_smoke.sql` Management API SQL runner üzərindən ilk dəfə uğursuz oldu: `SET LOCAL`/rol dəyişmə ardıcıllığı həmin sorğu runner-i üçün etibarlı psql sessiyası vermədi; bunu məhsul testi kimi qiymətləndirmədik. Sonra hosted session pooler üzərindən psql sessiyası ilə repodakı eyni smoke faylı icra edildi. Test `SET ROLE app_executor` mərhələsində dayandı, çünki `postgres` rolu `app_executor`-ə keçə bilmirdi. Yalnız bu ayrıca, silinə bilən test layihəsində `postgres` üçün müvəqqəti üzvlük verildikdən sonra eyni smoke faylı bütün assertion-ları keçdi. Sintetik fixture sətirləri silindi və sayğaclar sıfır təsdiqləndi.
+
+Müvəqqəti rolu ləğv etmək cəhdi adi `postgres` bağlantısından alınmadı: üzvlük grantor-u `supabase_admin` idi və bu bağlantının həmin grantor adından ləğv etmək səlahiyyəti yoxdur. Nəticədə `postgres` admin rolu üzərində `app_executor` üçün test üzvlüyü qalır; `anon`, `authenticated` və digər tətbiq rollarına üzvlük verilməyib. Bu, ayrıca test layihəsinin admin konfiqurasiyasında qalıqdır və production/staging-də belə dəyişiklik edilməyib. Uzaq test layihəsi PR #65 üçün saxlanılır; bu layihə Eve-nin hər hansı mövcud davamlı mühitinin tarixçəsini müəyyən etmir.
+
+Bu hosted sınaq fresh-install SQL ardıcıllığı və həmin izolə olunmuş bazadakı RLS/RPC smoke-u sübut edir. 2026-11-12-də istifadəçi mövcud əlçatan resurslarla davam etməyi və bu scope barədə qərarı inteqratora həvalə etdi. Əlçatan Supabase təşkilatında yalnız bu test layihəsi Eve adı ilə görünür; ayrıca Eve staging/production layihəsi və GitHub deploy qeydi tapılmadı. Bu PR-in branch migration-ları həmin boş test bazasına tətbiq edilmiş versiyalarla eynidir və migration siyahısı 001–011 üzrə uyğun gəlib. Buna görə bu PR yalnız cari, tanınmış Eve test tarixçəsi üçün merge edilə bilər; başqa Supabase hesabı/təşkilatı yoxlanmış sayılmır və ora deploy qərarı verilmir. Hosted smoke tam AT04–06, signed media, backup/restore və production qəbulunu əvəz etmir.

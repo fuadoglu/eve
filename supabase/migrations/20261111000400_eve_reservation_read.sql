@@ -57,8 +57,8 @@ as $$
 $$;
 revoke all on function api.read_current_reservation(uuid)
   from public, anon, authenticated;
+grant execute on function api.read_current_reservation(uuid) to authenticated;
 grant app_executor to current_user with set true, inherit false;
 alter function api.read_current_reservation(uuid) owner to app_executor;
 revoke app_executor from current_user;
 revoke create on schema api from app_executor;
-grant execute on function api.read_current_reservation(uuid) to authenticated;

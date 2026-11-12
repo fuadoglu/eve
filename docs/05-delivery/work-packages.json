@@ -503,16 +503,18 @@
       "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
       "deliverable": "RLS/RPC və storage policy üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
       "acceptance": [
-        "RLS/RPC və storage policy üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
-        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
-        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+        "Bütün 52 app_private cədvəli ENABLE/FORCE RLS-dir; anon və authenticated base schema/table girişinə və app_executor üzvlüyünə malik deyil; app_executor NOLOGIN/NOBYPASSRLS-dir, cədvəl sahibi deyil və təhlükəli role atributu daşımır. On reviewed SELECT policy/grant allowlist-i qorunur; qalan 42 cədvəl açıq RPC/policy əlavə edilənədək default-deny qalır.",
+        "api schema yalnız dəqiq imzalı allowlist RPC-lərini authenticated rola açır; anon və base-table RPC yolu rədd edilir. Funksiya owner-i, SECURITY DEFINER, sabit boş search_path və JWT-dən alınan actor müqaviləsi yoxlanılır.",
+        "D33 üzrə altı media classification/bucket private qalır; classification CHECK və Storage policy-ləri birbaşa anon/authenticated upload/read-i rədd edir. Dərc edilmiş safe public məzmun və scoped private proxy bu paketdə hazırmış kimi təqdim edilmir.",
+        "Mövcud access/read foundation-u üçün owner, A/B tenant, cari property capability, revoke-next-request və həssas sütunların çıxarılmaması müvafiq 0062 SQL/HTTP smoke-larında mənfi və müsbət nümunələrlə yoxlanılır; qismən RPC projection tam OpenAPI DTO sayılmır.",
+        "Bu paketin RLS/RPC/storage dəyişiklikləri local Supabase/PostgreSQL CI-də real sintetik fixture ilə işləyir; mock, local CI, ayrıca hosted test və production sübutları ayrıca adlandırılır."
       ],
-      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "verification": "`supabase/tests/0062_access_policy_smoke.sql`, `0062_api_surface_smoke.sql`, `0062_rls_coverage_smoke.sql`, access/read smoke-ları və altı private bucket üzrə local Storage/Data API HTTP matrix; CI `sql_schema` və `supabase_local`. Sənəd/kontrakt dəyişiklikləri: node scripts/docs-check.mjs, node scripts/verify-contracts.mjs, python3 scripts/verify-storage-config.py, schema validator və prototype smoke. Hosted test nəticəsi production/staging sübutu kimi sayılmır.",
       "reviewer_role": "qa_redteam",
-      "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
+      "out_of_scope": "Domain-specific write/transition policy və RPC-lər, tam module DTO/iş axınları, export, scoped media proxy/signed URL, DB isolation/concurrency acceptance (EVE-006.3 və aid domain paketləri); real Eve staging/production, provider və release sübutu. Bu işlər gələcəkdə açılana qədər base table/RPC access default-deny qalır. Parent taskdan kənar refaktor və production publish.",
       "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
       "external_gates": [],
-      "expected_result": "RLS/RPC və storage policy üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+      "expected_result": "M1 üçün təhlükəsiz access-control təməli: 52/52 FORCE RLS, dəqiq table/RPC allowlist, D33 private storage sərhədi və yalnız hazır olan read foundation-un yoxlanmış negative/positive davranışı. Gələcək domain əməliyyatları öz paketlərində implementasiya və test olunana qədər default-deny qalır; EVE-006.3 AT04–06 DB isolation/concurrency sübutunu tamamlayır.",
       "parent_acceptance_reference": "AT04–06 DB negative tests"
     },
     {
