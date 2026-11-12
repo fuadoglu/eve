@@ -21,3 +21,17 @@ EVE-006.2 `in_progress` qalır. Əsas repository migration-ları ilə Data API/S
 Eyni gün main `08c3f92` bazasının `git archive` surəti ayrıca `/tmp` qovluğunda açıldı. SHA-256 `74b24eceb837d0fe82287766ceae8666bf290cedd57ff8c630f700f5d304ef59` olan **tətbiq edilməmiş namizəd patch** yalnız yeddi migration-da `GRANT EXECUTE TO authenticated` əmrini həmin funksiyanın sahibi dəyişməzdən əvvələ keçirdi; qalan SQL və repo main dəyişmədi. Supabase CLI 3.1.0-ın minimal lokal DB/Kong/PostgREST/Storage stack-i bu surətdə 001–011 migration-ların hamısını tətbiq etdi (exit 0). `0062_api_surface_smoke.sql` və `0062_rls_coverage_smoke.sql` exit 0 verdi; altı Eve bucket-i private idi.
 
 Sintetik A/B/M fixture-i ilə doqquz lokal HTTP/DB yoxlaması exit 0 verdi: sahibin öz evi və menecerin verilmiş ev oxusu; daily menecer üçün `finance.read` rəddi; başqa sahibin evinin rəddi; base table 404 və `app_private` profile header 406; anonim RPC 401; membership revoke-dan sonrakı request-də rədd; private Storage bucket-ə birbaşa upload-un RLS `AccessDenied` cavabı. Bu sübut **yalnız həmin müvəqqəti patch surətinə** aiddir. Əsl repo migration-ları dəyişdirilmədi; patch main-da və davamlı Supabase-də tətbiq olunmayıb. Signed URL/media proxy, hosted provider və tam AT04–06/AT21 sınaqları keçmiş sayılmır. Stack dayandırılıb, sintetik DB və lokal secret faylları silinib.
+
+| Sintetik Given | Lokal HTTP When | Faktiki Then |
+|---|---|---|
+| Sahib A və A1 evi | A JWT ilə `has_property_capability(A1, property.read)` | `200 true` |
+| A1-də daily menecer M | M JWT ilə eyni RPC | `200 true` |
+| A1-də daily menecer M | `finance.read` | `200 false` |
+| Başqa sahib B | A1 üçün `property.read` | `200 false` |
+| A JWT | `GET /rest/v1/properties` | `404`, `api`-də base table yoxdur |
+| A JWT | `Accept-Profile: app_private` ilə həmin GET | `406`, private schema expose deyil |
+| Anonim request | A1 üçün RPC POST | `401` |
+| M-in üzvlüyü DB-də revoke edildi | Növbəti request-də A1 üçün `property.read` | `200 false` |
+| M JWT | Private task bucket-ə birbaşa object POST | HTTP `400`, daxildə `AccessDenied`/RLS rəddi |
+
+Bu, müvəqqəti skriptlə aparılmış **kəşfiyyat sınağıdır**: skript və raw cavab logu repoda saxlanmayıb. Formal AT04–06 qəbul sınağında təkrarlanan fixture, redaktə olunmuş request/response logu, reviewer və main-dakı eyni migration commit-i ayrıca tələb olunur.

@@ -32,7 +32,7 @@ Repo public-dir. M0–M7 native milestone-lar yaradılıb. `main` branch protect
 
 ## Açıq production qapıları
 
-Tam RLS/RPC/storage policy, real API route-ları, passwordless auth, tenant/property/capability inteqrasiya testləri və bütün domain axınları hələ yoxdur. SQL migration Supabase mühitinə tətbiq edilməyib. Supabase/SMTP/Payriff/Vercel hesabları, provider sandbox, hüquqi mətn təsdiqi, real usability, DB+private media restore və AT01–36 tətbiq sınaqları da açıqdır. [Xarici asılılıqlar](EXTERNAL-DEPENDENCIES.md) reyestrində ayrıca izlənir. Provider yoxluğu local schema/UI işini dayandırmır; sandbox PASS iddia edilmir.
+Tam RLS/RPC/storage policy, real API route-ları, passwordless auth, tenant/property/capability inteqrasiya testləri və bütün domain axınları hələ yoxdur. Əsas repository migration-ları davamlı Supabase mühitinə tətbiq edilməyib; yalnız izolyasiya olunmuş namizəd patch surəti lokal stack-də sınanıb. Supabase/SMTP/Payriff/Vercel hesabları, provider sandbox, hüquqi mətn təsdiqi, real usability, DB+private media restore və AT01–36 tətbiq sınaqları da açıqdır. [Xarici asılılıqlar](EXTERNAL-DEPENDENCIES.md) reyestrində ayrıca izlənir. Provider yoxluğu local schema/UI işini dayandırmır; sandbox PASS iddia edilmir.
 
 ## Növbəti iş
 
