@@ -36,4 +36,4 @@ Tam RLS/RPC/storage policy, real API route-ları, passwordless auth, tenant/prop
 
 ## Növbəti iş
 
-EVE-006.2 RLS/RPC/storage policy, ardınca EVE-006.3 DB isolation/concurrency fixture-ləri. Local iş provider credential-larını gözləmir.
+İlk addım PR #65 üçün mövcud Eve staging/production hesabı və 001–011 migration tarixçəsinin yoxlanmasıdır; boş yeni test bazası bu tarixi əvəz etmir. Təsdiq olunarsa PR merge/review gate-i bağlanır; sonra EVE-006.2-nin qalan domain RLS/RPC/storage scope-u davam edir və yalnız `.2` qəbul ediləndən sonra EVE-006.3 DB isolation/concurrency fixture-lərinə keçilir.
