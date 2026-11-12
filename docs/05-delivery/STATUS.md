@@ -36,4 +36,4 @@ Tam RLS/RPC/storage policy, real API route-ları, passwordless auth, tenant/prop
 
 ## Növbəti iş
 
-İlk addım PR #65 üçün mövcud Eve staging/production hesabı və 001–011 migration tarixçəsinin yoxlanmasıdır; boş yeni test bazası bu tarixi əvəz etmir. Təsdiq olunarsa PR merge/review gate-i bağlanır; sonra EVE-006.2-nin qalan domain RLS/RPC/storage scope-u davam edir və yalnız `.2` qəbul ediləndən sonra EVE-006.3 DB isolation/concurrency fixture-lərinə keçilir.
+PR #65 üçün cari əlçatan Eve test layihəsinin migration tarixçəsi 001–011 üzrə branch head ilə uyğunlaşdırılıb; başqa hesab/təşkilat yoxlanmış sayılmır. Növbəti addım PR #65-in merge CI nəticəsini qeydə almaq, EVE-006.2 acceptance-lərini ayrıca bağlamaq, sonra EVE-006.3 DB isolation/concurrency fixture-lərinə keçməkdir.
