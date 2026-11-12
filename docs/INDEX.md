@@ -43,6 +43,7 @@ Sənəd bazası: 2026-11-10, Asia/Baku. Dil: Azərbaycan dili. Status: **icra ü
 | [Status keçidləri](01-product/STATE-MACHINES.md) | Hər action-un şərti və atomik yan təsiri |
 | [Konfiqurasiya](01-product/CONFIGURATION.md) | Limit, vahid, dəyişmə səlahiyyəti və əsaslandırma |
 | [Kliklənən mobil prototip](02-design/PROTOTYPE.md) | UI01–19 demo və istifadə qaydası |
+| [Prototip brauzer sübutu](04-quality/evidence/eve-002-1-2-browser.md) | EVE-002.1/.2 üçün 360 px Chrome, klaviatura və flow yoxlaması |
 | [Dəqiq form axınları](02-design/FLOW-SPEC.md) | Sahə, default, düymə, xəta və fallback |
 | [OpenAPI 3.1 JSON](03-engineering/openapi.json) | Tam request/response müqaviləsi |
 | [Maşın data lüğəti](03-engineering/data-dictionary.json) | Sütun-sütun schema və invariantlar |
