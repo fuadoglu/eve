@@ -1,6 +1,6 @@
 # Qəbul sınaqları və Definition of Done
 
-Status: **bütün tətbiq testləri planlaşdırılıb, hələ icra edilməyib**. Hər sınaq üçün commit, mühit, fixture, addım, nəticə və artefakt yolu saxlanılır. Mock, integration, provider sandbox və real cihaz sübutları ayrıdır.
+Status: **full tətbiq qəbulu tamamlanmayıb; qismən lokal/inteqrasiya testləri icra olunub**. Hər sınaq üçün commit, mühit, fixture, addım, nəticə və artefakt yolu saxlanılır. Mock, integration, provider sandbox və real cihaz sübutları ayrıdır; qismən nəticə full acceptance və ya production qəbulu sayılmır.
 
 Ətraflı Given/When/Then: [acceptance-scenarios.json](acceptance-scenarios.json). Testin necə icra və qeyd edildiyi: [TEST-PROTOCOL](TEST-PROTOCOL.md). Tələb əlaqələri: [TRACEABILITY](TRACEABILITY.md). Müqavilə/prototip smoke nəticəsi tətbiq testi kimi işarələnmir.
 
