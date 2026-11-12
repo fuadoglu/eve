@@ -14,7 +14,7 @@ Tarix: 2026-11-12, Asia/Baku. Branch: `feat/EVE-006-2-access-closure`. Mühit: m
 
 ## Qapı
 
-EVE-006.2 `in_progress` qalır. Əsas repository migration-ları ilə hosted Data API/Storage HTTP və provider-inteqrasiya testləri keçmiş kimi yazılmır. Migration 002 və eyni nümunəli altı sonrakı migration faylında dəyişiklik yalnız fresh-install grant sırasına aiddir; bunların davamlı mühitdə tətbiq olunmadığı təsdiqlənmədən merge edilmir. Test layihəsi yaradılmazdan əvvəlki CLI baxışında `supabase projects list` iki başqa layihə göstərdi, Eve layihəsi tapılmadı; checkout heç bir Supabase layihəsinə link olunmayıb. Bu yoxlama yalnız cari CLI hesabının görünən layihələrini əhatə edir, başqa təşkilat/hesabdakı Eve staging və ya production mühitini istisna etmir. `AGENTS.md` tətbiq edilmiş migration redaktəsini qadağan edir; merge qərarı tətbiq tarixçəsi qeyri-müəyyənliyi həll edildikdən sonra verilir. Gələcək domain write/media RPC-ləri öz asılı paketlərində default-deny qaydası ilə açılır.
+EVE-006.2 `in_progress` qalır. Bu ilkin lokal sınaqda hosted Data API/Storage HTTP və provider-inteqrasiya testləri aparılmayıb. Migration 002 və eyni nümunəli altı sonrakı migration faylındakı PR #65 dəyişikliyi yalnız fresh-install grant sırasını dəyişir. İlkin CLI baxışı yalnız cari hesabın layihələrini əhatə edib; başqa təşkilat/hesab barədə nəticə çıxarılmır. Sonrakı hosted sınaq və istifadəçinin 2026-11-12 scope qərarı bu branch-in migration tarixçəsini ayrıca hosted test layihəsi ilə bağlayır; həmin qərarın sərhədi və başqa hesabların yoxlanmadığı aşağıda göstərilib. Gələcək domain write/media RPC-ləri öz asılı paketlərində default-deny qaydası ilə açılır.
 
 ## Yalnız müvəqqəti checkout-da patch sınağı
 
@@ -64,13 +64,13 @@ Müstəqil QA baxışından sonra anonim sorğu imzalı `anon` JWT ilə, revoke 
 | AT06 | Daily eyni private obyektin birbaşa oxusu | HTTP qeyri-`200`, `NoSuchKey` |
 | AT06 | Service fixture obyektinin silinməsi | `200` |
 
-Bu, branch-in lokal Data API/Storage deny-first davranış sübutudur. Export route-u, scoped media proxy-si, provider/hosted mühit, tam AT04–06 və production qəbulunu təsdiqləmir. PR #65-in merge-i tətbiq edilmiş migration tarixçəsinin təsdiqindən, EVE-006.2 `Done` isə ayrıca qəbul qərarından asılıdır.
+Bu, branch-in lokal Data API/Storage deny-first davranış sübutudur. Export route-u, scoped media proxy-si, hosted mühit, tam AT04–06 və production qəbulunu təsdiqləmir. PR #65-in merge scope-u hosted test layihəsinin migration tarixçəsi və istifadəçinin qərarı ilə müəyyən edilir; EVE-006.2 `Done` isə ayrıca acceptance sübutu və merged commit tələb edir.
 
 ## PR #65 son head: read API və altı bucket matrisi
 
 `5a5f8c8` head-indəki genişləndirilmiş `scripts/test-local-supabase-http.py` GitHub Actions CI #43232944670-də, təmiz sintetik Supabase stack-ində exit 0 verdi: **67 lokal HTTP/DB assertion**. Bu run-da `docs`, `sql_schema`, `supabase_local` job-larının hər üçü `success` oldu. Əlavə yoxlamalar beş read RPC-nin HTTP DTO/scope davranışını, xarici reservation ID və gözlənilməyən owner override parametrinin rəddini, A1-dən sonrakı property cursor səhifəsinin yalnız A2-ni qaytarmasını, eyni manager bearer-i ilə A1 revoke sonrası A1-in itirilib B1-in qalmasını əhatə edir. Manual block və contact fixture-ləri yalnız sintetik A2/B1 sətirləridir.
 
-Altı D33 bucket-in hər birində authenticated və signed `anon` upload rəddi, service-role ilə yaradılmış eyni obyektin authenticated və anon birbaşa read rəddi yoxlanılır; service fixture hər bucket-dən sonra silinir. Bu, lokal CI stack-i üçün HTTP deny-first sübutdur. Hosted/prod konfiqurasiya, signed URL, scoped media proxy, full AT04–06 və migration tarixçəsinin təsdiqi deyil. Cari desktop mühitində Docker daemon olmadığı üçün eyni stack-i lokalda təkrar başlatmaq mümkün olmadı; nəticə yalnız GitHub Actions CI-dan götürülüb.
+Altı D33 bucket-in hər birində authenticated və signed `anon` upload rəddi, service-role ilə yaradılmış eyni obyektin authenticated və anon birbaşa read rəddi yoxlanılır; service fixture hər bucket-dən sonra silinir. Bu, lokal CI stack-i üçün HTTP deny-first sübutdur. Hosted/prod konfiqurasiya, signed URL, scoped media proxy və full AT04–06 sübutu deyil; hosted SQL nəticələri aşağıda ayrıca verilib. Cari desktop mühitində Docker daemon olmadığı üçün eyni stack-i lokalda təkrar başlatmaq mümkün olmadı; nəticə yalnız GitHub Actions CI-dan götürülüb.
 
 ### Main sync və CI təkrarı
 
