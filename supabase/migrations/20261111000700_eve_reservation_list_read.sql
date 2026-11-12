@@ -41,10 +41,10 @@ as $$
 $$;
 revoke all on function api.list_current_reservation_summaries(uuid,text,uuid,integer)
   from public, anon, authenticated;
+grant execute on function api.list_current_reservation_summaries(uuid,text,uuid,integer)
+  to authenticated;
 grant app_executor to current_user with set true, inherit false;
 alter function api.list_current_reservation_summaries(uuid,text,uuid,integer)
   owner to app_executor;
 revoke app_executor from current_user;
 revoke create on schema api from app_executor;
-grant execute on function api.list_current_reservation_summaries(uuid,text,uuid,integer)
-  to authenticated;

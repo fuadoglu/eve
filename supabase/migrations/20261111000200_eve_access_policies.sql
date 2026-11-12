@@ -108,9 +108,9 @@ revoke all on function api.has_property_capability(uuid,text)
   from public, anon, authenticated;
 -- Supabase's migration role must be able to SET ROLE to the new function owner.
 -- Revoke this temporary membership in the same migration transaction.
+grant execute on function api.has_property_capability(uuid,text) to authenticated;
 grant app_executor to current_user with set true, inherit false;
 alter function api.has_property_capability(uuid,text) owner to app_executor;
 revoke app_executor from current_user;
 revoke create on schema api from app_executor;
 grant usage on schema api to authenticated;
-grant execute on function api.has_property_capability(uuid,text) to authenticated;
