@@ -75,3 +75,13 @@ Altı D33 bucket-in hər birində authenticated və signed `anon` upload rəddi,
 ### Main sync və CI təkrarı
 
 2026-11-12-də PR #68 merge olduqdan sonra branch `origin/main` ilə sinxronlaşdırıldı. Merge commit `0ef5b8a` üzrə CI #43278886453 `docs`, `sql_schema`, `supabase_local` job-larını uğurla tamamladı; sintetik lokal stack-də 67 HTTP/DB assertion yenidən icra edildi. Bu, main sync regression sübutudur, hosted Supabase və ya migration history sübutu deyil. Work-package ledger 18/90 Done göstərir; EVE-006.2 `in_progress`, parent #14 açıq qalır.
+
+## PR #65 — izolyasiya olunmuş hosted Supabase sınağı
+
+2026-11-12-də istifadəçinin icazəsi ilə Eve staging/production-dan ayrı, yeni Free plan Supabase layihəsi yaradıldı. Layihə yalnız PR #65 migration/sınaq üçün nəzərdə tutulub; real istifadəçi və production məlumatı yoxdur. PR branch-indəki migration 001–011 boş bazaya tətbiq olundu. `supabase migration list`-də lokal və remote versiyalar 001–011 hamısı uyğun göründü. `0062_api_surface_smoke.sql` və `0062_rls_coverage_smoke.sql` uzaq bazada exit 0 verdi.
+
+`0062_rent_read_smoke.sql` Management API SQL runner üzərindən ilk dəfə uğursuz oldu: `SET LOCAL`/rol dəyişmə ardıcıllığı həmin sorğu runner-i üçün etibarlı psql sessiyası vermədi; bunu məhsul testi kimi qiymətləndirmədik. Sonra hosted session pooler üzərindən psql sessiyası ilə repodakı eyni smoke faylı icra edildi. Test `SET ROLE app_executor` mərhələsində dayandı, çünki `postgres` rolu `app_executor`-ə keçə bilmirdi. Yalnız bu ayrıca, silinə bilən test layihəsində `postgres` üçün müvəqqəti üzvlük verildikdən sonra eyni smoke faylı bütün assertion-ları keçdi. Sintetik fixture sətirləri silindi və sayğaclar sıfır təsdiqləndi.
+
+Müvəqqəti rolu ləğv etmək cəhdi adi `postgres` bağlantısından alınmadı: üzvlük grantor-u `supabase_admin` idi və bu bağlantının həmin grantor adından ləğv etmək səlahiyyəti yoxdur. Nəticədə `postgres` admin rolu üzərində `app_executor` üçün test üzvlüyü qalır; `anon`, `authenticated` və digər tətbiq rollarına üzvlük verilməyib. Bu, ayrıca test layihəsinin admin konfiqurasiyasında qalıqdır və production/staging-də belə dəyişiklik edilməyib. Uzaq test layihəsi PR #65 üçün saxlanılır; bu layihə Eve-nin hər hansı mövcud davamlı mühitinin tarixçəsini müəyyən etmir.
+
+Bu hosted sınaq fresh-install SQL ardıcıllığı və həmin izolə olunmuş bazadakı RLS/RPC smoke-u sübut edir. Başqa Eve staging/production layihəsinin olub-olmaması və ona 001–011 tətbiq edilib-edilməməsi hələ naməlumdur; buna görə migration fayllarının dəyişdirilməsi üzrə PR merge qapısı açıq qalır. Hosted provider smoke-u da tam AT04–06, signed media, backup/restore və production qəbulunu əvəz etmir.
