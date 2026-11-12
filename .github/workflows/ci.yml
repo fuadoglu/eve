@@ -221,3 +221,37 @@ jobs:
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_rls_coverage_smoke.sql
       - name: Data API RPC allowlist və grant smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_api_surface_smoke.sql
+
+  supabase_local:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Repository-ni aç
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Node.js versiyasını seç
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version-file: .nvmrc
+      - name: Təzə sintetik Supabase stack-i qur
+        run: |
+          if ! npx -y supabase@3.1.0 start \
+            -x gotrue,realtime,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor \
+            > /tmp/eve-local-stack.log 2>&1; then
+            sed -E 's/(S3_PROTOCOL_ACCESS_KEY_SECRET|S3_PROTOCOL_ACCESS_KEY_ID)":"[^"]+"/\1":"<redacted>"/g' \
+              /tmp/eve-local-stack.log | tail -30
+            exit 1
+          fi
+          sed -n '/^Applying migration/p' /tmp/eve-local-stack.log
+      - name: Supabase RPC, RLS və sintetik rent fixture smoke
+        run: |
+          docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
+            < supabase/tests/0062_api_surface_smoke.sql
+          docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
+            < supabase/tests/0062_rls_coverage_smoke.sql
+          docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
+            < supabase/tests/0062_rent_read_smoke.sql
+      - name: Data API və Storage mənfi HTTP sınağı
+        run: python3 scripts/test-local-supabase-http.py
+      - name: Lokal sintetik stack-i sil
+        if: always()
+        run: npx -y supabase@3.1.0 stop --project-id eve --no-backup
