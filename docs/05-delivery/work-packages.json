@@ -182,7 +182,7 @@
       "parent_issue": 11,
       "milestone": "M0",
       "title": "Email cross-device/scanner spike",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-001.3"
       ],
@@ -211,7 +211,7 @@
       "parent_issue": 11,
       "milestone": "M0",
       "title": "Payriff order/status/webhook spike",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-003.1"
       ],
@@ -240,7 +240,7 @@
       "parent_issue": 11,
       "milestone": "M0",
       "title": "Provider sübutu və bloklayıcı reyestri",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-003.2"
       ],
