@@ -23,7 +23,7 @@ begin
       or p.proowner <> 'app_executor'::regrole
       or not p.prosecdef
       or p.provolatile <> 's'
-      or not (coalesce(p.proconfig, array[]::text[]) @> array['search_path=']::text[])
+      or not (coalesce(p.proconfig, array[]::text[]) @> array['search_path=""']::text[])
       or has_function_privilege('anon',p.oid,'EXECUTE')
       or not has_function_privilege('authenticated',p.oid,'EXECUTE'));
   if mismatch_count <> 0 then
