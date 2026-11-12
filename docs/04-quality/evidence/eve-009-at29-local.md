@@ -1,0 +1,7 @@
+# EVE-009.3 — AT29 lokal a11y incrementi
+
+Tarix: 2026-11-12, Asia/Baku. Branch: `feat/EVE-009-3-a11y-matrix`. Mühit: macOS 27.2, Node 24.5.0, pnpm 12.18.0, Next 16.4.6 production build, Google Chrome 157 headless. Yalnız sintetik, auth və real müştəri məlumatı yoxdur.
+
+`scripts/test-mobile-shell.mjs` dörd CSS viewport enində (320/360/390/430) üç əsas route-u və açıq `+` menyusunu yoxlayır. Hər route-da `axe-core` WCAG 2 A/AA, 2.1 A/AA və 2.2 AA etiketli qaydaları sıfır violation qaytardı; açıq menyuda da sıfır violation. Naviqasiya hədəfləri ən az 44×44 CSS px idi. Keyboard Enter `+` menyusunu açdı; Escape bağlayıb fokusunu `Əlavə et` düyməsinə qaytardı; Tab və Enter əsas naviqasiya ilə `/today` route-una keçdi. Bu ekranlarda üfüqi page overflow və JS pageerror müşahidə edilmədi; offline statusu yalan “saxlanıldı” iddiası etmədi. Lokal `EVE_BROWSER_EXECUTABLE=… pnpm test:ui` exit 0, 88 assertion. CI bundled Chromium ilə eyni testin ayrıca nəticəsini göstərəcək.
+
+Bu, **avtomatlaşdırılmış accessibility yoxlamasıdır**, insanın screen reader ilə istifadə sınağı deyil. Error/permission-denied vəziyyətləri backend auth/data axını olmadığı üçün tam inteqrasiya ilə yoxlanmayıb; safe-area və mobil klaviatura real iPhone/Android cihazında ölçülməyib. EVE-009.3 `in_progress`, AT29 tam PASS deyil. EVE-002.3 beş real istifadəçi sınağı da ayrıca açıqdır. Schema/API/migration təsiri yoxdur; test əlavəsinin rollback-i bu commitin geri alınmasıdır.

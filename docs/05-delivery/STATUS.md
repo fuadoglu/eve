@@ -24,6 +24,8 @@ R01–R16 tələb xəritəsi, 117 OpenAPI əməliyyatı, 52 data cədvəli, 5 st
 
 - EVE-006.2 üçün lokal Supabase stack sınağı cəhdi [ayrı sübutda](../04-quality/evidence/eve-006-2-local-supabase-attempt.md) qeyd olunub: CLI 2.33.9 / Supabase PG 17.4.1.068 image-ində migration 002-nin explicit rol GRANT-ı PostgreSQL backend crash (`signal 11`) yaratdı; minimal SQL təkrarı da eyni nəticə verdi. CLI 3.1.0 ilkin sınağı host disk/Docker I/O ilə dayanıb; yalnız əsas servisli təkrar sınaq migration 002-də `GRANT EXECUTE` üçün SQLSTATE 42501 verdi: RPC sahibi dəyişdirilib migrator üzvlüyü ləğv edildikdən sonra qrant çağırılır. Eyni sıra migration 004/005/007/008/010/011-də var. Data API/Storage HTTP sübutu alınmayıb; tarixdəki migration-lar dəyişdirilməyib, EVE-006.2 `in_progress` qalır. API RPC-nin yeddi tam imzalı grant inventarı PR #61, main `9b65e6a` və CI #43181388193-də keçib.
 
+- EVE-009.3 AT29-un lokal hissəsi üçün [a11y/keyboard sübutu](../04-quality/evidence/eve-009-at29-local.md) əlavə edildi: 320/360/390/430 px Chrome production build-də üç route və menyu üçün 88 browser assertion, axe WCAG etiketli sıfır violation, keyboard Enter/Tab/Escape və fokus qaytarılması. Bu, real screen reader, iPhone/Android, safe-area/soft keyboard və auth permission/error inteqrasiyasını əvəz etmir; paket `in_progress` qalır.
+
 ## GitHub qoruması
 
 Repo public-dir. M0–M7 native milestone-lar yaradılıb. `main` branch protection PR, `docs` required check, linear history və admin enforcement tələb edir; approval sayı 0-dır. Secret scanning və push protection aktivdir. Ayrıca GitHub ruleset qurulmayıb; daxili müstəqil agent review-u GitHub insan approval-u kimi göstərilmir.
