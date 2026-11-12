@@ -41,6 +41,18 @@ jobs:
         run: pnpm typecheck
       - name: Production build
         run: pnpm build
+      - name: Chromium quraşdır
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Mobil shell brauzer sınağı
+        run: |
+          pnpm start --port 4177 > /tmp/eve-next.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --silent --fail http://localhost:4177/today > /dev/null; then break; fi
+            sleep 1
+          done
+          pnpm test:ui
       - name: Sənəd linkləri və tələb ID-ləri
         run: node scripts/docs-check.mjs
       - name: Kontraktlar və asılılıq qrafı

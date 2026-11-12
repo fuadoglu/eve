@@ -757,7 +757,7 @@
       "parent_issue": 17,
       "milestone": "M1",
       "title": "Dizayn tokenləri və UI primitivləri",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-002.2",
         "EVE-005.3"
@@ -791,7 +791,7 @@
       "parent_issue": 17,
       "milestone": "M1",
       "title": "Üç naviqasiya və kontekstli plus",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-009.1"
       ],
@@ -824,7 +824,7 @@
       "parent_issue": 17,
       "milestone": "M1",
       "title": "Klaviatura/empty/error/a11y yoxlaması",
-      "status": "backlog",
+      "status": "in_progress",
       "depends_on": [
         "EVE-009.2"
       ],
