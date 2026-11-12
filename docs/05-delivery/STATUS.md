@@ -22,6 +22,8 @@ R01–R16 tələb xəritəsi, 117 OpenAPI əməliyyatı, 52 data cədvəli, 5 st
 
 - EVE-009.1 dizayn tokenləri/primitivlər və EVE-009.2 üç əsas route + doğru deaktiv kontekst menyusu UI təməli `feat/EVE-009-1-3-mobile-shell` branch-ində qurulub. [Mobil shell sübutu](../04-quality/evidence/eve-009-mobile-shell.md) Chrome 320/360/390/430 px-də 60 browser assertion, 44 px naviqasiya hədəfləri, Escape/focus-return və overflow yoxlamasını qeyd edir. Müstəqil QA server məlumatı olmayan ekranda yalançı boş vəziyyət mətnini tapdı, düzəlişi yenidən yoxladı. Bu, auth/data API və əməliyyat axınları deyil; EVE-009.3 AT29 real cihaz/screen reader/permission/error gate-i `in_progress` qalır.
 
+- EVE-006.2 üçün lokal Supabase stack sınağı cəhdi [ayrı sübutda](../04-quality/evidence/eve-006-2-local-supabase-attempt.md) qeyd olunub: CLI 2.33.9 / Supabase PG 17.4.1.068 image-ində migration 002-nin explicit rol GRANT-ı PostgreSQL backend crash (`signal 11`) yaratdı; minimal SQL təkrarı da eyni nəticə verdi. CLI 3.1.0 sınağı host disk doluluğu və Docker I/O xətası ilə dayanıb. Data API/Storage HTTP sübutu alınmayıb; migration dəyişdirilməyib, EVE-006.2 `in_progress` qalır. API RPC grant inventarı üçün əlavə SQL guard CI-də yoxlanılır.
+
 ## GitHub qoruması
 
 Repo public-dir. M0–M7 native milestone-lar yaradılıb. `main` branch protection PR, `docs` required check, linear history və admin enforcement tələb edir; approval sayı 0-dır. Secret scanning və push protection aktivdir. Ayrıca GitHub ruleset qurulmayıb; daxili müstəqil agent review-u GitHub insan approval-u kimi göstərilmir.
