@@ -65,3 +65,9 @@ Müstəqil QA baxışından sonra anonim sorğu imzalı `anon` JWT ilə, revoke 
 | AT06 | Service fixture obyektinin silinməsi | `200` |
 
 Bu, branch-in lokal Data API/Storage deny-first davranış sübutudur. Export route-u, scoped media proxy-si, provider/hosted mühit, tam AT04–06 və production qəbulunu təsdiqləmir. PR #65-in merge-i tətbiq edilmiş migration tarixçəsinin təsdiqindən, EVE-006.2 `Done` isə ayrıca qəbul qərarından asılıdır.
+
+## PR #65 son head: read API və altı bucket matrisi
+
+`5a5f8c8` head-indəki genişləndirilmiş `scripts/test-local-supabase-http.py` GitHub Actions CI #43232944670-də, təmiz sintetik Supabase stack-ində exit 0 verdi: **67 lokal HTTP/DB assertion**. Bu run-da `docs`, `sql_schema`, `supabase_local` job-larının hər üçü `success` oldu. Əlavə yoxlamalar beş read RPC-nin HTTP DTO/scope davranışını, xarici reservation ID və gözlənilməyən owner override parametrinin rəddini, A1-dən sonrakı property cursor səhifəsinin yalnız A2-ni qaytarmasını, eyni manager bearer-i ilə A1 revoke sonrası A1-in itirilib B1-in qalmasını əhatə edir. Manual block və contact fixture-ləri yalnız sintetik A2/B1 sətirləridir.
+
+Altı D33 bucket-in hər birində authenticated və signed `anon` upload rəddi, service-role ilə yaradılmış eyni obyektin authenticated və anon birbaşa read rəddi yoxlanılır; service fixture hər bucket-dən sonra silinir. Bu, lokal CI stack-i üçün HTTP deny-first sübutdur. Hosted/prod konfiqurasiya, signed URL, scoped media proxy, full AT04–06 və migration tarixçəsinin təsdiqi deyil. Cari desktop mühitində Docker daemon olmadığı üçün eyni stack-i lokalda təkrar başlatmaq mümkün olmadı; nəticə yalnız GitHub Actions CI-dan götürülüb.
