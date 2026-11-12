@@ -35,3 +35,33 @@ Sintetik A/B/M fixture-i ilə doqquz lokal HTTP/DB yoxlaması exit 0 verdi: sahi
 | M JWT | Private task bucket-ə birbaşa object POST | HTTP `400`, daxildə `AccessDenied`/RLS rəddi |
 
 Bu, müvəqqəti skriptlə aparılmış **kəşfiyyat sınağıdır**: skript və raw cavab logu repoda saxlanmayıb. Formal AT04–06 qəbul sınağında təkrarlanan fixture, redaktə olunmuş request/response logu, reviewer və main-dakı eyni migration commit-i ayrıca tələb olunur.
+
+## PR #65 branch-ində təkrarlanan lokal sınaq
+
+`fix/EVE-006-2-migration-grant-order` / `a015ee5` branch-ində, 2026-11-12 tarixində, eyni yeddi SQL grant dəyişməsi ilə Supabase CLI 3.1.0-ın yalnız lokal DB/Kong/PostgREST/Storage stack-i **təzədən** quruldu. Migration 001–011 ardıcıl tətbiq olundu (exit 0). Bu, davamlı və ya hosted mühit deyil. `supabase/tests/0062_api_surface_smoke.sql` və `0062_rls_coverage_smoke.sql` lokal DB-də `supabase_admin` ilə exit 0 verdi. `0062_rent_read_smoke.sql`-in sintetik A/B/M, move və ledger fixture-i də həmin rolda exit 0 verdi. `postgres` ilə ilkin cəhd fixture-in sonundakı `SET ROLE app_executor` sətrində dayandı: lokal Supabase `postgres` rolu müvəqqəti üzvlük ləğv ediləndən sonra bu rola keçə bilmir; DB təzədən qurulub smoke superuser `supabase_admin` ilə icra edildi. Həmin ilkin cəhd PASS sayılmır.
+
+Təkrarlama: yalnız təmiz, **sintetik** lokal Eve stack-ində `npx -y supabase@3.1.0 start -x gotrue,realtime,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor`; sonra `docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 < supabase/tests/0062_rent_read_smoke.sql`; sonra `python3 scripts/test-local-supabase-http.py`. Mövcud lokal verilənləri silmək üçün bu əmrləri başqa layihədə işlətmək olmaz. Skript yalnız `127.0.0.1:54321` və `supabase_*_eve` konteynerlərini işlədir, lokal JWT açarını yaddaşda oxuyur, açar/token/raw cavab yazmır. Sintetik Storage obyektini `service_role` ilə yaradıb oxuyur, authenticated birbaşa oxunu rəddini yoxlayır və sonda silir.
+
+Skript exit 0 ilə aşağıdakı **17** redaktə olunmuş nəticəni verdi; identifikatorlar yalnız fixture-dəki sintetik sabitlərdir:
+
+| ID | Sorğu və gözlənən sərhəd | Lokal nəticə |
+|---|---|---|
+| AT04 | A sahib → A1 `property.read` | `200 true` |
+| AT04 | B sahib → A1 `property.read` | `200 false` |
+| AT06 | A2 daily → `finance.read` | `200 false` |
+| AT06 | A2 daily → cari rezervasiyanın kirayə yazısı | `200`, 1 safe DTO; guest/note/actor yoxdur |
+| AT06 | A sahib → öz rezervasiyasının tarixi | `200`, 3 safe DTO |
+| AT04 | B sahib → A rezervasiyasının pulu | `200 []` |
+| AT04 | B1 full menecer → verilmiş evin pulu | `200`, 1 safe DTO |
+| AT05 | M A1 üzvlüyü aktivkən `property.read` | `200 true` |
+| AT05 | Eyni JWT, üzvlük revoke sonrası növbəti sorğu | `200 false` |
+| AT04 | Base `properties` Data API GET | `404` |
+| AT04 | `Accept-Profile: app_private` ilə GET | `406` |
+| AT04 | Anon RPC POST | `401` |
+| AT06 | Daily birbaşa private bucket upload | HTTP `400`, daxildə `AccessDenied`/`403` |
+| AT06 | Lokal service fixture obyektinin yaradılması | `200` |
+| AT06 | Həmin obyektin service ilə mövcudluq yoxlaması | `200`, sintetik baytlar |
+| AT06 | Daily eyni private obyektin birbaşa oxusu | HTTP qeyri-`200`, `NoSuchKey` |
+| AT06 | Service fixture obyektinin silinməsi | `200` |
+
+Bu, branch-in lokal Data API/Storage deny-first davranış sübutudur. Export route-u, scoped media proxy-si, provider/hosted mühit, tam AT04–06 və production qəbulunu təsdiqləmir. PR #65-in merge-i tətbiq edilmiş migration tarixçəsinin təsdiqindən, EVE-006.2 `Done` isə ayrıca qəbul qərarından asılıdır.
