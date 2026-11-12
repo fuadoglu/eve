@@ -4,7 +4,7 @@ Tarix: 2026-11-12, Asia/Baku. Branch: `feat/EVE-009-3-a11y-matrix`. Mühit: macO
 
 `scripts/test-mobile-shell.mjs` dörd CSS viewport enində (320/360/390/430) üç əsas route-u və açıq `+` menyusunu yoxlayır. Hər route-da `axe-core` WCAG 2 A/AA, 2.1 A/AA və 2.2 AA etiketli qaydaları sıfır violation qaytardı; açıq menyuda da sıfır violation. Naviqasiya hədəfləri ən az 44×44 CSS px idi. Keyboard Enter `+` menyusunu açdı; Escape bağlayıb fokusunu `Əlavə et` düyməsinə qaytardı; Tab və Enter əsas naviqasiya ilə `/today` route-una keçdi. Bu ekranlarda üfüqi page overflow və JS pageerror müşahidə edilmədi; offline statusu yalan “saxlanıldı” iddiası etmədi. Lokal `EVE_BROWSER_EXECUTABLE=… pnpm test:ui` exit 0, 88 assertion. CI bundled Chromium ilə eyni testin ayrıca nəticəsini göstərəcək.
 
-Bu, **avtomatlaşdırılmış accessibility yoxlamasıdır**, insanın screen reader ilə istifadə sınağı deyil. Error/permission-denied vəziyyətləri backend auth/data axını olmadığı üçün tam inteqrasiya ilə yoxlanmayıb; safe-area və mobil klaviatura real iPhone/Android cihazında ölçülməyib. EVE-009.3 `in_progress`, AT29 tam PASS deyil. EVE-002.3 beş real istifadəçi sınağı da ayrıca açıqdır. Schema/API/migration təsiri yoxdur; test əlavəsinin rollback-i bu commitin geri alınmasıdır.
+Bu, **avtomatlaşdırılmış accessibility yoxlamasıdır**, insanın screen reader ilə istifadə sınağı deyil. Həmin ilkin mərhələdə error/permission-denied backend axını yox idi, safe-area/soft keyboard real iPhone/Android cihazında ölçülməmişdi. Bu paraqraf sonrakı 404 və 124 assertion-lıq safe-area mərhələlərindən əvvəlki qismən nəticəni təsvir edir; cari paket statusu və yekun məhdudiyyətlər aşağıdakı bölmələrdədir. EVE-002.3 beş real istifadəçi sınağı ayrıca açıqdır. Schema/API/migration təsiri yoxdur.
 
 ## 404 mənfi axını — 2026-11-12
 
@@ -18,4 +18,6 @@ Reduced-height keyboard görünüşünün emulyasiyasında (420px viewport) aç�
 
 Lokal faktiki əmrlər: `npx -y pnpm@12.18.0 install --frozen-lockfile` exit 0, `typecheck` exit 0, `build` exit 0, `EVE_BROWSER_EXECUTABLE='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' EVE_TEST_BASE_URL='http://127.0.0.1:4177' npx -y pnpm@12.18.0 test:ui` exit 0 — **124 assertion**. Əhatə: 4 viewport, 34px safe-area, 420px reduced-height, AX tree navigation/dialog/404 semantics, 44px target, keyboard focus/Enter/Tab/Escape, axe, offline status, 404/error recovery və horizontal overflow.
 
-Bu increment yalnız EVE-009.3 lokal avtomatlaşdırılmış QA acceptance-ını əhatə edir; real iPhone/Android, faktiki on-screen keyboard, insanın screen-reader çıxışı və backend permission/data error yoxlanmayıb. Bunlar production release sübutu deyil. PR CI və müstəqil review ayrıca göstərilməlidir.
+Bu increment yalnız EVE-009.3 lokal avtomatlaşdırılmış QA acceptance-ını əhatə edir; real iPhone/Android, faktiki on-screen keyboard, insanın screen-reader çıxışı və backend permission/data error yoxlanmayıb. Bunlar production release sübutu deyil.
+
+PR #67 `faa508b` squash commit `83a6a92` ilə main-a merge edildi. PR CI #43275197035-də `docs` və `sql_schema` keçdi; `docs` logu 124 browser assertion-u göstərir. Main push CI #43275604202 də `docs` və `sql_schema` job-larında keçdi. Müstəqil read-only review EVE-009.3 Done statusunu yalnız package contract-dakı lokal `AT29 keyboard/width` scope-unda təsdiqlədi; full AT29/production qəbulu təsdiqləmədi.
