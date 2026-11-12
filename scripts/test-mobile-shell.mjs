@@ -50,6 +50,25 @@ for (const [name, engine] of [['Google Chrome', chromium]]) {
     await page.keyboard.press('Enter');
     await page.waitForURL('**/today');
     checks += 2;
+    const missing = await page.goto(base + '/this-route-does-not-exist');
+    if (missing?.status() !== 404) throw new Error(`${name} ${width} missing route status ${missing?.status()}`);
+    checks++;
+    await page.getByRole('heading', { name: 'Səhifə tapılmadı' }).waitFor();
+    checks++;
+    const errorSize = await page.evaluate(() => ({ doc: document.documentElement.scrollWidth, body: document.body.scrollWidth }));
+    if (errorSize.doc > width || errorSize.body > width) throw new Error(`${name} ${width} error overflow ${JSON.stringify(errorSize)}`);
+    checks++;
+    const errorAudit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
+    if (errorAudit.violations.length) throw new Error(`${name} ${width} error axe: ${errorAudit.violations.map(v => v.id + ':' + v.nodes.length).join(',')}`);
+    checks++;
+    const returnLink = page.getByRole('link', { name: 'Bu günə qayıt' });
+    const returnBox = await returnLink.boundingBox();
+    if (!returnBox || returnBox.width < 44 || returnBox.height < 44) throw new Error(`${name} ${width} error return target`);
+    checks++;
+    await returnLink.focus();
+    await page.keyboard.press('Enter');
+    await page.waitForURL('**/today');
+    checks++;
     await context.setOffline(true);
     await page.evaluate(() => window.dispatchEvent(new Event('offline')));
     await page.getByRole('status').getByText('Bağlantı yoxdur. Məlumat yenilənmir.').waitFor();
@@ -60,4 +79,4 @@ for (const [name, engine] of [['Google Chrome', chromium]]) {
   }
   await browser.close();
 }
-console.log(`PASS ${checks} assertions; Chromium; 320/360/390/430; nav, target, keyboard Enter/Tab/Escape, axe WCAG, menu safety, offline, no overflow/JS errors`);
+console.log(`PASS ${checks} assertions; Chromium; 320/360/390/430; nav, 404 recovery, target, keyboard Enter/Tab/Escape, axe WCAG, menu safety, offline, no overflow/JS errors`);
