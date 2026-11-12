@@ -47,7 +47,7 @@ h1 { font-size: clamp(30px, 8vw, 38px); line-height: 1.15; margin: 0 0 var(--spa
 .nav-icon { font-size: 20px; line-height: 1; }
 .action-area { position: fixed; z-index: 20; left: 50%; bottom: calc(86px + env(safe-area-inset-bottom)); width: min(100%, 680px); transform: translateX(-50%); pointer-events: none; padding-inline: var(--space-4); display: flex; align-items: flex-end; flex-direction: column; gap: var(--space-3); }
 .plus-button { pointer-events: auto; width: 52px; height: 52px; border: 0; border-radius: var(--radius); background: var(--teal); color: white; box-shadow: 0 4px 14px #0f172a33; font-size: 32px; line-height: 1; cursor: pointer; }
-.action-menu { pointer-events: auto; width: min(100%, 360px); max-height: min(70svh, 440px); overflow-y: auto; padding: var(--space-4); border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface); box-shadow: 0 12px 30px #0f172a26; }
+.action-menu { pointer-events: auto; width: min(100%, 360px); max-height: max(0px, min(70svh, calc(100svh - 212px - env(safe-area-inset-bottom)), 440px)); overflow-y: auto; padding: var(--space-4); border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface); box-shadow: 0 12px 30px #0f172a26; }
 .menu-heading { font-weight: 750; margin: 0 0 var(--space-1); }
 .menu-help { color: var(--muted); margin: 0 0 var(--space-3); font-size: 14px; }
 .menu-action { display: block; width: 100%; min-height: 44px; text-align: left; padding: var(--space-2) var(--space-3); border: 0; border-top: 1px solid var(--border); background: transparent; color: var(--muted); }

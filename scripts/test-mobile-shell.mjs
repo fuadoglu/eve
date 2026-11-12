@@ -5,13 +5,32 @@ let checks = 0;
 for (const [name, engine] of [['Google Chrome', chromium]]) {
   const browser = await engine.launch({ headless: true, ...(process.env.EVE_BROWSER_EXECUTABLE ? { executablePath: process.env.EVE_BROWSER_EXECUTABLE } : {}) });
   for (const width of [320, 360, 390, 430]) {
-    const context = await browser.newContext({ viewport: { width, height: 740 }, reducedMotion: 'reduce' });
+    const context = await browser.newContext({ viewport: { width, height: 740 }, reducedMotion: 'reduce', isMobile: true, hasTouch: true });
     const page = await context.newPage();
+    const cdp = await context.newCDPSession(page);
+    await cdp.send('Emulation.setSafeAreaInsetsOverride', { insets: { top: 24, right: 0, bottom: 34, left: 0 } });
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.goto(base + '/today');
     await page.getByRole('heading', { name: 'Bu gün', exact: true }).waitFor();
     await page.waitForFunction(() => Object.keys(document.querySelector('button[aria-label="Əlavə et"]') ?? {}).some(key => key.startsWith('__reactProps$')));
+    const safeArea = await page.evaluate(() => ({
+      viewportFit: document.querySelector('meta[name="viewport"]')?.content.includes('viewport-fit=cover') ?? false,
+      shellBottom: parseFloat(getComputedStyle(document.querySelector('.app-shell')).paddingBottom),
+      navBottom: parseFloat(getComputedStyle(document.querySelector('.bottom-nav')).paddingBottom),
+      actionBottom: parseFloat(getComputedStyle(document.querySelector('.action-area')).bottom),
+    }));
+    if (!safeArea.viewportFit || safeArea.shellBottom < 122 || safeArea.navBottom < 42 || safeArea.actionBottom < 120) {
+      throw new Error(`${name} ${width} safe-area inset not applied ${JSON.stringify(safeArea)}`);
+    }
+    checks++;
+    const axTree = await cdp.send('Accessibility.getFullAXTree');
+    const axNames = axTree.nodes.map(node => node.name?.value).filter(Boolean);
+    const axRoles = axTree.nodes.map(node => node.role?.value);
+    if (!axRoles.includes('navigation') || !axNames.includes('Əsas mobil naviqasiya')) {
+      throw new Error(`${name} ${width} mobile navigation missing from accessibility tree`);
+    }
+    checks++;
     let size = await page.evaluate(() => ({ width: innerWidth, doc: document.documentElement.scrollWidth, body: document.body.scrollWidth }));
     if (size.doc > width || size.body > width) throw new Error(`${name} ${width} overflow ${JSON.stringify(size)}`);
     checks++;
@@ -31,6 +50,10 @@ for (const [name, engine] of [['Google Chrome', chromium]]) {
     await plus.focus();
     await page.keyboard.press('Enter');
     await page.getByRole('dialog', { name: 'Yeni əməliyyat' }).waitFor();
+    const menuAx = await cdp.send('Accessibility.getFullAXTree');
+    if (!menuAx.nodes.some(node => node.role?.value === 'dialog' && node.name?.value === 'Yeni əməliyyat')) {
+      throw new Error(`${name} ${width} action menu missing from accessibility tree`);
+    }
     checks++;
     const menuSize = await page.evaluate(() => ({ doc: document.documentElement.scrollWidth, body: document.body.scrollWidth }));
     if (menuSize.doc > width || menuSize.body > width) throw new Error(`${name} ${width} menu overflow ${JSON.stringify(menuSize)}`);
@@ -41,6 +64,17 @@ for (const [name, engine] of [['Google Chrome', chromium]]) {
       if (!await page.getByRole('button', { name: action }).isDisabled()) throw new Error(`${name} ${width} unsafe action ${action}`);
       checks++;
     }
+    await page.setViewportSize({ width, height: 420 });
+    const keyboardViewport = await page.evaluate(() => {
+      const menu = document.querySelector('.action-menu').getBoundingClientRect();
+      const nav = document.querySelector('.bottom-nav').getBoundingClientRect();
+      return { height: innerHeight, menuTop: menu.top, menuBottom: menu.bottom, navTop: nav.top };
+    });
+    if (keyboardViewport.menuTop < 24 || keyboardViewport.menuBottom > keyboardViewport.navTop) {
+      throw new Error(`${name} ${width} reduced keyboard viewport clips or overlaps menu ${JSON.stringify(keyboardViewport)}`);
+    }
+    checks++;
+    await page.setViewportSize({ width, height: 740 });
     await page.keyboard.press('Escape');
     if (await page.getByRole('dialog').count() || !await plus.evaluate(el => el === document.activeElement)) throw new Error(`${name} ${width} escape focus`);
     checks++;
@@ -54,6 +88,10 @@ for (const [name, engine] of [['Google Chrome', chromium]]) {
     if (missing?.status() !== 404) throw new Error(`${name} ${width} missing route status ${missing?.status()}`);
     checks++;
     await page.getByRole('heading', { name: 'Səhifə tapılmadı' }).waitFor();
+    const errorAx = await cdp.send('Accessibility.getFullAXTree');
+    if (!errorAx.nodes.some(node => node.role?.value === 'heading' && node.name?.value === 'Səhifə tapılmadı')) {
+      throw new Error(`${name} ${width} 404 heading missing from accessibility tree`);
+    }
     checks++;
     const errorSize = await page.evaluate(() => ({ doc: document.documentElement.scrollWidth, body: document.body.scrollWidth }));
     if (errorSize.doc > width || errorSize.body > width) throw new Error(`${name} ${width} error overflow ${JSON.stringify(errorSize)}`);
@@ -79,4 +117,4 @@ for (const [name, engine] of [['Google Chrome', chromium]]) {
   }
   await browser.close();
 }
-console.log(`PASS ${checks} assertions; Chromium; 320/360/390/430; nav, 404 recovery, target, keyboard Enter/Tab/Escape, axe WCAG, menu safety, offline, no overflow/JS errors`);
+console.log(`PASS ${checks} assertions; Chromium mobile emulation; 320/360/390/430; safe-area inset; accessibility tree nav/dialog/error; 404 recovery; target; keyboard Enter/Tab/Escape; axe WCAG; menu safety; offline; no overflow/JS errors`);

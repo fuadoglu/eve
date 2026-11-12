@@ -824,7 +824,7 @@
       "parent_issue": 17,
       "milestone": "M1",
       "title": "Klaviatura/empty/error/a11y yoxlaması",
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "EVE-009.2"
       ],
