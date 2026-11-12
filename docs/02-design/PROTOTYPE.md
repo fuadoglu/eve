@@ -61,7 +61,7 @@ Prototipdəki düymə backend əməliyyatı edə bilmirsə, açıq **DEMO** bild
 
 ## Yoxlama sərhədi
 
-JS sintaksisi və statik DOM müqavilələri local runtime-da yoxlanılır. Brauzer və screenshot QA inteqrator tərəfindən aparılır; həmin nəticə ayrıca sübut kimi qeydə alınmalıdır. Real istifadəçi ilə ≥80% köməksiz tamamlama, həqiqi cihaz, QR çap skanı, screen reader və performans hədəfləri bu prototip hazırlanması ilə keçilmiş sayılmır.
+JS sintaksisi və statik DOM müqavilələri local runtime-da yoxlanılır. Chrome-da 360 px brauzer/klaviatura yoxlamasının nəticəsi [EVE-002.1/.2 sübutunda](../04-quality/evidence/eve-002-1-2-browser.md) qeydə alınıb. Bu, real istifadəçi ilə ≥80% köməksiz tamamlama, həqiqi cihaz, QR çap skanı, screen reader və performans hədəflərinin keçdiyi anlamına gəlmir.
 
 ## Dəyişiklik qaydası
 

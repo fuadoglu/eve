@@ -93,7 +93,7 @@
       "parent_issue": 10,
       "milestone": "M0",
       "title": "Mobil wireframe və komponentlər",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-001.3"
       ],
@@ -122,7 +122,7 @@
       "parent_issue": 10,
       "milestone": "M0",
       "title": "Kliklənən əsas axınlar",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-002.1"
       ],
