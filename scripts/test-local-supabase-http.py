@@ -10,10 +10,12 @@ import base64
 import hashlib
 import hmac
 import json
+import os
 import subprocess
 import time
 import urllib.error
 import urllib.request
+import uuid
 
 
 API = "http://127.0.0.1:54321"
@@ -29,6 +31,18 @@ RENT_COLUMNS = {
     "entry_id", "reservation_id", "property_id", "placement_id", "kind",
     "amount_minor", "custodian", "occurred_at", "created_at",
 }
+ENTRY_A_TARGET = "e5100000-0000-0000-0000-000000000004"
+ENTRY_B = "e5100000-0000-0000-0000-000000000003"
+
+
+def assert_local_docker():
+    host_override = os.environ.get("DOCKER_HOST", "")
+    context = json.loads(subprocess.check_output(
+        ["docker", "context", "inspect", "--format", "{{json .Endpoints.docker.Host}}"],
+        stderr=subprocess.DEVNULL,
+    ))
+    if not context.startswith("unix://") or (host_override and not host_override.startswith("unix://")):
+        raise RuntimeError("local Unix Docker context required")
 
 
 def b64(raw):
@@ -58,10 +72,12 @@ def jwt(actor, key, role="authenticated"):
     return (signed + b"." + b64(hmac.new(key, signed, hashlib.sha256).digest())).decode()
 
 
-def request(path, *, actor=None, key=None, role="authenticated", payload=None,
-            method=None, headers=None):
+def request(path, *, actor=None, key=None, role="authenticated", bearer=None,
+            payload=None, method=None, headers=None):
     request_headers = dict(headers or {})
-    if actor:
+    if bearer:
+        request_headers["Authorization"] = "Bearer " + bearer
+    elif actor:
         request_headers["Authorization"] = "Bearer " + jwt(actor, key, role)
     body = json.dumps(payload).encode() if isinstance(payload, dict) else payload
     if isinstance(payload, dict):
@@ -90,13 +106,14 @@ def verify(name, condition, detail):
     print("PASS " + name)
 
 
-def rpc(name, actor, key, arguments):
+def rpc(name, actor, key, arguments, *, role="authenticated", bearer=None):
     status, body = request("/rest/v1/rpc/" + name, actor=actor, key=key,
-                           payload=arguments)
+                           role=role, bearer=bearer, payload=arguments)
     return status, json.loads(body)
 
 
 def main():
+    assert_local_docker()
     key = local_signing_key()
     capability = lambda property_id, name: {
         "p_property_id": property_id, "p_capability": name,
@@ -117,29 +134,37 @@ def main():
     status, data = rpc("list_reservation_rent_summaries", TARGET_DAILY, key,
                        rent(RESERVATION_A))
     verify("AT06 daily current rent read", status == 200 and len(data) == 1
-           and set(data[0]) == RENT_COLUMNS, str(status))
+           and set(data[0]) == RENT_COLUMNS
+           and data[0]["entry_id"] == ENTRY_A_TARGET
+           and data[0]["property_id"] == PROPERTY_A2
+           and data[0]["amount_minor"] == 4000, str(status))
     status, data = rpc("list_reservation_rent_summaries", OWNER_A, key,
                        rent(RESERVATION_A))
     verify("AT06 owner history read", status == 200 and len(data) == 3
-           and all(set(row) == RENT_COLUMNS for row in data), str(status))
+           and all(set(row) == RENT_COLUMNS for row in data)
+           and {row["amount_minor"] for row in data} == {10000, 5000, 4000},
+           str(status))
     status, data = rpc("list_reservation_rent_summaries", OWNER_B, key,
                        rent(RESERVATION_A))
     verify("AT04 other owner rent deny", status == 200 and data == [], str(status))
     status, data = rpc("list_reservation_rent_summaries", MANAGER, key,
                        rent(RESERVATION_B))
-    verify("AT04 full manager assigned read", status == 200 and len(data) == 1,
+    verify("AT04 full manager assigned read", status == 200 and len(data) == 1
+           and data[0]["entry_id"] == ENTRY_B
+           and data[0]["amount_minor"] == 7000,
            str(status))
 
+    manager_bearer = jwt(MANAGER, key)
     sql("update app_private.property_memberships set revoked_at=null "
         "where property_id='" + PROPERTY_A1 + "' and user_id='" + MANAGER + "';")
     status, data = rpc("has_property_capability", MANAGER, key,
-                       capability(PROPERTY_A1, "property.read"))
+                       capability(PROPERTY_A1, "property.read"), bearer=manager_bearer)
     verify("AT05 manager before revoke", status == 200 and data is True,
            str(status))
     sql("update app_private.property_memberships set revoked_at=now() "
         "where property_id='" + PROPERTY_A1 + "' and user_id='" + MANAGER + "';")
     status, data = rpc("has_property_capability", MANAGER, key,
-                       capability(PROPERTY_A1, "property.read"))
+                       capability(PROPERTY_A1, "property.read"), bearer=manager_bearer)
     verify("AT05 next request revoke", status == 200 and data is False,
            str(status))
 
@@ -148,9 +173,11 @@ def main():
     status, _ = request("/rest/v1/properties", actor=OWNER_A, key=key,
                         headers={"Accept-Profile": "app_private"})
     verify("AT04 private schema deny", status == 406, str(status))
-    status, _ = request("/rest/v1/rpc/has_property_capability",
-                        payload=capability(PROPERTY_A1, "property.read"))
-    verify("AT04 anonymous RPC deny", status == 401, str(status))
+    status, data = rpc("has_property_capability",
+                       "00000000-0000-0000-0000-000000000000", key,
+                       capability(PROPERTY_A1, "property.read"), role="anon")
+    verify("AT04 signed anon RPC deny", status in (401, 403)
+           and data.get("code") == "42501", str(status))
 
     status, body = request("/storage/v1/object/eve-private-task/denied.txt",
                            actor=TARGET_DAILY, key=key, payload=b"synthetic",
@@ -160,7 +187,8 @@ def main():
            status == 400 and storage_error.get("code") == "AccessDenied"
            and storage_error.get("statusCode") == "403", str(status))
 
-    object_path = "/storage/v1/object/eve-private-task/local-isolation-proof.txt"
+    object_path = ("/storage/v1/object/eve-private-task/local-isolation-"
+                   + uuid.uuid4().hex + ".txt")
     status, _ = request(object_path, actor=TARGET_DAILY, key=key,
                         role="service_role", payload=b"synthetic local proof",
                         headers={"Content-Type": "text/plain"})
