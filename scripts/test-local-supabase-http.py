@@ -239,9 +239,10 @@ def main():
            and all(set(row) == {"property_id", "owner_account_id", "name", "area",
                                 "readiness", "version"} for row in data), str(status))
     status, data = rpc("list_visible_property_summaries", OWNER_A, key,
-                       {"p_after_id": PROPERTY_B1, "p_page_size": 100})
-    verify("AT04 foreign property cursor cannot widen scope",
-           status == 200 and data == [], str(status))
+                       {"p_after_id": PROPERTY_A1, "p_page_size": 100})
+    verify("AT04 owner cursor page remains tenant-scoped",
+           status == 200 and {row["property_id"] for row in data} == {PROPERTY_A2}
+           and PROPERTY_B1 not in {row["property_id"] for row in data}, str(status))
     status, _ = request("/rest/v1/rpc/list_visible_property_summaries",
                         actor=OWNER_A, key=key,
                         payload={"p_after_id": None, "p_page_size": 100,
