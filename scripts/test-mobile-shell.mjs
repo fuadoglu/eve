@@ -1,4 +1,5 @@
 import { chromium } from 'playwright';
+import AxeBuilder from '@axe-core/playwright';
 const base = process.env.EVE_TEST_BASE_URL ?? 'http://localhost:4177';
 let checks = 0;
 for (const [name, engine] of [['Google Chrome', chromium]]) {
@@ -22,19 +23,33 @@ for (const [name, engine] of [['Google Chrome', chromium]]) {
       await page.waitForFunction(text => [...document.querySelectorAll('nav a')].some(a => a.textContent?.includes(text) && a.getAttribute('aria-current') === 'page'), label);
       const routeSize = await page.evaluate(() => ({ doc: document.documentElement.scrollWidth, body: document.body.scrollWidth }));
       if (routeSize.doc > width || routeSize.body > width) throw new Error(`${name} ${width} ${label} overflow ${JSON.stringify(routeSize)}`);
-      checks += 2;
+      const audit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
+      if (audit.violations.length) throw new Error(`${name} ${width} ${label} axe: ${audit.violations.map(v => v.id + ':' + v.nodes.length).join(',')}`);
+      checks += 3;
     }
-    await page.getByRole('button', { name: 'Əlavə et' }).click();
+    const plus = page.getByRole('button', { name: 'Əlavə et' });
+    await plus.focus();
+    await page.keyboard.press('Enter');
+    await page.getByRole('dialog', { name: 'Yeni əməliyyat' }).waitFor();
+    checks++;
     const menuSize = await page.evaluate(() => ({ doc: document.documentElement.scrollWidth, body: document.body.scrollWidth }));
     if (menuSize.doc > width || menuSize.body > width) throw new Error(`${name} ${width} menu overflow ${JSON.stringify(menuSize)}`);
-    checks++;
+    const menuAudit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
+    if (menuAudit.violations.length) throw new Error(`${name} ${width} menu axe: ${menuAudit.violations.map(v => v.id + ':' + v.nodes.length).join(',')}`);
+    checks += 2;
     for (const action of ['Rezervasiya', 'Pul qeydi', 'Xərc', 'Tapşırıq']) {
       if (!await page.getByRole('button', { name: action }).isDisabled()) throw new Error(`${name} ${width} unsafe action ${action}`);
       checks++;
     }
     await page.keyboard.press('Escape');
-    if (await page.getByRole('dialog').count() || !await page.getByRole('button', { name: 'Əlavə et' }).evaluate(el => el === document.activeElement)) throw new Error(`${name} ${width} escape focus`);
+    if (await page.getByRole('dialog').count() || !await plus.evaluate(el => el === document.activeElement)) throw new Error(`${name} ${width} escape focus`);
     checks++;
+    await page.keyboard.press('Tab');
+    const focusedNav = await page.evaluate(() => document.activeElement?.textContent?.trim());
+    if (focusedNav !== 'Bu gün') throw new Error(`${name} ${width} tab focus ${focusedNav}`);
+    await page.keyboard.press('Enter');
+    await page.waitForURL('**/today');
+    checks += 2;
     await context.setOffline(true);
     await page.evaluate(() => window.dispatchEvent(new Event('offline')));
     await page.getByRole('status').getByText('Bağlantı yoxdur. Məlumat yenilənmir.').waitFor();
@@ -45,4 +60,4 @@ for (const [name, engine] of [['Google Chrome', chromium]]) {
   }
   await browser.close();
 }
-console.log(`PASS ${checks} assertions; Chromium; 320/360/390/430; nav, target, menu safety, Escape focus, offline, no overflow/JS errors`);
+console.log(`PASS ${checks} assertions; Chromium; 320/360/390/430; nav, target, keyboard Enter/Tab/Escape, axe WCAG, menu safety, offline, no overflow/JS errors`);

@@ -44,6 +44,7 @@ Sənəd bazası: 2026-11-10, Asia/Baku. Dil: Azərbaycan dili. Status: **icra ü
 | [Konfiqurasiya](01-product/CONFIGURATION.md) | Limit, vahid, dəyişmə səlahiyyəti və əsaslandırma |
 | [Kliklənən mobil prototip](02-design/PROTOTYPE.md) | UI01–19 demo və istifadə qaydası |
 | [Lokal Supabase giriş sınağı](04-quality/evidence/eve-006-2-local-supabase-attempt.md) | EVE-006.2 image/GRANT crash və Data API/Storage açıq qapısı |
+| [AT29 lokal a11y/keyboard sübutu](04-quality/evidence/eve-009-at29-local.md) | EVE-009.3 qismən browser audit; real cihaz/reader açıq |
 | [Mobil shell/AT29 qismən sübut](04-quality/evidence/eve-009-mobile-shell.md) | EVE-009.1/.2 UI və browser matrix; EVE-009.3 qapısı açıq |
 | [Prototip brauzer sübutu](04-quality/evidence/eve-002-1-2-browser.md) | EVE-002.1/.2 üçün 360 px Chrome, klaviatura və flow yoxlaması |
 | [Dəqiq form axınları](02-design/FLOW-SPEC.md) | Sahə, default, düymə, xəta və fallback |
