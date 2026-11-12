@@ -21,6 +21,10 @@ Monthly/yearly qiymətlər, 7 günlük trial, AZ panel, AZ/RU/EN content, media 
 
 Provider credential olmadan schema, UI, local integration və fake provider contract test edilə bilər. Lakin SMTP delivery, Payriff sandbox və production çıxışı tamamlanmış sayılmır.
 
+## EVE-003 feasibility nəticəsi və növbəti sübut
+
+[Email giriş feasibility](../03-engineering/AUTH-FEASIBILITY.md), [Payriff feasibility](../03-engineering/PAYRIFF-FEASIBILITY.md) və [mənbə/bloklayıcı matrisi](../04-quality/evidence/eve-003-feasibility.md) 2026-11-12-də rəsmi açıq sənədləri yoxlayıb. Bu, EXT02–05-in təmin edilməsi deyil. EXT02/03 üçün staging və custom SMTP ilə scanner, fərqli cihaz, refresh və real çatdırılma EVE-007.3-də; EXT04/05 üçün merchant sandbox, order/status/webhook doğrulaması və illik recurring EVE-027.3-də sınaqdan keçirilməlidir. Həmin nəticələr alınana qədər release gate-ləri açıqdır.
+
 ## Secret handling
 
 Açarlar .env və ya hosting secret store-a təhlükəsiz daxil edilir. Repo issue, PR, screenshot, log və agent mesajına raw key göndərilmir. Leak olarsa əvvəl revoke/rotate, sonra redacted incident. .env.example yalnız ad/placeholder saxlayır.

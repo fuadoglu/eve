@@ -6,6 +6,10 @@ Tarix: 2026-11-12 (Asia/Baku). Mərhələ: **M1 scaffold və CI inteqrasiyası**
 
 R01–R16 tələb xəritəsi, 117 OpenAPI əməliyyatı, 52 data cədvəli, 5 state machine və 36 qəbul ssenarisi yoxlanır. Main-da validator 255 birbaşa/alias field binding sayır; EVE-006.2 PR #53-də iki yanlış task binding-i çıxarılıb. EVE-001 PR #43–#46 və EVE-004 PR #47–#49 main-a merge edilib. `node scripts/docs-check.mjs`, `node scripts/verify-contracts.mjs`, Python OpenAPI/JSON Schema validatoru və prototip smoke main-da keçib. Bu yoxlamalar işləyən API/DB və ya məhsul qəbul sınağı deyil.
 
+## M0 provider feasibility
+
+- EVE-003.1 email giriş spike-ı Supabase-in passwordless, PKCE, prefetch/scanner, session və SMTP sənədlərini [ayrı feasibility artefaktında](../03-engineering/AUTH-FEASIBILITY.md) müqayisə edir. EVE-003.2 Payriff hosted checkout, status və recurring-in [rəsmi açıq məlumatını](../03-engineering/PAYRIFF-FEASIBILITY.md) Eve-nin daxili adapter qərarından ayırır. EVE-003.3 [mənbə və bloklayıcı matrisi](../04-quality/evidence/eve-003-feasibility.md) EXT02–05 üçün məsul, növbəti sınaq və release gate-i göstərir. Bu üç paket yalnız feasibility və review scope-unda `done`-dur; Supabase staging, real SMTP, Payriff merchant sandbox, AT01–03 və AT26–28 tətbiq sınaqları keçməyib. EVE-007.3/EVE-027.3 və M0 çıxış qapısı açıqdır.
+
 ## M1 kod və yoxlama
 
 - EVE-005.1 PR #40 merge `3dc2d89`: pinlənmiş Node/pnpm/Next.js/TypeScript scaffold. Merged main-da frozen lockfile install, typecheck və build keçdi.

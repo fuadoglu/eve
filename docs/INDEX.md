@@ -25,6 +25,8 @@ Sənəd bazası: 2026-11-10, Asia/Baku. Dil: Azərbaycan dili. Status: **icra ü
 | [State/capability auditi](03-engineering/STATE-CAPABILITY-AUDIT.md) | EVE-004.2 üçün DB enum, keçid və API icazə sərhədləri necə tutuşdurulub? |
 | [Təhlükəsizlik](03-engineering/SECURITY.md) | Kim hansı resursa daxil ola bilər? |
 | [İnteqrasiyalar](03-engineering/INTEGRATIONS.md) | Auth, Payriff, WhatsApp və media necə yoxlanılır? |
+| [Email giriş feasibility](03-engineering/AUTH-FEASIBILITY.md) | EVE-003.1 üçün rəsmi mənbə, namizəd axın və açıq SMTP/scanner sınağı |
+| [Payriff feasibility](03-engineering/PAYRIFF-FEASIBILITY.md) | EVE-003.2 üçün hosted checkout faktları və təsdiqsiz merchant/API sərhədi |
 | [Qəbul sınaqları](04-quality/ACCEPTANCE.md) | İşin düzgünlüyü necə sübut edilir? |
 | [OpenAPI/schema qəbulu](04-quality/OPENAPI-SCHEMA-CLOSURE.md) | EVE-004.3 contract və mənfi sınaq sübutu nədir? |
 | [Red-team](04-quality/RED-TEAM.md) | Hansı səhvlər buraxılışı dayandırır? |
@@ -37,6 +39,7 @@ Sənəd bazası: 2026-11-10, Asia/Baku. Dil: Azərbaycan dili. Status: **icra ü
 | [İstismar](05-delivery/RUNBOOK.md) | Deploy, rollback, backup və hadisə |
 | [GitHub task xəritəsi](05-delivery/GITHUB-TRACKING.md) | 8 epik və 30 issue-nun dəqiq keçidləri |
 | [İcra statusu](05-delivery/STATUS.md) | Faktiki nə edilib, sübutu haradadır? |
+| [Provider spike sübutu](04-quality/evidence/eve-003-feasibility.md) | EVE-003.3 mənbə/fərziyyə/bloklayıcı və sonrakı gate xəritəsi |
 | [Status keçidləri](01-product/STATE-MACHINES.md) | Hər action-un şərti və atomik yan təsiri |
 | [Konfiqurasiya](01-product/CONFIGURATION.md) | Limit, vahid, dəyişmə səlahiyyəti və əsaslandırma |
 | [Kliklənən mobil prototip](02-design/PROTOTYPE.md) | UI01–19 demo və istifadə qaydası |
