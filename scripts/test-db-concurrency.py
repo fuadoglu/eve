@@ -104,6 +104,88 @@ commit;
                 winner.wait(timeout=3)
 
 
+def run_first_trial_race(owner_user: str) -> None:
+    winner_sql = f"""
+begin;
+set local role authenticated;
+set local request.jwt.claim.sub = '{owner_user}';
+select id from api.create_property('Trial race winner','Synthetic') \\gset
+\\echo TRIAL_WINNER_CREATED
+select pg_sleep(1.5);
+commit;
+"""
+    winner = subprocess.Popen(
+        psql_args(),
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        bufsize=1,
+    )
+    assert winner.stdin and winner.stdout and winner.stderr
+    try:
+        winner.stdin.write(winner_sql)
+        winner.stdin.close()
+        marker_seen = False
+        deadline = time.monotonic() + 10
+        with selectors.DefaultSelector() as selector:
+            selector.register(winner.stdout, selectors.EVENT_READ)
+            while time.monotonic() < deadline:
+                if not selector.select(timeout=max(0, deadline - time.monotonic())):
+                    break
+                line = winner.stdout.readline()
+                if not line:
+                    break
+                if "TRIAL_WINNER_CREATED" in line:
+                    marker_seen = True
+                    break
+        if not marker_seen:
+            raise RuntimeError("first property transaction did not reach its uncommitted create")
+
+        loser_sql = f"""
+begin;
+set local role authenticated;
+set local request.jwt.claim.sub = '{owner_user}';
+select subscription_state from api.create_property('Trial race loser','Synthetic');
+commit;
+"""
+        loser = subprocess.run(
+            psql_args(), input=loser_sql, text=True, capture_output=True, timeout=20
+        )
+        winner_stdout = winner.stdout.read()
+        winner_stderr = winner.stderr.read()
+        winner_code = winner.wait(timeout=20)
+        if winner_code != 0:
+            raise RuntimeError(f"first trial transaction failed: {winner_stderr.strip()} {winner_stdout.strip()}")
+        if loser.returncode != 0 or loser.stdout.strip().splitlines() != ["draft"]:
+            raise RuntimeError(
+                "second concurrent property did not remain draft: "
+                f"exit={loser.returncode}, stdout={loser.stdout.strip()}, stderr={loser.stderr.strip()}"
+            )
+
+        result = psql(
+            f"select count(*)||':'||count(*) filter (where state='trialing')||':'||"
+            f"count(*) filter (where state='draft') from app_private.subscriptions s "
+            f"join app_private.owner_accounts a on a.id=s.owner_account_id "
+            f"where a.owner_user_id='{owner_user}';"
+        ).stdout.strip()
+        claims = psql(
+            f"select count(*) from app_private.trial_claims t "
+            f"join app_private.owner_accounts a on a.id=t.owner_account_id "
+            f"where a.owner_user_id='{owner_user}';"
+        ).stdout.strip()
+        if result != "2:1:1" or claims != "1":
+            raise RuntimeError(f"first-trial race invariant mismatch: subscriptions={result}, claims={claims}")
+    finally:
+        if winner.poll() is None:
+            winner.terminate()
+            try:
+                winner.wait(timeout=3)
+            except subprocess.TimeoutExpired:
+                winner.kill()
+                winner.wait(timeout=3)
+
+
 def main() -> int:
     if not shutil.which("psql"):
         print("psql is required", file=sys.stderr)
@@ -122,12 +204,12 @@ def main() -> int:
         print("refusing to run: target must be the marked localhost eve_schema_test database", file=sys.stderr)
         return 2
 
-    ids = [str(uuid.uuid4()) for _ in range(6)]
-    owner_user, account, property_id, block_a, block_b, occupancy_a = ids
+    ids = [str(uuid.uuid4()) for _ in range(7)]
+    owner_user, account, property_id, block_a, block_b, occupancy_a = ids[:6]
     occupancy_b = str(uuid.uuid4())
     setup = f"""
 begin;
-insert into auth.users(id) values ('{owner_user}');
+insert into auth.users(id) values ('{owner_user}'), ('{ids[6]}');
 insert into app_private.owner_accounts(id,owner_user_id) values ('{account}','{owner_user}');
 insert into app_private.properties(id,owner_account_id,name,area)
 values ('{property_id}','{account}','Concurrency fixture','Synthetic');
@@ -147,10 +229,22 @@ delete from auth.users where id='{owner_user}';
 """
     try:
         run_race(account, property_id, block_a, block_b, occupancy_a, occupancy_b)
+        run_first_trial_race(ids[6])
     finally:
         psql(cleanup)
+        psql(
+            f"delete from app_private.subscriptions where owner_account_id in "
+            f"(select id from app_private.owner_accounts where owner_user_id='{ids[6]}'); "
+            f"delete from app_private.trial_claims where owner_account_id in "
+            f"(select id from app_private.owner_accounts where owner_user_id='{ids[6]}'); "
+            f"delete from app_private.properties where owner_account_id in "
+            f"(select id from app_private.owner_accounts where owner_user_id='{ids[6]}'); "
+            f"delete from app_private.owner_accounts where owner_user_id='{ids[6]}'; "
+            f"delete from auth.users where id='{ids[6]}';"
+        )
 
     print("PASS occupancy concurrency: 2 concurrent transactions, 1 commit, 1 exclusion_violation, 1 active row")
+    print("PASS first-trial concurrency: 2 concurrent property creates, 1 trial claim, 1 trialing, 1 draft")
     print("LIMIT synthetic local PostgreSQL only; not booking API, hosted DB, or production evidence")
     return 0
 
