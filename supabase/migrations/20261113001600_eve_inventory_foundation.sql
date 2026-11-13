@@ -304,10 +304,12 @@ grant execute on function api.create_room(uuid,text,integer) to authenticated;
 grant execute on function api.create_inventory_item(uuid,uuid,text,numeric,text,text,numeric,bigint,date,date,text,text,text,uuid[])
   to authenticated;
 grant execute on function api.apply_inventory_template(uuid,text,text) to authenticated;
+grant create on schema api to app_executor;
 grant app_executor to current_user with set true, inherit false;
 alter function api.get_inventory(uuid) owner to app_executor;
 alter function api.create_room(uuid,text,integer) owner to app_executor;
 alter function api.create_inventory_item(uuid,uuid,text,numeric,text,text,numeric,bigint,date,date,text,text,text,uuid[]) owner to app_executor;
 alter function api.apply_inventory_template(uuid,text,text) owner to app_executor;
 revoke app_executor from current_user;
+revoke create on schema api from app_executor;
 grant usage on schema api to authenticated;
