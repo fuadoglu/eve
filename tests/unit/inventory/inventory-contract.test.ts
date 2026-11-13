@@ -76,4 +76,16 @@ test("import preview accepts a bounded server acknowledgement and reports row er
     ...acknowledgement,
     created_at: "2024-02-29T10:00:00Z",
   }));
+  assert.doesNotThrow(() => validateImportPreview({
+    ...acknowledgement,
+    created_at: "2016-12-31t23:59:60z",
+  }));
+  assert.doesNotThrow(() => validateImportPreview({
+    ...acknowledgement,
+    created_at: "2017-01-01T03:59:60+04:00",
+  }));
+  assert.throws(() => validateImportPreview({
+    ...acknowledgement,
+    created_at: "2016-12-30T23:59:60Z",
+  }), TypeError);
 });

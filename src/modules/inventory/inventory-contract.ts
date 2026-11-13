@@ -217,29 +217,48 @@ function isIntegerInRange(value: unknown, minimum: number, maximum: number): val
 
 function isDateTime(value: unknown): value is string {
   if (typeof value !== "string") return false;
-  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(?:Z|[+-](\d{2}):(\d{2}))$/.exec(value);
+  const match = /^(\d{4})-(\d{2})-(\d{2})[Tt](\d{2}):(\d{2}):(\d{2})(?:\.\d+)?([Zz]|([+-])(\d{2}):(\d{2}))$/.exec(value);
   if (!match) return false;
 
-  const [, yearPart, monthPart, dayPart, hourPart, minutePart, secondPart, offsetHourPart, offsetMinutePart] = match;
-  const year = Number(yearPart);
-  const month = Number(monthPart);
-  const day = Number(dayPart);
-  const hour = Number(hourPart);
-  const minute = Number(minutePart);
-  const second = Number(secondPart);
-  const offsetHour = Number(offsetHourPart ?? 0);
-  const offsetMinute = Number(offsetMinutePart ?? 0);
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const hour = Number(match[4]);
+  const minute = Number(match[5]);
+  const second = Number(match[6]);
+  const offsetHour = Number(match[9] ?? 0);
+  const offsetMinute = Number(match[10] ?? 0);
   const leapYear = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
   const monthDays = [31, leapYear ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
-  return month >= 1
+  const validCalendarTime = month >= 1
     && month <= 12
     && day >= 1
-    && day <= monthDays[month - 1]
+    && day <= (monthDays[month - 1] ?? 0)
     && hour <= 23
     && minute <= 59
-    && second <= 59
+    && second <= 60
     && offsetHour <= 23
-    && offsetMinute <= 59
-    && Number.isFinite(Date.parse(value));
+    && offsetMinute <= 59;
+  if (!validCalendarTime) return false;
+  if (second < 60) return Number.isFinite(Date.parse(value));
+
+  // RFC 3339's second 60 is valid only at an announced UTC leap second.
+  // Convert the local minute using its stated numeric offset and compare the
+  // resulting UTC day with the leap-second dates currently in the standard.
+  const offsetSign = match[8] === "+" ? 1 : match[8] === "-" ? -1 : 0;
+  const offsetMinutes = offsetSign * (offsetHour * 60 + offsetMinute);
+  const utcMinute = new Date(Date.UTC(year, month - 1, day, hour, minute) - offsetMinutes * 60_000);
+  const utcDate = `${utcMinute.getUTCFullYear().toString().padStart(4, "0")}-${(utcMinute.getUTCMonth() + 1).toString().padStart(2, "0")}-${utcMinute.getUTCDate().toString().padStart(2, "0")}`;
+  return utcMinute.getUTCHours() === 23
+    && utcMinute.getUTCMinutes() === 59
+    && LEAP_SECOND_UTC_DATES.has(utcDate);
 }
+
+const LEAP_SECOND_UTC_DATES = new Set([
+  "1972-06-30", "1972-12-31", "1973-12-31", "1974-12-31", "1975-12-31", "1976-12-31",
+  "1977-12-31", "1978-12-31", "1979-12-31", "1981-06-30", "1982-06-30", "1983-06-30",
+  "1985-06-30", "1987-12-31", "1989-12-31", "1990-12-31", "1992-06-30", "1993-06-30",
+  "1994-06-30", "1995-12-31", "1997-06-30", "1998-12-31", "2005-12-31", "2008-12-31",
+  "2012-06-30", "2015-06-30", "2016-12-31",
+]);
