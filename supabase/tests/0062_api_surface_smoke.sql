@@ -18,11 +18,17 @@ begin
       'api.list_current_reservation_summaries(uuid,text,uuid,integer)'::regprocedure,
       'api.list_current_manual_blocks(uuid,date,date,uuid,integer)'::regprocedure,
       'api.list_property_contact_summaries(uuid,uuid,integer)'::regprocedure,
-      'api.list_reservation_rent_summaries(uuid,timestamptz,uuid,integer)'::regprocedure)
+      'api.list_reservation_rent_summaries(uuid,timestamptz,uuid,integer)'::regprocedure,
+      'api.is_my_session_active()'::regprocedure,
+      'api.revoke_my_sessions()'::regprocedure)
       or p.prokind <> 'f'
-      or p.proowner <> 'app_executor'::regrole
+      or (p.oid = 'api.is_my_session_active()'::regprocedure and p.proowner <> 'app_session_reader'::regrole)
+      or (p.oid = 'api.revoke_my_sessions()'::regprocedure and p.proowner <> 'app_executor'::regrole)
+      or (p.oid not in ('api.is_my_session_active()'::regprocedure,'api.revoke_my_sessions()'::regprocedure)
+          and p.proowner <> 'app_executor'::regrole)
       or not p.prosecdef
-      or p.provolatile <> 's'
+      or (p.oid <> 'api.revoke_my_sessions()'::regprocedure and p.provolatile <> 's')
+      or (p.oid = 'api.revoke_my_sessions()'::regprocedure and p.provolatile <> 'v')
       or not (coalesce(p.proconfig, array[]::text[]) @> array['search_path=""']::text[])
       or has_function_privilege('anon',p.oid,'EXECUTE')
       or not has_function_privilege('authenticated',p.oid,'EXECUTE'));
@@ -33,7 +39,7 @@ begin
   select count(*) into mismatch_count
   from pg_proc p
   where p.pronamespace='api'::regnamespace;
-  if mismatch_count <> 7 then
+  if mismatch_count <> 9 then
     raise exception 'api RPC inventory changed: %', mismatch_count;
   end if;
 

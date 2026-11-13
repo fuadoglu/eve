@@ -96,9 +96,11 @@ jobs:
           create role authenticated;
           create schema auth;
           create table auth.users (id uuid primary key);
+          create table auth.sessions (id uuid primary key, user_id uuid not null, created_at timestamptz not null default now());
           create function auth.uid() returns uuid language sql stable
           as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
           grant usage on schema auth to anon, authenticated;
+          grant select on auth.sessions to anon, authenticated;
           SQL
       - name: SQL migration tətbiq et
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261111000100_eve_core_schema.sql
@@ -221,6 +223,10 @@ jobs:
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261111001100_eve_rent_read.sql
       - name: Cari və tarixi pul qeydi isolation smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_rent_read_smoke.sql
+      - name: Session revocation migration tətbiq et
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261113001200_eve_session_revocation.sql
+      - name: Session refresh və logout-all scope smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_session_revocation_smoke.sql
       - name: 52 cədvəlin RLS və grant coverage smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_rls_coverage_smoke.sql
       - name: Data API RPC allowlist və grant smoke
