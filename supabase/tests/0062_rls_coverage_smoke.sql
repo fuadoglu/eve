@@ -88,6 +88,14 @@ begin
   if table_count <> 40 then
     raise exception 'unexpected private table policies: %',table_count;
   end if;
+  if not exists (select 1 from pg_policy where polrelid='app_private.manager_invite_accept_context'::regclass
+      and polname='manager_invite_accept_context_insert' and polcmd='a'
+      and polroles=array['app_executor'::regrole::oid])
+     or not exists (select 1 from pg_policy where polrelid='app_private.manager_invite_accept_context'::regclass
+      and polname='manager_invite_accept_context_delete' and polcmd='d'
+      and polroles=array['app_executor'::regrole::oid]) then
+    raise exception 'manager invite accept context policies missing or mis-scoped';
+  end if;
   if not exists (select 1 from pg_policy where polrelid='app_private.owner_accounts'::regclass
       and polname='owner_accounts_self_create' and polcmd='a'
       and polroles=array['app_executor'::regrole::oid])
