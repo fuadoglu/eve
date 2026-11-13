@@ -22,6 +22,16 @@ Tarix: 2026-11-13. Status: **merged; EVE-008.3 DB/RLS negative-test DoD tamamlan
 - Owner A-nın invite create əməliyyatında B1 cross-owner property daxil edilməsi rədd edilir; uğursuz əməliyyatdan sonra token hash `b` üçün invite/property association persist olmamalıdır.
 - Sonrakı testdə yeni dəvət revoked A1 membership-i yalnız explicit yeni permission ilə bərpa edir.
 
+## Package acceptance crosswalk
+
+| Package acceptance | Merged evidence | Covered component result | Still open |
+|---|---|---|---|
+| AT04–06 | [EVE-006.3 DB isolation evidence](eve-006-3-db-isolation.md), CI #43379564053 | Synthetic A/B owners, M daily/full, cross-owner denial, revoke-next-request, daily finance/storage denial, 67 local HTTP/DB assertions | Complete product flows, real hosted Data API, owner-facing revoke route, private media proxy/revoke, and full AT05 old-tab read/write sequence |
+| AT25 race | [EVE-008.1 first-trial evidence](eve-008-1-property-trial.md), CI #43391826215 | Parallel first property create yields one trial claim, one `trialing`, one `draft`; archive/delete cannot create another trial | Hosted Eve Supabase and broader reservation/booking races |
+| EVE-008.3-specific extension | This PR #81 and CI #43406974550/#43407399860 | Invite-created manager membership revoke, next-call denial, remaining A2 capability, B1 denial, cross-owner invite rollback, explicit new-invite reactivation | HTTP/UI and private Storage behavior |
+
+These merged package proofs satisfy the local DB/RPC component acceptance mapping for EVE-008.3. They do not close the broader product/release acceptance gates listed below.
+
 Bu harness DB rol/JWT fixture-idir. Revoke HTTP route, owner-facing UI, real Data API header/JWT doğrulaması, private Storage, hosted Supabase və tam AT05 acceptance bu sübutun scope-unda deyil.
 
 ## Yoxlama nəticələri
