@@ -81,6 +81,12 @@ begin
   if app_private.expire_property_holds(property_a) <> 0 then
     raise exception 'repeated catch-up was not idempotent';
   end if;
+  -- Exercise the helper through the only application role granted EXECUTE.
+  perform set_config('role','app_executor',true);
+  if app_private.expire_property_holds(property_a) <> 0 then
+    raise exception 'role-switched retry unexpectedly changed state';
+  end if;
+  perform set_config('role','none',true);
   perform set_config('request.jwt.claim.sub',owner_b::text,true);
   begin
     perform app_private.expire_property_holds(property_a);
