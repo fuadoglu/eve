@@ -142,6 +142,29 @@ begin
   end if;
 end $$;
 
+-- Owner action fixture: current membership checks must reject the same manager's next request.
+update app_private.property_memberships
+set revoked_at=statement_timestamp(),version=version+1
+where user_id='f0000000-0000-0000-0000-000000000003'
+  and property_id='f2000000-0000-0000-0000-000000000001' and revoked_at is null;
+set local role authenticated;
+set local request.jwt.claims = '{"sub":"f0000000-0000-0000-0000-000000000003","email":"manager@example.test"}';
+do $$
+declare v_seen uuid[];
+begin
+  if api.has_property_capability('f2000000-0000-0000-0000-000000000001','property.read')
+     or api.has_property_capability('f2000000-0000-0000-0000-000000000003','property.read')
+     or not api.has_property_capability('f2000000-0000-0000-0000-000000000002','property.read') then
+    raise exception 'revoked or cross-owner property capability survived while other assigned property stopped working';
+  end if;
+  select coalesce(array_agg(property_id order by property_id),array[]::uuid[])
+    into v_seen from api.list_visible_property_summaries(null,100);
+  if v_seen <> array['f2000000-0000-0000-0000-000000000002'::uuid] then
+    raise exception 'next request retained revoked property or lost remaining same-owner property: %',v_seen;
+  end if;
+end $$;
+reset role;
+
 set local role authenticated;
 set local request.jwt.claims = '{"sub":"f0000000-0000-0000-0000-000000000001","email":"owner-a@example.test"}';
 do $$
@@ -273,6 +296,14 @@ begin
   end;
 end $$;
 reset role;
+do $$
+begin
+  if exists (select 1 from app_private.manager_invites where token_hash=repeat('b',64))
+     or exists (select 1 from app_private.invite_properties
+       where invite_id in (select id from app_private.manager_invites where token_hash=repeat('b',64))) then
+    raise exception 'cross-owner invite failure persisted an invite or property association';
+  end if;
+end $$;
 
 insert into app_private.manager_invites(owner_account_id,invited_by_user_id,normalized_email,token_hash,expires_at)
 values ('f1000000-0000-0000-0000-000000000001','f0000000-0000-0000-0000-000000000001','expired@example.test',repeat('d',64),now()+interval '1 day')
