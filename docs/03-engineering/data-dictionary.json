@@ -169,7 +169,8 @@
         "private_guest",
         "private_receipt",
         "private_inspection",
-        "private_task"
+        "private_task",
+        "private_inventory"
       ]
     },
     "media_state": {
@@ -7624,7 +7625,7 @@
       "checks": [
         {
           "name": "media_bucket_classification",
-          "expression": "(classification='public_property' AND bucket='eve-public-property') OR (classification='public_guide' AND bucket='eve-public-guide') OR (classification='private_guest' AND bucket='eve-private-guest') OR (classification='private_receipt' AND bucket='eve-private-receipt') OR (classification='private_inspection' AND bucket='eve-private-inspection') OR (classification='private_task' AND bucket='eve-private-task')",
+          "expression": "(classification='public_property' AND bucket='eve-public-property') OR (classification='public_guide' AND bucket='eve-public-guide') OR (classification='private_guest' AND bucket='eve-private-guest') OR (classification='private_receipt' AND bucket='eve-private-receipt') OR (classification='private_inspection' AND bucket='eve-private-inspection') OR (classification='private_task' AND bucket='eve-private-task') OR (classification='private_inventory' AND bucket='eve-private-inventory')",
           "enforcement": "CHECK"
         },
         {
@@ -7648,7 +7649,7 @@
       "rls": {
         "enabled": true,
         "select": "via binding capability or safe public classification; private assets raw public select denied",
-        "insert": "media.write capability or scoped upload intent",
+        "insert": "media.write capability or scoped upload intent; private_inventory requires inventory.manage",
         "update": "media.write capability or scoped upload intent",
         "delete": "deny; retention_service_only"
       }
@@ -7908,7 +7909,7 @@
       "rls": {
         "enabled": true,
         "select": "target capability AND media classification; link only own target",
-        "insert": "target capability; class immutable after public publish",
+        "insert": "target capability; inventory binding requires inventory.manage and validated private_inventory media",
         "update": "deny_except_documented_transition_rpc",
         "delete": "deny; retention_service_only"
       }
@@ -10435,7 +10436,7 @@
     }
   ],
   "storage": {
-    "decision": "D33",
+    "decision": "D33+D34",
     "all_buckets_private": true,
     "bucket_by_classification": {
       "public_property": "eve-public-property",
@@ -10443,7 +10444,8 @@
       "private_guest": "eve-private-guest",
       "private_receipt": "eve-private-receipt",
       "private_inspection": "eve-private-inspection",
-      "private_task": "eve-private-task"
+      "private_task": "eve-private-task",
+      "private_inventory": "eve-private-inventory"
     }
   },
   "access_boundary": {

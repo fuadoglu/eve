@@ -14345,7 +14345,8 @@
               "private_guest",
               "private_receipt",
               "private_inspection",
-              "private_task"
+              "private_task",
+              "private_inventory"
             ]
           },
           "filename": {
@@ -14387,7 +14388,7 @@
         ],
         "x-invariants": [
           "image<=15728640 bytes; video<=104857600 bytes/300 sec; audio<=60 sec",
-          "MIME və magic bytes uyğun olmalıdır; public/inspection/receipt class server capability-dən çıxarılır",
+          "MIME və magic bytes uyğun olmalıdır; public/inspection/receipt/inventory class server capability-dən çıxarılır",
           "Quota reserve/finalize serverdə atomik, orphan cleanup idempotent"
         ]
       },
@@ -14455,7 +14456,8 @@
               "private_guest",
               "private_receipt",
               "private_inspection",
-              "private_task"
+              "private_task",
+              "private_inventory"
             ]
           },
           "status": {

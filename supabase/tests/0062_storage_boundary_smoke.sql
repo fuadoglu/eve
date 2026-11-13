@@ -12,9 +12,10 @@ begin
     select count(*) from storage.buckets b
     where b.id in (
       'eve-public-property', 'eve-public-guide', 'eve-private-guest',
-      'eve-private-receipt', 'eve-private-inspection', 'eve-private-task'
+      'eve-private-receipt', 'eve-private-inspection', 'eve-private-task',
+      'eve-private-inventory'
     ) and not b.public
-  ) <> 6 then raise exception 'all six Eve buckets must be provisioned private'; end if;
+  ) <> 7 then raise exception 'all seven Eve buckets must be provisioned private'; end if;
 end $$;
 
 insert into auth.users(id) values ('77777777-7777-7777-7777-777777777777');
