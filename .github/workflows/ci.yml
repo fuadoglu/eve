@@ -223,6 +223,7 @@ jobs:
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_api_surface_smoke.sql
       - name: Paralel occupancy conflict DB sınağı
         env:
+          EVE_TEST_DATABASE: '1'
           PGHOST: localhost
           PGPORT: 5432
           PGUSER: postgres
