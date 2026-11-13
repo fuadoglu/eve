@@ -922,7 +922,7 @@
       "parent_issue": 18,
       "milestone": "M2",
       "title": "Paralel booking/block/hold testləri",
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "EVE-010.2"
       ],
