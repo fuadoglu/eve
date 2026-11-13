@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import os
+import selectors
 import shutil
 import subprocess
 import sys
@@ -42,13 +43,17 @@ commit;
         winner.stdin.close()
         marker_seen = False
         deadline = time.monotonic() + 10
-        while time.monotonic() < deadline:
-            line = winner.stdout.readline()
-            if not line:
-                break
-            if "WINNER_INSERTED" in line:
-                marker_seen = True
-                break
+        with selectors.DefaultSelector() as selector:
+            selector.register(winner.stdout, selectors.EVENT_READ)
+            while time.monotonic() < deadline:
+                if not selector.select(timeout=max(0, deadline - time.monotonic())):
+                    break
+                line = winner.stdout.readline()
+                if not line:
+                    break
+                if "WINNER_INSERTED" in line:
+                    marker_seen = True
+                    break
         if not marker_seen:
             raise RuntimeError("winner transaction did not reach its uncommitted insert")
 
@@ -133,7 +138,7 @@ delete from auth.users where id='{owner_user}';
     try:
         run_race(account, property_id, block_a, block_b, occupancy_a, occupancy_b)
     finally:
-        psql(cleanup, check=False)
+        psql(cleanup)
 
     print("PASS occupancy concurrency: 2 concurrent transactions, 1 commit, 1 exclusion_violation, 1 active row")
     print("LIMIT synthetic local PostgreSQL only; not booking API, hosted DB, or production evidence")

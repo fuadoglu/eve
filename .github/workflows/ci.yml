@@ -74,6 +74,8 @@ jobs:
     services:
       postgres:
         image: postgres:17
+        ports:
+          - 5432:5432
         env:
           POSTGRES_PASSWORD: local_schema_test_only
           POSTGRES_DB: eve_schema_test
