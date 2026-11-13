@@ -296,6 +296,7 @@ begin
 end $$;
 reset role;
 set local role authenticated;
+set local request.jwt.claims = '{"sub":"f0000000-0000-0000-0000-000000000006","email":"expired@example.test"}';
 do $$
 declare v_result jsonb;
 begin
@@ -306,7 +307,7 @@ reset role;
 do $$
 begin
   if (select state from app_private.manager_invites where token_hash=repeat('d',64)) <> 'expired'
-     or exists (select 1 from app_private.property_memberships where user_id='f0000000-0000-0000-0000-000000000004'
+     or exists (select 1 from app_private.property_memberships where user_id='f0000000-0000-0000-0000-000000000006'
        and owner_account_id='f1000000-0000-0000-0000-000000000001' and revoked_at is null
        and property_id in (select property_id from app_private.invite_properties
          where invite_id=(select id from app_private.manager_invites where token_hash=repeat('d',64)))) then
@@ -314,7 +315,7 @@ begin
   end if;
 end $$;
 set local role authenticated;
-set local request.jwt.claims = '{"sub":"f0000000-0000-0000-0000-000000000004","email":"expired@example.test"}';
+set local request.jwt.claims = '{"sub":"f0000000-0000-0000-0000-000000000006","email":"expired@example.test"}';
 do $$
 begin
   if api.accept_manager_invite(repeat('d',64))->>'status' is distinct from 'expired' then

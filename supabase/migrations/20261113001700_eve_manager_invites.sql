@@ -73,13 +73,18 @@ revoke all on function app_private.current_actor_email_verified() from public, a
 grant execute on function app_private.current_actor_email_verified() to app_executor;
 
 create function app_private.clear_manager_invite_accept_context()
-returns void
-language sql volatile security definer set search_path = ''
+returns integer
+language plpgsql volatile security definer set search_path = ''
 as $$
+declare
+  v_deleted integer;
+begin
   delete from app_private.manager_invite_accept_context
   where transaction_id=pg_catalog.txid_current()
-    and backend_pid=pg_catalog.pg_backend_pid()
-    and actor_id=app_private.current_actor_id();
+    and backend_pid=pg_catalog.pg_backend_pid();
+  get diagnostics v_deleted = row_count;
+  return v_deleted;
+end;
 $$;
 revoke all on function app_private.clear_manager_invite_accept_context() from public, anon, authenticated;
 grant execute on function app_private.clear_manager_invite_accept_context() to app_executor;
@@ -403,7 +408,9 @@ begin
     set state='accepted',accepted_user_id=v_actor,updated_at=v_now,version=version+1
     where id=v_invite.id;
 
-  perform app_private.clear_manager_invite_accept_context();
+  if app_private.clear_manager_invite_accept_context() <> 1 then
+    raise exception using errcode='55000', message='manager_invite_accept_context_cleanup_failed';
+  end if;
 
   return jsonb_build_object('status','accepted','items',coalesce(v_items,'[]'::jsonb),'next_cursor',null);
 end;
