@@ -271,6 +271,8 @@ jobs:
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
             < supabase/tests/0062_api_surface_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
+            < supabase/tests/0062_session_revocation_smoke.sql
+          docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
             < supabase/tests/0062_rls_coverage_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
             < supabase/tests/0062_rent_read_smoke.sql
