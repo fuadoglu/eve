@@ -150,7 +150,7 @@ for(const [schema,field] of [['ScopedAcceptInput','claimed_name'],['ScopedTaskDo
   assert(!bindings.bindings.some(b=>b.schema===schema&&b.api_field===field),`${key}: task transition history cannot write a base field`);
   assert(bindings.computed_fields.some(b=>b.schema===schema&&b.api_field===field&&b.rule.includes('EVE-017.1')),`${key}: task transition history contract missing`);
 }
-const machineEnums={reservation:'reservation_state',task:'task_state',inspection:'submission_state',expense:'expense_approval',billing_order:'order_state'};
+const machineEnums={reservation:'reservation_state',task:'task_state',inspection:'submission_state',expense:'expense_approval',billing_order:'order_state',manager_invite:'invite_state'};
 const stateCapabilityApis={
   'reservation.write':['reservation.write','reservation.write_both_properties'],
   'system.hold_expiry':[],
@@ -162,6 +162,8 @@ const stateCapabilityApis={
   'expense.propose':['expense.propose'],
   'finance.manage':['finance.manage'],
   'billing.owner':['owner'],
+  owner:['owner'],
+  'session.manage':['session.manage'],
   'system.billing':[],
   'operator.allowlisted':['operator.allowlisted']
 };

@@ -1019,6 +1019,129 @@
           "idempotent": true
         }
       ]
+    },
+    {
+      "name": "manager_invite",
+      "states": [
+        "absent",
+        "pending",
+        "accepted",
+        "revoked",
+        "expired"
+      ],
+      "terminal_states": [
+        "accepted",
+        "revoked",
+        "expired"
+      ],
+      "transitions": [
+        {
+          "id": "manager_invite.create",
+          "action": "create",
+          "from_states": [
+            "absent"
+          ],
+          "to_state": "pending",
+          "capability": "owner",
+          "preconditions": [
+            "path_property_in_selected_property_ids",
+            "all_properties_same_owner",
+            "active_or_trial_entitlement_for_each_property",
+            "valid_email",
+            "sha256_token_hash",
+            "ttl_at_most_24_hours"
+          ],
+          "transaction_effects": [
+            "revoke_previous_pending_invite_for_owner_email",
+            "insert_invite",
+            "insert_all_invite_properties"
+          ],
+          "requirements": [
+            "R03"
+          ],
+          "acceptance": [
+            "AT04"
+          ],
+          "invalid_error": "FORBIDDEN",
+          "idempotent": false
+        },
+        {
+          "id": "manager_invite.accept",
+          "action": "accept",
+          "from_states": [
+            "pending"
+          ],
+          "to_state": "accepted",
+          "capability": "session.manage",
+          "preconditions": [
+            "authenticated_verified_email_matches",
+            "invite_not_expired",
+            "all_properties_active_at_acceptance",
+            "no_active_duplicate_membership"
+          ],
+          "transaction_effects": [
+            "insert_or_reactivate_all_memberships",
+            "mark_invite_accepted"
+          ],
+          "requirements": [
+            "R03"
+          ],
+          "acceptance": [
+            "AT04",
+            "AT05"
+          ],
+          "invalid_error": "LINK_EXPIRED",
+          "idempotent": false
+        },
+        {
+          "id": "manager_invite.expire",
+          "action": "expire",
+          "from_states": [
+            "pending"
+          ],
+          "to_state": "expired",
+          "capability": "session.manage",
+          "preconditions": [
+            "invite_expired",
+            "authenticated_verified_email_matches"
+          ],
+          "transaction_effects": [
+            "mark_invite_expired",
+            "do_not_create_membership"
+          ],
+          "requirements": [
+            "R03"
+          ],
+          "acceptance": [
+            "AT04"
+          ],
+          "invalid_error": "LINK_EXPIRED",
+          "idempotent": true
+        },
+        {
+          "id": "manager_invite.replace",
+          "action": "replace",
+          "from_states": [
+            "pending"
+          ],
+          "to_state": "revoked",
+          "capability": "owner",
+          "preconditions": [
+            "same_owner_and_email_new_invite"
+          ],
+          "transaction_effects": [
+            "invalidate_previous_token_hash"
+          ],
+          "requirements": [
+            "R03"
+          ],
+          "acceptance": [
+            "AT04"
+          ],
+          "invalid_error": "FORBIDDEN",
+          "idempotent": true
+        }
+      ]
     }
   ],
   "derived_states": {

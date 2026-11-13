@@ -52,6 +52,12 @@ Yeni guide locale ilk dəfə yazılanda expected_version=0 qəbul edilir; yalnı
 
 ## Həssas əməliyyat semantikası
 
+### Menecer dəvəti və ev icazəsi
+
+`inviteManager` serverdə emaili trim/lower edir, path ev daxil olmaqla bütün property ID-ləri eyni owner və aktiv/trialing entitlement üçün yoxlayır, seçilmiş evlərə eyni `daily`/`full` permission ilə invite yazılarını bir transaction-da yaradır. Dəvət 24 saat qüvvədədir (D35); hər owner/email üçün əvvəlki pending dəvətlər ləğv edilir. Raw token serverdə kriptoqrafik random mənbədən yaranır, yalnız SHA-256 hex hash DB-yə ötürülür. Dəvət məktubu provider adapteri göndərməni təsdiqləməyənədək API uğur kimi təqdim edilmir. `MembershipPage`-də yalnız dəvət statusu və təhlükəsiz DTO qaytarılır.
+
+`acceptManagerInvite` raw tokeni serverdə hash edir və yalnız JWT-dəki authenticated email normalized dəvət email-inə uyğun gəldikdə, dəvət pending və vaxtı keçməmiş olduqda qəbul edir. Property/entitlement acceptance anında yenidən yoxlanır; bütün seçilmiş evlər üçün üzvlüklər və invite state eyni transaction-da yazılır. Yanlış email/token neytral 404-dür, expiry 410-dur, token DB/log/response-a düşmür. Replay rədd edilir. Mövcud active membership permission-u dəvətlə səssiz dəyişdirilmir.
+
 ### Rezervasiya
 
 Create reservation+occupancy+initial receipt+outbox-u bir transaction-da yaradır. Hold expiry transaction daxilində yenidən yoxlanır; cron gecikməsi correctness-i pozmur. free_stay=true olmadan 0 quote qəbul edilmir. Giriş/çıxış vaxtı evdən hazır gəlir; check_out check_in-dən böyükdür. Təsdiqlənmiş gecələrə overlap DB constraint ilə rədd edilir.

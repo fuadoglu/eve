@@ -1068,8 +1068,8 @@
       "rls": {
         "enabled": true,
         "select": "owner OR user_id=app_private.current_actor_id()",
-        "insert": "owner_only",
-        "update": "owner_only",
+        "insert": "pending invite recipient; property and permission must match",
+        "update": "recipient may reactivate own revoked membership through pending invite",
         "delete": "deny; retention_service_only"
       }
     },
@@ -1100,13 +1100,23 @@
           "validation": []
         },
         {
+          "name": "invited_by_user_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "description": "Dəvəti yaradan sahib hesabı; accepted membership granted_by üçün",
+          "validation": []
+        },
+        {
           "name": "normalized_email",
           "type": "varchar(254)",
           "nullable": false,
           "default": null,
           "description": "Dəvət emaili",
           "validation": [
-            "char_length(normalized_email) <= 254"
+            "char_length(normalized_email) <= 254",
+            "normalized_email = lower(btrim(normalized_email))",
+            "normalized_email is a valid email address"
           ]
         },
         {
@@ -1116,7 +1126,7 @@
           "default": null,
           "description": "SHA-256 token hash",
           "validation": [
-            "char_length(token_hash) <= 64"
+            "token_hash matches lowercase SHA-256 hex"
           ]
         },
         {
@@ -1125,7 +1135,10 @@
           "nullable": false,
           "default": null,
           "description": "Son qəbul vaxtı",
-          "validation": []
+          "validation": [
+            "expires_at > created_at",
+            "expires_at <= created_at + interval '24 hours'"
+          ]
         },
         {
           "name": "state",
@@ -1218,21 +1231,55 @@
           "on_delete": "RESTRICT",
           "on_update": "NO ACTION",
           "deferrable": false
+        },
+        {
+          "columns": [
+            "invited_by_user_id"
+          ],
+          "references": {
+            "table": "auth.users",
+            "columns": [
+              "id"
+            ]
+          },
+          "on_delete": "RESTRICT",
+          "on_update": "NO ACTION",
+          "deferrable": false
         }
       ],
       "checks": [
         {
           "name": "invite_expiry",
-          "expression": "expires_at > created_at",
+          "expression": "expires_at > created_at AND expires_at <= created_at + interval '24 hours'",
+          "enforcement": "CHECK"
+        },
+        {
+          "name": "manager_invites_token_hash_sha256",
+          "expression": "token_hash matches lowercase 64-character SHA-256 hex",
+          "enforcement": "CHECK"
+        },
+        {
+          "name": "manager_invites_normalized_email",
+          "expression": "normalized_email = lower(btrim(normalized_email)) AND normalized_email matches email pattern",
           "enforcement": "CHECK"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "columns": [
+            "owner_account_id",
+            "normalized_email"
+          ],
+          "method": "btree",
+          "predicate": "state = 'pending'",
+          "unique": false
+        }
+      ],
       "rls": {
         "enabled": true,
-        "select": "owner_only",
+        "select": "owner OR exact normalized email recipient",
         "insert": "owner_only",
-        "update": "owner_only",
+        "update": "owner OR matching invite recipient may accept/expire pending invite",
         "delete": "deny; retention_service_only"
       }
     },
@@ -1373,9 +1420,9 @@
       "indexes": [],
       "rls": {
         "enabled": true,
-        "select": "owner_only",
+        "select": "owner OR matching invite recipient while pending",
         "insert": "owner_only",
-        "update": "owner_only",
+        "update": "deny",
         "delete": "deny; retention_service_only"
       }
     },

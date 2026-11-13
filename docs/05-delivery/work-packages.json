@@ -693,7 +693,7 @@
       "parent_issue": 16,
       "milestone": "M1",
       "title": "Email invite və property permission",
-      "status": "backlog",
+      "status": "in_progress",
       "depends_on": [
         "EVE-008.1"
       ],

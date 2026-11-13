@@ -19,7 +19,7 @@ Maşınla oxunan əsas müqavilə: **[data-dictionary.json](data-dictionary.json
 | Silinmə | Domain FK-larda `ON DELETE RESTRICT`; archive və hüquqi purge ayrı prosesdir |
 | Secret | Raw token, password, kart PAN/CVV Eve cədvəllərində yoxdur |
 
-Menecer dəvətinin tokeni yüksək entropiyalı bearer secret-dir: DB-də yalnız SHA-256 hash qalır. Dəvət bir dəfə qəbul olunur, authenticated hesab email-i normalized dəvət email-i ilə dəqiq uyğun gəlməlidir, expiry serverdə `created_at + 24h`-dən gec olmur (D35). Bu link hesab yaratmır və başqa emailə account takeover vermir.
+Menecer dəvətinin tokeni yüksək entropiyalı bearer secret-dir: DB-də yalnız 64 simvolluq lowercase SHA-256 hex hash qalır. Dəvət bir dəfə qəbul olunur, authenticated hesabın verified JWT email-i normalized dəvət email-i ilə dəqiq uyğun gəlməlidir, expiry serverdə `created_at + 24h`-dən gec olmur (D35). Bir owner/email üçün yeni dəvət əvvəlki pending dəvəti ləğv edir. Qəbul zamanı bütün property entitlement-ləri yenidən yoxlanır və membership-lər dəvətin seçilmiş evləri/permission-u ilə eyni transaction-da yaranır; mövcud active membership səssiz dəyişdirilmir. Bu link hesab yaratmır və başqa emailə account takeover vermir.
 
 `auth.users` xarici, Supabase tərəfindən idarə olunan cədvəldir. Eve yalnız UUID ilə bağlanır; email kimliyi oradan doğrulanır. `profiles` ayrıca qlobal owner/manager rolunu saxlamır.
 

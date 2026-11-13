@@ -14,6 +14,7 @@
     "typecheck": "tsc --noEmit",
     "test:env": "node --conditions=react-server --experimental-strip-types --test tests/unit/env.test.ts",
     "test:identity": "node --conditions=react-server --experimental-strip-types --test tests/unit/identity/*.test.ts",
+    "test:access": "node --conditions=react-server --experimental-strip-types --test tests/unit/access/*.test.ts",
     "test:ui": "node scripts/test-mobile-shell.mjs"
   },
   "dependencies": {

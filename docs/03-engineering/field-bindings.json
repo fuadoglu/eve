@@ -259,7 +259,15 @@
       "table": "manager_invites",
       "column": "normalized_email",
       "mode": "alias",
-      "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
+      "note": "Server trim/lower edir; Supabase sessiyasının verified email-i ilə qəbulda dəqiq müqayisə olunur."
+    },
+    {
+      "schema": "MembershipCreate",
+      "api_field": "permission",
+      "table": "invite_properties",
+      "column": "permission",
+      "mode": "direct",
+      "note": "Eyni dəvətdə seçilən bütün property-lər üçün eyni permission yazılır."
     },
     {
       "schema": "Contact",
@@ -2426,12 +2434,12 @@
     {
       "schema": "MembershipCreate",
       "api_field": "property_ids",
-      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+      "rule": "Atomik invite_properties.property_id əlaqələri; path property seçilmiş siyahıda olmalı, bütün evlər eyni owner və active/trialing entitlement daxilində olmalıdır."
     },
     {
-      "schema": "MembershipCreate",
-      "api_field": "permission",
-      "rule": "ID/relationship, media binding, server projection və ya atomik domain command; bu schema-nın əsas cədvəlinə birbaşa scalar yazı deyil."
+      "schema": "InviteAccept",
+      "api_field": "invite_token",
+      "rule": "Server raw bearer tokeni SHA-256 hex edir; yalnız nəticə manager_invites.token_hash-a yazılır, raw token DB-yə və loglara yazılmır."
     },
     {
       "schema": "Contact",
