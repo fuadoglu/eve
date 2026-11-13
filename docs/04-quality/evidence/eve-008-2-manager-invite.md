@@ -8,7 +8,7 @@ Tarix: 2026-11-13. Status: **merged; EVE-008.2 local DB/RPC component DoD tamaml
 - Branch: `feat/EVE-008-2-manager-invite`
 - PR: [#79 — feat(EVE-008.2): add manager invite persistence](https://github.com/fuadoglu/eve/pull/79), squash merge `59fea750fbb1a3bcb34b6407085c059e1982475e`.
 - Final PR head: `afc24586155f42f905d3de1712b034984a3812fd`; main branch merge commit CI: [run #43405445062](https://github.com/fuadoglu/eve/actions/runs/43405445062); final PR CI: [run #43405186105](https://github.com/fuadoglu/eve/actions/runs/43405186105). Hər iki run-da `docs`, `sql_schema`, `supabase_local` PASS.
-- Paket statusu: `done`; main ledger 25/90 (27.8%).
+- Paket statusu: `done`; PR #80 closure-record merge olunduqdan sonra delivery ledger 25/90 (27.8%) olacaq; PR #80-dən əvvəlki main snapshot 24/90 (26.7%) idi.
 - DB migration: `20261113001700_eve_manager_invites.sql` (yalnız forward; verified `auth.users` email və client tərəfindən saxtalaşdırıla bilməyən transaction-scoped accept context ilə).
 - D35: birdəfəlik email-match dəvət üçün 24 saatlıq maximum TTL; NIST istinadı yalnız comparator-dur, Eve auth deyil.
 - D33 media seçimi: ayrı private inventory bucket artıq main-dakı D34 qərarı və EVE-019.1 ilə tətbiq olunub.
