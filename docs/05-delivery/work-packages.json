@@ -922,29 +922,27 @@
       "parent_issue": 18,
       "milestone": "M2",
       "title": "Paralel booking/block/hold testləri",
-      "status": "backlog",
+      "status": "in_progress",
       "depends_on": [
         "EVE-010.2"
       ],
       "role": "qa_redteam",
       "owned_path_candidates": [
-        "src/modules/reservations/",
-        "src/modules/properties/",
-        "app/(panel)/calendar/"
+        "scripts/test-db-concurrency.py"
       ],
-      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "ownership_rule": "İnteqrator concurrency runner scope-unu və CI invocation-u koordinasiya edir; migration/API/lockfile ortaq dəyişmir.",
       "deliverable": "Paralel booking/block/hold testləri üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
       "acceptance": [
-        "AT07–09 concurrency",
-        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
-        "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
+        "AT07/AT09 DB component: property-locked concurrent manual-block, hold and reservation transactions for the same [check_in,check_out) interval commit at most one active occupancy; expired-hold next-write catch-up releases the interval after a delayed background lock.",
+        "A losing transaction leaves no reservation/placement/occupancy; successful catch-up is repeatable and preserves confirmed/future states; one positive and one negative result are recorded.",
+        "Full AT08 public valid-departure behavior and AT09 reservation-create idempotency remain open until their query/RPC components exist; this package does not mark those parent acceptance scenarios passed."
       ],
       "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
       "reviewer_role": "integration_reviewer",
       "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
       "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
       "external_gates": [],
-      "expected_result": "Paralel booking/block/hold testləri üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
+      "expected_result": "PostgreSQL DB-level race and delayed-expiry catch-up have executable synthetic concurrency evidence. Full AT07 booking RPC, AT08 public valid-departure, and AT09 reservation-create idempotency remain open and are not claimed passed.",
       "parent_acceptance_reference": "AT07–09 concurrency"
     },
     {
