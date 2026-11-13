@@ -54,6 +54,16 @@
       "mutable": true
     },
     {
+      "key": "access.manager_invite_ttl_hours",
+      "value": 24,
+      "unit": "saat",
+      "scope": "server",
+      "rationale": "Birdəfəlik və emaili uyğun gələn dəvət linkinin təsir pəncərəsini məhdudlaşdırır, gecikmiş email üçün qəbul vaxtı verir. NIST email confirmation code üçün göstərdiyi 24 saat yuxarı hədlə müqayisə edilən konservativ ilkin seçimdir; manager dəvəti authentication faktoru deyil.",
+      "requirement": "R03",
+      "acceptance": "AT04",
+      "mutable": true
+    },
+    {
       "key": "auth.link_requests_per_email_hour",
       "value": 5,
       "unit": "sorğu/saat",
