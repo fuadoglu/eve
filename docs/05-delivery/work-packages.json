@@ -891,17 +891,17 @@
       "parent_issue": 18,
       "milestone": "M2",
       "title": "Expired hold lock/catch-up",
-      "status": "backlog",
+      "status": "in_progress",
       "depends_on": [
         "EVE-010.1"
       ],
       "role": "domain_engineer",
       "owned_path_candidates": [
-        "src/modules/reservations/",
-        "src/modules/properties/",
-        "app/(panel)/calendar/"
+        "supabase/migrations/20261113001800_eve_expired_hold_catchup.sql",
+        "supabase/tests/0063_expired_hold_catchup_smoke.sql",
+        ".github/workflows/ci.yml"
       ],
-      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "ownership_rule": "Schema migration/CI inteqrator tərəfindən koordinasiya edilir; OpenAPI/API types/lockfile/env müqaviləsi dəyişmir; yalnız app_executor üçün private helper, ayrıca smoke və CI wiring əlavə olunur.",
       "deliverable": "Expired hold lock/catch-up üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
       "acceptance": [
         "Expired hold lock/catch-up üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
