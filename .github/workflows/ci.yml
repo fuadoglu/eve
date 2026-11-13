@@ -37,6 +37,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Env kontraktını yoxla
         run: pnpm test:env
+      - name: Email passwordless axın unit sınaqları
+        run: pnpm test:identity
       - name: TypeScript yoxlaması
         run: pnpm typecheck
       - name: Production build
