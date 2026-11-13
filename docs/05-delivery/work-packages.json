@@ -523,7 +523,7 @@
       "parent_issue": 14,
       "milestone": "M1",
       "title": "DB isolation və concurrency fixture-ləri",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-006.2"
       ],
