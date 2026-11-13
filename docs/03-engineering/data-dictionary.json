@@ -877,7 +877,7 @@
       ],
       "rls": {
         "enabled": true,
-        "select": "owner OR current_membership(property_id); financial data separately projected",
+        "select": "owner OR current_membership(property_id) OR exact-email recipient of pending invite for this property; financial data separately projected",
         "insert": "RPC-only: owner creates own tenant property; owner_account_id derived, never client-selected",
         "update": "RPC-only allowlisted property fields; owner_account_id immutable; archived_at owner-only; see ACCESS-BOUNDARY.md",
         "delete": "deny; retention_service_only"
@@ -8272,7 +8272,7 @@
       "indexes": [],
       "rls": {
         "enabled": true,
-        "select": "owner; assigned manager only status/end projection",
+        "select": "owner; assigned manager status/end projection; exact-email pending invite recipient only for selected property entitlement check",
         "insert": "billing verified transaction only; opt-in owner explicit",
         "update": "billing verified transaction only; opt-in owner explicit",
         "delete": "deny; retention_service_only"

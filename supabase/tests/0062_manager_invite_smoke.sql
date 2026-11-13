@@ -70,6 +70,14 @@ end $$;
 
 set local request.jwt.claims = '{"sub":"f0000000-0000-0000-0000-000000000003","email":"manager@example.test"}';
 do $$
+begin
+  if exists (select 1 from api.list_visible_property_summaries(null,100)
+      where property_id in ('f2000000-0000-0000-0000-000000000001',
+                            'f2000000-0000-0000-0000-000000000002')) then
+    raise exception 'pending invite RLS leaked properties through the normal property list';
+  end if;
+end $$;
+do $$
 declare v_result jsonb;
 begin
   v_result := api.accept_manager_invite(repeat('a',64));

@@ -54,6 +54,7 @@ begin
     ('profiles','profiles_self_read'),
     ('owner_accounts','owner_accounts_self_read'),
     ('properties','properties_scoped_read'),
+    ('properties','properties_matching_invite_read'),
     ('property_memberships','property_memberships_self_or_owner_read'),
     ('reservations','reservations_current_property_read'),
     ('reservation_placements','reservation_placements_current_read'),
@@ -63,6 +64,7 @@ begin
     ('rent_entries','rent_entries_current_or_finance_read'),
     ('subscriptions','subscriptions_inventory_read'),
     ('subscriptions','subscriptions_owner_invite_read'),
+    ('subscriptions','subscriptions_matching_invite_read'),
     ('manager_invites','manager_invites_owner_read'),
     ('manager_invites','manager_invites_matching_email_read'),
     ('invite_properties','invite_properties_owner_read'),
@@ -83,7 +85,7 @@ begin
   select count(*) into table_count
   from pg_policy p join pg_class c on c.oid=p.polrelid
   where c.relnamespace='app_private'::regnamespace;
-  if table_count <> 36 then
+  if table_count <> 38 then
     raise exception 'unexpected private table policies: %',table_count;
   end if;
   if not exists (select 1 from pg_policy where polrelid='app_private.owner_accounts'::regclass

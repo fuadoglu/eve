@@ -15,6 +15,7 @@ Tarix: 2026-11-13. Status: **branch-də implementasiya; CI və müstəqil review
 
 - `api.create_manager_invite` path property-nin siyahıda olmasını, 1–100 eyni-owner property-ni, hər evdə active/trial entitlement-i, `daily`/`full` permission-u, normalized email və SHA-256 token hash-i transaction daxilində yoxlayır. Hər owner/email üçün əvvəlki pending invite ləğv olunur; raw bearer token qəbul edilmir və cavabda hash yoxdur.
 - `api.accept_manager_invite` hash/email/state/expiry-ni yoxlayır, bütün property entitlement-lərini yenidən yoxlayır, revoked membership-i bərpa edə və bütün property membership-lərini atomik yarada bilir. Yanlış email neytral 404-dür, expiry state-ni `expired` edib membership yaratmır; replay rədd edilir.
+- Pending recipient yalnız öz dəvətində seçilmiş property və subscription sətirlərini executor/RLS daxilində entitlement recheck üçün görə bilər; normal property-list RPC capability yoxlaması ilə invite olunmuş, hələ qəbul edilməmiş evi qaytarmır.
 - `invited_by_user_id` dəvət sahibini membership `granted_by` üçün saxlayır, beləliklə manager accept zamanı owner_accounts tenant sətirinə əlavə read policy açılmır.
 - `invite-token.ts` serverdə 256-bit token yaradır və SHA-256 hex qaytarır; raw token yalnız delivery adapterinə ötürülməlidir.
 - Data dictionary, field bindings, state machine, OpenAPI, RLS/grant/API allowlist smoke və CI migration zənciri yenilənib.

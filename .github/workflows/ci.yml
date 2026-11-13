@@ -39,6 +39,8 @@ jobs:
         run: pnpm test:env
       - name: Email passwordless axın unit sınaqları
         run: pnpm test:identity
+      - name: Manager invite token unit sınaqları
+        run: pnpm test:access
       - name: TypeScript yoxlaması
         run: pnpm typecheck
       - name: Production build

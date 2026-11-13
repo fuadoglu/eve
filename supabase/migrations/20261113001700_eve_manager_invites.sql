@@ -35,6 +35,23 @@ grant select on app_private.subscriptions to app_executor;
 
 create policy subscriptions_owner_invite_read on app_private.subscriptions
   for select to app_executor using (app_private.is_owner(owner_account_id));
+create policy subscriptions_matching_invite_read on app_private.subscriptions
+  for select to app_executor using (exists (
+    select 1 from app_private.manager_invites i
+    join app_private.invite_properties ip on ip.invite_id=i.id and ip.owner_account_id=i.owner_account_id
+    where ip.property_id=subscriptions.property_id
+      and ip.owner_account_id=subscriptions.owner_account_id
+      and i.state='pending' and i.normalized_email=(select app_private.current_actor_email())
+      and (select app_private.current_actor_id()) is not null
+  ));
+create policy properties_matching_invite_read on app_private.properties
+  for select to app_executor using (exists (
+    select 1 from app_private.manager_invites i
+    join app_private.invite_properties ip on ip.invite_id=i.id and ip.owner_account_id=i.owner_account_id
+    where ip.property_id=properties.id and ip.owner_account_id=properties.owner_account_id
+      and i.state='pending' and i.normalized_email=(select app_private.current_actor_email())
+      and (select app_private.current_actor_id()) is not null
+  ));
 create policy manager_invites_owner_read on app_private.manager_invites
   for select to app_executor using (app_private.is_owner(owner_account_id));
 create policy manager_invites_owner_create on app_private.manager_invites
