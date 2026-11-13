@@ -36,11 +36,12 @@ begin
      or not has_column_privilege('app_session_reader','auth.sessions','id','SELECT')
      or not has_column_privilege('app_session_reader','auth.sessions','user_id','SELECT')
      or not has_column_privilege('app_session_reader','auth.sessions','created_at','SELECT') then
-    raise exception 'session reader grants missing: auth_usage=%, id=%, user_id=%, created_at=%',
+    raise exception 'session reader grants missing: auth_usage=%, id=%, user_id=%, created_at=%, acl=%',
       has_schema_privilege('app_session_reader','auth','USAGE'),
       has_column_privilege('app_session_reader','auth.sessions','id','SELECT'),
       has_column_privilege('app_session_reader','auth.sessions','user_id','SELECT'),
-      has_column_privilege('app_session_reader','auth.sessions','created_at','SELECT');
+      has_column_privilege('app_session_reader','auth.sessions','created_at','SELECT'),
+      (select nspacl from pg_namespace where nspname='auth');
   end if;
 end $$;
 
