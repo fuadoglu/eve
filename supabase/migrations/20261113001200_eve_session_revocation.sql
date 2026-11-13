@@ -25,7 +25,7 @@ begin
 end $$;
 
 grant usage on schema app_private, auth to app_session_reader;
-grant select (session_revoked_before) on app_private.profiles to app_session_reader;
+grant select (user_id, session_revoked_before) on app_private.profiles to app_session_reader;
 grant execute on function app_private.current_actor_id() to app_session_reader;
 grant select (id, user_id, created_at) on auth.sessions to app_session_reader;
 
