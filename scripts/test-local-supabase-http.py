@@ -66,13 +66,15 @@ def local_signing_key():
     return base64.urlsafe_b64decode(encoded + "=" * (-len(encoded) % 4))
 
 
-def jwt(actor, key, role="authenticated"):
+def jwt(actor, key, role="authenticated", issued_at=None, session_id=None):
     def part(value):
         return b64(json.dumps(value, separators=(",", ":")).encode())
 
+    issued_at = int(time.time()) if issued_at is None else issued_at
     signed = part({"alg": "HS256", "typ": "JWT"}) + b"." + part({
         "role": role, "sub": actor, "aud": "authenticated",
-        "exp": int(time.time()) + 300,
+        "iat": issued_at, "exp": max(int(time.time()) + 300, issued_at + 300),
+        "session_id": session_id or str(uuid.uuid4()),
     })
     return (signed + b"." + b64(hmac.new(key, signed, hashlib.sha256).digest())).decode()
 
@@ -113,6 +115,13 @@ def verify(name, condition, detail):
     print("PASS " + name)
 
 
+def safe_error_detail(status, data):
+    error = data[0] if isinstance(data, list) and data else data
+    if isinstance(error, dict):
+        return f"{status}:{error.get('code', '')}:{error.get('message', '')}"
+    return f"{status}:{type(data).__name__}:{str(data)[:160]}"
+
+
 def rpc(name, actor, key, arguments, *, role="authenticated", bearer=None):
     status, body = request("/rest/v1/rpc/" + name, actor=actor, key=key,
                            role=role, bearer=bearer, payload=arguments)
@@ -122,6 +131,45 @@ def rpc(name, actor, key, arguments, *, role="authenticated", bearer=None):
 def main():
     assert_local_docker()
     key = local_signing_key()
+    session_a, session_b = str(uuid.uuid4()), str(uuid.uuid4())
+    session_a_id, session_b_id, session_a_fresh_id = (str(uuid.uuid4()) for _ in range(3))
+    sql(f"insert into auth.users(id) values ('{session_a}'),('{session_b}');")
+    sql(f"insert into auth.sessions(id,user_id,created_at) values ('{session_a_id}','{session_a}',now()),('{session_b_id}','{session_b}',now());")
+    old_session_token = jwt(session_a, key, session_id=session_a_id)
+    try:
+        status, data = rpc("is_my_session_active", session_a, key, {}, bearer=old_session_token)
+        verify("session new user without profile active", status == 200 and data is True,
+               safe_error_detail(status, data))
+        status, data = rpc("revoke_my_sessions", session_a, key, {})
+        verify("session logout-all cutoff recorded", status == 200 and data is True,
+               str(status))
+        status, data = rpc("is_my_session_active", session_a, key, {}, bearer=old_session_token)
+        verify("session pre-cutoff token denied", status == 200 and data is False,
+               str(status))
+        refreshed_old_session = jwt(session_a, key, issued_at=int(time.time()) + 30,
+                                    session_id=session_a_id)
+        status, data = rpc("is_my_session_active", session_a, key, {},
+                           bearer=refreshed_old_session)
+        verify("session refreshed old session remains denied", status == 200 and data is False,
+               str(status))
+        time.sleep(0.05)
+        sql(f"insert into auth.sessions(id,user_id,created_at) values ('{session_a_fresh_id}','{session_a}',now() + interval '1 second');")
+        status, data = rpc("is_my_session_active", session_a, key, {},
+                           bearer=jwt(session_a, key, session_id=session_a_fresh_id))
+        verify("session post-cutoff login active", status == 200 and data is True,
+               str(status))
+        status, data = rpc("is_my_session_active", session_b, key, {},
+                           bearer=jwt(session_b, key, session_id=session_b_id))
+        verify("session logout-all tenant isolation", status == 200 and data is True,
+               str(status))
+        status, data = rpc("revoke_my_sessions", session_a, key, {}, role="anon")
+        verify("session anonymous revoke denied", status in (401, 403)
+               and isinstance(data, dict) and data.get("code") == "42501", str(status))
+    finally:
+        sql(f"delete from app_private.profiles where user_id in ('{session_a}','{session_b}'); "
+            f"delete from auth.sessions where user_id in ('{session_a}','{session_b}'); "
+            f"delete from auth.users where id in ('{session_a}','{session_b}');")
+
     capability = lambda property_id, name: {
         "p_property_id": property_id, "p_capability": name,
     }
