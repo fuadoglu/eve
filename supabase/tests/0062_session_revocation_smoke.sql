@@ -14,6 +14,18 @@ begin
     or (select proowner from pg_proc where oid='api.revoke_my_sessions()'::regprocedure) <> 'app_executor'::regrole then
     raise exception 'session RPC must use the scoped owner roles';
   end if;
+  if (select rolbypassrls or rolsuper or rolcanlogin
+      from pg_roles where rolname='app_session_reader')
+     or not (select relrowsecurity from pg_class where oid='auth.sessions'::regclass)
+     or not exists (
+       select 1 from pg_policy p
+       where p.polrelid='auth.sessions'::regclass
+         and p.polname='sessions_session_reader_self'
+         and p.polcmd='r'
+         and p.polroles=array['app_session_reader'::regrole::oid]
+     ) then
+    raise exception 'Auth session reader must be non-bypass and actor-scoped';
+  end if;
   if has_table_privilege('authenticated','app_private.profiles','UPDATE')
      or has_table_privilege('authenticated','app_private.profiles','INSERT')
      or has_table_privilege('app_session_reader','auth.sessions','DELETE')
