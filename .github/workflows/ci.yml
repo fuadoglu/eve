@@ -221,6 +221,14 @@ jobs:
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_rls_coverage_smoke.sql
       - name: Data API RPC allowlist və grant smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_api_surface_smoke.sql
+      - name: Paralel occupancy conflict DB sınağı
+        env:
+          PGHOST: localhost
+          PGPORT: 5432
+          PGUSER: postgres
+          PGPASSWORD: local_schema_test_only
+          PGDATABASE: eve_schema_test
+        run: python3 scripts/test-db-concurrency.py
 
   supabase_local:
     runs-on: ubuntu-24.04
