@@ -248,7 +248,10 @@ function isDateTime(value: unknown): value is string {
   // resulting UTC day with the leap-second dates currently in the standard.
   const offsetSign = match[8] === "+" ? 1 : match[8] === "-" ? -1 : 0;
   const offsetMinutes = offsetSign * (offsetHour * 60 + offsetMinute);
-  const utcMinute = new Date(Date.UTC(year, month - 1, day, hour, minute) - offsetMinutes * 60_000);
+  const localMinute = new Date(0);
+  localMinute.setUTCFullYear(year, month - 1, day);
+  localMinute.setUTCHours(hour, minute, 0, 0);
+  const utcMinute = new Date(localMinute.getTime() - offsetMinutes * 60_000);
   const utcDate = `${utcMinute.getUTCFullYear().toString().padStart(4, "0")}-${(utcMinute.getUTCMonth() + 1).toString().padStart(2, "0")}-${utcMinute.getUTCDate().toString().padStart(2, "0")}`;
   return utcMinute.getUTCHours() === 23
     && utcMinute.getUTCMinutes() === 59
