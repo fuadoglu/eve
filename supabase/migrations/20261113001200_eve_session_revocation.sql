@@ -33,7 +33,7 @@ create policy profiles_session_reader_self on app_private.profiles
   for select to app_session_reader
   using (user_id = (select app_private.current_actor_id()));
 
-grant insert (user_id), update (session_revoked_before, updated_at, version)
+grant insert (user_id, session_revoked_before, updated_at), update (session_revoked_before, updated_at, version)
   on app_private.profiles to app_executor;
 
 create policy profiles_self_session_insert on app_private.profiles
