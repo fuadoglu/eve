@@ -32,6 +32,12 @@ begin
      or has_table_privilege('app_session_reader','auth.sessions','UPDATE') then
     raise exception 'session roles have excessive privileges';
   end if;
+  if not has_schema_privilege('app_session_reader','auth','USAGE')
+     or not has_column_privilege('app_session_reader','auth.sessions','id','SELECT')
+     or not has_column_privilege('app_session_reader','auth.sessions','user_id','SELECT')
+     or not has_column_privilege('app_session_reader','auth.sessions','created_at','SELECT') then
+    raise exception 'session reader Auth schema/column grants missing';
+  end if;
 end $$;
 
 begin;
@@ -41,6 +47,15 @@ insert into auth.users(id) values
 insert into auth.sessions(id,user_id,created_at) values
  ('f7100000-0000-0000-0000-000000000001','f7000000-0000-0000-0000-000000000001',clock_timestamp()),
  ('f7100000-0000-0000-0000-000000000002','f7000000-0000-0000-0000-000000000002',clock_timestamp());
+
+set local role app_session_reader;
+set local request.jwt.claims = '{"sub":"f7000000-0000-0000-0000-000000000001","session_id":"f7100000-0000-0000-0000-000000000001"}';
+do $$ begin
+  if not exists (select 1 from auth.sessions where id='f7100000-0000-0000-0000-000000000001') then
+    raise exception 'session reader cannot select the actor session under Auth RLS';
+  end if;
+end $$;
+reset role;
 
 set local role authenticated;
 set local request.jwt.claims = '{"sub":"f7000000-0000-0000-0000-000000000001","session_id":"f7100000-0000-0000-0000-000000000001","iat":1800000000}';
