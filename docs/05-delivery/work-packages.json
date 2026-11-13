@@ -891,7 +891,7 @@
       "parent_issue": 18,
       "milestone": "M2",
       "title": "Expired hold lock/catch-up",
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "EVE-010.1"
       ],
