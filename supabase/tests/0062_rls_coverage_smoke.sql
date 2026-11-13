@@ -43,7 +43,7 @@ begin
     raise exception 'client role can access private schema';
   end if;
 
-  -- There is one explicit read policy per selected foundation table.
+  -- Read policies are explicitly allowlisted by table and role.
   select count(*) into bad_count
   from (values
     ('profiles','profiles_self_read'),
@@ -68,7 +68,31 @@ begin
   select count(*) into table_count
   from pg_policy p join pg_class c on c.oid=p.polrelid
   where c.relnamespace='app_private'::regnamespace;
-  if table_count <> 10 then
+  if table_count <> 13 then
     raise exception 'unexpected private table policies: %',table_count;
+  end if;
+  if not exists (
+    select 1 from pg_policy p
+    where p.polrelid='app_private.profiles'::regclass
+      and p.polname='profiles_session_reader_self'
+      and p.polcmd='r'
+      and p.polroles=array['app_session_reader'::regrole::oid]
+  ) then
+    raise exception 'session reader profile policy missing or mis-scoped';
+  end if;
+  if not exists (
+    select 1 from pg_policy p
+    where p.polrelid='app_private.profiles'::regclass
+      and p.polname='profiles_self_session_insert'
+      and p.polcmd='a'
+      and p.polroles=array['app_executor'::regrole::oid]
+  ) or not exists (
+    select 1 from pg_policy p
+    where p.polrelid='app_private.profiles'::regclass
+      and p.polname='profiles_self_session_update'
+      and p.polcmd='w'
+      and p.polroles=array['app_executor'::regrole::oid]
+  ) then
+    raise exception 'session executor profile write policies missing or mis-scoped';
   end if;
 end $$;

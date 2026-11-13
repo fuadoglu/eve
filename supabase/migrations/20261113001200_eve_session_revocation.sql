@@ -112,6 +112,8 @@ grant app_session_reader to current_user with set true, inherit false;
 alter function api.is_my_session_active() owner to app_session_reader;
 revoke app_session_reader from current_user;
 revoke create on schema api from app_session_reader;
+grant create on schema api to app_executor;
 grant app_executor to current_user with set true, inherit false;
 alter function api.revoke_my_sessions() owner to app_executor;
 revoke app_executor from current_user;
+revoke create on schema api from app_executor;
