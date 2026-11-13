@@ -73,10 +73,6 @@ begin
 end $$;
 rollback;
 
-delete from auth.users
-where id in ('dddddddd-dddd-dddd-dddd-dddddddddddd',
-             'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee');
-
 begin;
 set local role authenticated;
 set local request.jwt.claim.sub = 'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee';
@@ -90,6 +86,10 @@ begin
   end;
 end $$;
 rollback;
+
+delete from auth.users
+where id in ('dddddddd-dddd-dddd-dddd-dddddddddddd',
+             'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee');
 
 begin;
 set local role authenticated;
