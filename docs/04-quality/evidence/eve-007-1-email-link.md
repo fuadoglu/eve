@@ -1,6 +1,6 @@
 # EVE-007.1 — Email request and confirmation evidence
 
-Status: **implementation in progress; not Done**. This record covers local code and contract behavior only. No hosted Supabase project, SMTP provider, real email, or production credential was used.
+Status: **EVE-007.1 bounded local package scope complete**. This record covers local code and contract behavior only. No hosted Supabase project, SMTP provider, real email, or production credential was used.
 
 ## Acceptance mapping
 
@@ -25,7 +25,7 @@ Status: **implementation in progress; not Done**. This record covers local code 
 | `pnpm test:ui` | 124 assertions passed locally against the final production build on port 4177: 320/360/390/430 widths, safe area, accessibility tree, axe checks, keyboard, 404 recovery and overflow. The test exercises the existing mobile shell, not the new auth flow. |
 | Python JSON Schema validator | Passed locally and in CI run #43382432384: 207 schemas, 12 positive and 20 negative examples. |
 
-CI run #43382432384 passed all required `docs`, `sql_schema`, and `supabase_local` jobs at PR #72 head `8166c101d91ba5d8ec1464030bf81911b042645f`. Independent read-only QA/red-team review found no code blocker after the route-prefix correction. This is not GitHub human approval. PR #72 is open; merge has not yet been recorded.
+CI run #43382694468 passed `docs`, `sql_schema`, and `supabase_local` at PR #72 head `c16e6b883b472513a498e1c92d545ddde75dee5b`; earlier run #43382432384 also passed all three jobs at the implementation commit. Independent read-only QA/red-team review found no code blocker after the route-prefix correction. This is not GitHub human approval. The ledger records completion only for this package's local scope; the parent issue and all external/production acceptance gates remain open.
 
 ## Remaining evidence and limitations
 

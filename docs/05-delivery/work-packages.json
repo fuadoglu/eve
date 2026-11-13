@@ -556,7 +556,7 @@
       "parent_issue": 15,
       "milestone": "M1",
       "title": "Email request və confirm/resend",
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "EVE-005.3",
         "EVE-006.3",
