@@ -22,7 +22,9 @@ begin
       or has_table_privilege('authenticated',c.oid,
         'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER')
       or has_table_privilege('app_executor',c.oid,
-        'INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER')
+        'UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER')
+      or has_table_privilege('app_executor',c.oid,'INSERT') is distinct from
+        (c.relname in ('owner_accounts','properties','trial_claims','subscriptions'))
       or has_table_privilege('app_executor',c.oid,'SELECT') is distinct from
         (c.relname in ('profiles','owner_accounts','properties',
           'property_memberships','reservations','reservation_placements',
@@ -68,8 +70,22 @@ begin
   select count(*) into table_count
   from pg_policy p join pg_class c on c.oid=p.polrelid
   where c.relnamespace='app_private'::regnamespace;
-  if table_count <> 13 then
+  if table_count <> 17 then
     raise exception 'unexpected private table policies: %',table_count;
+  end if;
+  if not exists (select 1 from pg_policy where polrelid='app_private.owner_accounts'::regclass
+      and polname='owner_accounts_self_create' and polcmd='a'
+      and polroles=array['app_executor'::regrole::oid])
+     or not exists (select 1 from pg_policy where polrelid='app_private.properties'::regclass
+      and polname='properties_owner_create' and polcmd='a'
+      and polroles=array['app_executor'::regrole::oid])
+     or not exists (select 1 from pg_policy where polrelid='app_private.trial_claims'::regclass
+      and polname='trial_claims_owner_create' and polcmd='a'
+      and polroles=array['app_executor'::regrole::oid])
+     or not exists (select 1 from pg_policy where polrelid='app_private.subscriptions'::regclass
+      and polname='subscriptions_owner_create' and polcmd='a'
+      and polroles=array['app_executor'::regrole::oid]) then
+    raise exception 'EVE-008.1 owner-scoped insert policies missing';
   end if;
   if not exists (
     select 1 from pg_policy p
