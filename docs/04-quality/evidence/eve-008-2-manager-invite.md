@@ -1,11 +1,13 @@
 # EVE-008.2 — Email dəvəti və ev icazəsi
 
-Tarix: 2026-11-13. Status: **branch-də implementasiya; CI və müstəqil review gözlənilir**.
+Tarix: 2026-11-13. Status: **PR-də implementasiya və lokal komponent gate-ləri keçib; merge gözlənilir**.
 
 ## İzləmə
 
 - Issue: [#16 — EVE-008](https://github.com/fuadoglu/eve/issues/16)
 - Branch: `feat/EVE-008-2-manager-invite`
+- Head: `88c0822e11b81be77f8f5321c3f966edb8f7f4f1`
+- CI: [run #43404878447](https://github.com/fuadoglu/eve/actions/runs/43404878447) — `docs`, `sql_schema`, `supabase_local` hamısı PASS.
 - Paket statusu: `in_progress`; main ledger 24/90 (26.7%), bu branch hələ sayılmır.
 - DB migration: `20261113001700_eve_manager_invites.sql` (yalnız forward; verified `auth.users` email və client tərəfindən saxtalaşdırıla bilməyən transaction-scoped accept context ilə).
 - D35: birdəfəlik email-match dəvət üçün 24 saatlıq maximum TTL; NIST istinadı yalnız comparator-dur, Eve auth deyil.
@@ -24,14 +26,14 @@ Tarix: 2026-11-13. Status: **branch-də implementasiya; CI və müstəqil review
 ## Hazırkı yoxlama
 
 - `node scripts/docs-check.mjs` — PASS (60 Markdown files).
-- `node scripts/verify-contracts.mjs` — PASS (117 API operations, 53 tables, 256 field bindings, 90 acyclic packages, 16 trace rows, 36 scenarios).
+- `node scripts/verify-contracts.mjs` — PASS (117 API operations, 53 tables, 256 field bindings, 90 acyclic packages, 16 trace rows, 36 scenarios); CI Python JSON Schema/OpenAPI validator — PASS.
 - `python3 scripts/verify-storage-config.py` — PASS (7 private buckets).
 - `node scripts/test-prototype.mjs` — PASS (71 synthetic VM/fake-DOM assertions; backend/mobile acceptance deyil).
 - `node --conditions=react-server --experimental-strip-types --test tests/unit/access/invite-token.test.ts` — PASS (2/2).
 - `node_modules/.bin/tsc --noEmit -p tsconfig.json` — PASS.
 - `git diff --check` — PASS.
-- `supabase/tests/0062_manager_invite_smoke.sql` PostgreSQL 17 və fresh Supabase local CI-da işləmək üçün əlavə edilib; local Docker daemon yoxdur, ona görə real DB nəticəsi hələ yoxdur.
-- Python JSON Schema validatori bu worktree-də `jsonschema` quraşdırılmadığı üçün işləməyib; CI nəticəsi gözlənilir.
+- `supabase/tests/0062_manager_invite_smoke.sql` və `0062_rls_coverage_smoke.sql` PostgreSQL 17 `sql_schema` job-unda, həmçinin fresh synthetic Supabase local stack-də CI run #43404878447 ilə PASS; local Docker daemon yoxdur.
+- EVE-008.2 üzrə müstəqil read-only QA review son diff-də P1/P2 blocker tapmadı; bu GitHub human approval deyil.
 
 ## API sərhədi və idempotency
 
@@ -39,4 +41,4 @@ OpenAPI create/accept əməliyyatları `Idempotency-Key` tələb edir. Bu PR-də
 
 ## Scope və açıq gate-lər
 
-Bu komponent yoxlaması HTTP/server route, browser UI, real SMTP/provider delivery, hosted Eve Supabase, full AT04–06/AT25, backup/restore və production acceptance deyil. SMTP göndərmə təsdiqi yoxdursa server `saved/sent` uğuru göstərməməlidir. PR CI, SQL smoke, independent QA/red-team review və merge başa çatmamış paket `done` sayıla bilməz.
+Bu komponent yoxlaması HTTP/server route, browser UI, real SMTP/provider delivery, hosted Eve Supabase, full AT04–06/AT25, backup/restore və production acceptance deyil. SMTP göndərmə təsdiqi yoxdursa server `saved/sent` uğuru göstərməməlidir. PR #79 merge olunana qədər paket `in_progress` qalır; bu nəticə production readiness deyil.
