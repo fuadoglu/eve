@@ -259,7 +259,7 @@ jobs:
             echo 'Local Supabase startup failed; applied migration names follow.'
             sed -nE 's/^Applying migration ([0-9]{14}_[A-Za-z0-9_]+[.]sql)[.][.][.]$/\1/p' \
               /tmp/eve-local-stack.log
-            grep -Ei 'ERROR:|FATAL:|failed|permission denied|does not exist|must be owner' \
+            grep -Ei -A6 'ERROR:|FATAL:|failed|permission denied|does not exist|must be owner' \
               /tmp/eve-local-stack.log | tail -n 20 || true
             exit 1
           fi

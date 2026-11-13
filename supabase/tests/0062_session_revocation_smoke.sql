@@ -51,9 +51,11 @@ do $$ begin
   end if;
 end $$;
 
--- A genuinely new provider session created after the cutoff remains eligible.
+-- Create the provider fixture outside the API role, then query it as authenticated.
+reset role;
 insert into auth.sessions(id,user_id,created_at) values
  ('f7100000-0000-0000-0000-000000000003','f7000000-0000-0000-0000-000000000001',clock_timestamp() + interval '1 second');
+set local role authenticated;
 set local request.jwt.claims = '{"sub":"f7000000-0000-0000-0000-000000000001","session_id":"f7100000-0000-0000-0000-000000000003","iat":1800000000}';
 do $$ begin
   if not api.is_my_session_active() then raise exception 'new post-cutoff session was rejected'; end if;
