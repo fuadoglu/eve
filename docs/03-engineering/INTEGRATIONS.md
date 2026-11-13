@@ -2,9 +2,9 @@
 
 ## Supabase Auth / email
 
-Rəsmi passwordless və session sənədləri REFERENCES-dədir. M1 spike: magic link template, custom SMTP, rate limit, scanner/prefetch, eyni və fərqli cihaz axını, SSR cookie refresh, logout-all. Email input-u trim edilir, email normallaşdırılması provider kimliyini uydurmur. SMTP delivery təsdiqlənmədən “email uğurla çatdı” deyil, “keçid göndərilməsi istənildi” davranışı.
+Rəsmi passwordless və session sənədləri REFERENCES-dədir. EVE-007.1 local implementation email link request, scanner üçün GET-də token sərf etməyən `/auth/confirm` landing və istifadəçinin explicit POST addımını qurur. Email input-u yalnız trim edilir; email normallaşdırılması provider kimliyini uydurmur. Provider 4xx cavabları hesabın giriş növünü açıqlamamaq üçün neytral cavaba normallaşdırılır. SMTP delivery təsdiqlənmədən “email uğurla çatdı” deyil, “keçid üçün sorğu qəbul edildi” davranışı.
 
-Giriş linki üçün ilkin 15 dəqiqə TTL, resend 60 saniyə; IP+email limit serverdədir və staging load ilə tənzimlənir. Linki təsadüfən consume edən scanner varsa ara confirm page məcburidir. Cross-device token_hash verify axını providerin cari təhlükəsizlik sənədi ilə seçilir; PKCE verifier-in yoxluğu xəta kimi istifadəçiyə aydın göstərilir.
+Giriş linki üçün ilkin 15 dəqiqə TTL, resend 60 saniyə; IP+email limit serverdədir və staging load ilə tənzimlənir. Local code bu TTL/resend dəyərlərini müqavilə cavabında qaytarır, amma provider parametrlərinin tətbiq olunduğunu və rate-limit enforcement-u təsdiqləmir. Email template-in token_hash formatı, custom SMTP, IP+email limitləri, scanner və eyni/fərqli cihaz davranışı EVE-007.3-də real provider sübutu tələb edir. Cross-device token_hash verify axını providerin cari təhlükəsizlik sənədi ilə seçilir; PKCE verifier-in yoxluğu xəta kimi istifadəçiyə aydın göstərilir.
 
 Custom SMTP, SPF/DKIM/DMARC və sender domain production asılılığıdır. Telefon yalnız opsional kontakt/WhatsApp üçündür, login vasitəsi deyil.
 

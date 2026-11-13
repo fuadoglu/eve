@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { validateSupabasePublicConfig } from "../../src/lib/env/supabase-public.ts";
+import { validateAppBaseUrl, validateSupabasePublicConfig } from "../../src/lib/env/supabase-public.ts";
 import { getSupabaseSecretKey } from "../../src/lib/env/supabase-server.ts";
 
 function withSecretKey<T>(value: string | undefined, run: () => T): T {
@@ -76,6 +76,19 @@ test("rejects a project URL with an extra path", () => {
       "sb_publishable_example",
     ),
     /must not contain a path/,
+  );
+});
+
+test("validates the canonical application origin used by auth redirects", () => {
+  assert.deepEqual(validateAppBaseUrl("https://eve.example/"), { url: "https://eve.example" });
+  assert.deepEqual(validateAppBaseUrl("http://localhost:3000"), { url: "http://localhost:3000" });
+  assert.throws(() => validateAppBaseUrl("https://eve.example/evil"), /must not contain a path/);
+  assert.throws(() => validateAppBaseUrl("https://user:pass@eve.example"), /credentials/);
+  assert.throws(() => validateAppBaseUrl("http://eve.example"), /must use HTTPS/);
+  assert.throws(() => validateAppBaseUrl("http://localhost:3000", false), /must use HTTPS/);
+  assert.throws(
+    () => validateSupabasePublicConfig("http://127.0.0.1:54321", "sb_publishable_example", false),
+    /must use HTTPS/,
   );
 });
 

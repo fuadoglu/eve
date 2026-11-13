@@ -113,6 +113,9 @@
           "422": {
             "$ref": "#/components/responses/Error422"
           },
+          "410": {
+            "$ref": "#/components/responses/Error410"
+          },
           "429": {
             "$ref": "#/components/responses/Error429"
           },
