@@ -39,6 +39,8 @@ jobs:
         run: pnpm test:env
       - name: Email passwordless axın unit sınaqları
         run: pnpm test:identity
+      - name: Manager invite token unit sınaqları
+        run: pnpm test:access
       - name: TypeScript yoxlaması
         run: pnpm typecheck
       - name: Production build
@@ -95,7 +97,11 @@ jobs:
           create role anon;
           create role authenticated;
           create schema auth;
-          create table auth.users (id uuid primary key);
+          create table auth.users (
+            id uuid primary key,
+            email varchar(254),
+            email_confirmed_at timestamptz
+          );
           create table auth.sessions (id uuid primary key, user_id uuid not null, created_at timestamptz not null default now());
           alter table auth.sessions enable row level security;
           create function auth.uid() returns uuid language sql stable
@@ -243,7 +249,11 @@ jobs:
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261113001600_eve_inventory_foundation.sql
       - name: Inventar DTO, entitlement və tenant isolation smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_inventory_foundation_smoke.sql
-      - name: 52 cədvəlin RLS və grant coverage smoke
+      - name: Manager invite və property permission migration
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261113001700_eve_manager_invites.sql
+      - name: Email-match, expiry, replay və tenant isolation invite smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_manager_invite_smoke.sql
+      - name: 53 cədvəlin RLS və grant coverage smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_rls_coverage_smoke.sql
       - name: Data API RPC allowlist və grant smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_api_surface_smoke.sql
@@ -289,6 +299,8 @@ jobs:
             < supabase/tests/0062_inventory_media_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
             < supabase/tests/0062_inventory_foundation_smoke.sql
+          docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
+            < supabase/tests/0062_manager_invite_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
             < supabase/tests/0062_api_surface_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \

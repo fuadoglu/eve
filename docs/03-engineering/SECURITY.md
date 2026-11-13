@@ -25,6 +25,8 @@ Cross-tenant FK, composite constraint və server derive birlikdədir. UI gizlət
 
 ## Auth və sessiya
 
+Manager invite bearer token serverdə yüksək entropiyalı təsadüfi dəyər kimi yaranır; PostgreSQL-ə yalnız SHA-256 hex hash ötürülür. Token request body, exception, access log, audit payload və DTO-lara yazılmır. Qəbul JWT email-ini cari `auth.users.email` və `email_confirmed_at` ilə tutuşdurur; hər ikisi uyğun və təsdiqli olmalıdır. Sonra normalized dəvət email-i, pending state və maksimum 24 saat expiry yoxlanır. Yalnız kilidlənmiş, təsdiqli və müddəti keçməmiş dəvət üçün transaction ID, backend PID və actor-a bağlı DB context sətri yaradılır; RLS property/subscription read və membership write-ı həmin dəvətə bağlayır. Sətr qəbul əməliyyatı bitəndə silinir və xətalı transaction-da rollback olur; klient tərəfindən yazıla bilən custom setting authorization context kimi işlədilmir. Token hash üzərində row lock concurrent acceptance-i seriallaşdırır; property permission-ları yalnız eyni owner-a aid seçilmiş property-lərə atomik tətbiq olunur.
+
 Password sign-in/sign-up və set-password UI/API yoxdur; provider password grant konfiqurasiyası imkan daxilində söndürülür və endpoint negative test olunur. Magic link qısaömürlü/birdəfəlik, sərt redirect allowlist; open redirect yoxdur. İstifadəçi enumeration-a neytral cavab.
 
 Mail scanner/prefetch tokeni istehlak etməsin deyə confirm landing və explicit click axını yoxlanılır. PKCE-nin eyni cihaz/brauzer məhdudiyyəti ayrıca qiymətləndirilir; “hər cihazda işləyir” təsdiqsiz iddia edilmir.

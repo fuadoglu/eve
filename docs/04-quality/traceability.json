@@ -102,6 +102,7 @@
       ],
       "tables": [
         "invite_properties",
+        "manager_invite_accept_context",
         "manager_invites",
         "property_memberships"
       ],

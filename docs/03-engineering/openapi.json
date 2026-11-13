@@ -913,7 +913,7 @@
       "post": {
         "operationId": "inviteManager",
         "summary": "Seçilmiş evlərə menecer dəvət et",
-        "description": "Path ev və body property_ids eyni owner-a aiddir; path ev seçilmiş siyahıda olmalıdır. Email yalnız dəvətdir, automatic account takeover deyil.",
+        "description": "Path ev və body property_ids eyni owner-a aiddir; path ev seçilmiş siyahıda olmalıdır. Bütün seçilmiş evlərdə active/trialing entitlement yoxlanır və eyni daily/full icazəsi tətbiq olunur. Email normalized olunur; göndərmə yalnız SMTP adapteri aktiv olanda təsdiqlənir. Dəvət bearer tokeni raw halda qaytarılmır və DB-də yalnız hash saxlanır. Email yalnız dəvətdir, automatic account takeover deyil.",
         "tags": [
           "properties"
         ],
@@ -1157,7 +1157,7 @@
       "post": {
         "operationId": "acceptManagerInvite",
         "summary": "Emaili uyğun gələn dəvəti qəbul et",
-        "description": "Emaili uyğun gələn dəvəti qəbul et",
+        "description": "Yalnız authenticated Supabase sessiyasının verified email-i ilə uyğun, pending və yaradılmasından 24 saat keçməmiş birdəfəlik dəvəti qəbul et. Raw token serverdə hash edilir; səhv email və mövcud olmayan token eyni neytral 404 verir. Expired dəvət üzvlük yaratmır və 410 qaytarır.",
         "tags": [
           "invites"
         ],
@@ -1207,6 +1207,9 @@
           },
           "403": {
             "$ref": "#/components/responses/Error403"
+          },
+          "410": {
+            "$ref": "#/components/responses/Error410"
           }
         },
         "requestBody": {

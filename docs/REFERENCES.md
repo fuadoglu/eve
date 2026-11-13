@@ -18,6 +18,7 @@ Yoxlama tarixi: 2026-11-10; EVE-003 üçün Supabase/Payriff səhifələri 2026-
 | [Google noindex](https://developers.google.com/search/docs/crawling-indexing/block-indexing) | noindex və crawler davranışı |
 | [Vercel Hobby](https://vercel.com/docs/plans/hobby) | Commercial production üçün Pro seçiminin əsaslandırılması |
 | [WCAG 2.2](https://www.w3.org/TR/WCAG22/) | Accessibility qəbul meyarları |
+| [NIST SP 800-63-4, IAL confirmation codes](https://pages.nist.gov/800-63-4/sp800-63a/ial-general/) | Email ünvanı təsdiq kodu üçün 24 saatlıq maksimum; manager invite authentication deyil, yalnız TTL seçimi üçün müqayisədir |
 
 ## Açıq provider yoxlamaları
 

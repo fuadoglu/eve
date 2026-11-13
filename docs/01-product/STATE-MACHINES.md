@@ -6,6 +6,17 @@ Bu sənəd hər düymənin serverdə nə etdiyini dəqiqləşdirir. Maşınla yo
 
 Hər əməliyyat cari capability, evin abunə hüququ, versiya və idempotency yoxlamasından keçir. Pul, occupancy, snapshot və outbox dəyişiklikləri bir tranzaksiyada commit edilir. Bildirişin faktiki çatması biznes tranzaksiyasının şərti deyil. Eyni əməliyyat təkrarı yeni pul və tapşırıq yaratmır. GET keçid və ya təsdiq əməliyyatı deyil.
 
+## Menecer dəvəti
+
+| Hazırkı vəziyyət | Hadisə | Yeni vəziyyət | Yoxlama və atomik nəticə |
+|---|---|---|---|
+| Yoxdur | Sahib email dəvəti yaradır | pending | Path ev seçilmiş siyahıdadır; bütün evlər eyni sahibindir və active/trialing entitlement var; permission eynidir; email normalized edilir; expiry maksimum 24 saatdır |
+| pending | Dəvət emaili uyğun sessiya ilə qəbul olunur | accepted | Raw token serverdə hash edilir; recipient email tam uyğunluğu, expiry və bütün evlərin cari entitlement-i yoxlanır; seçilmiş evlər üzrə membership-lər bir tranzaksiyada yazılır |
+| pending | Uyğun recipient expiry-dən sonra qəbul edir | expired | Dəvət expired olur, heç bir membership yaranmır; API 410 qaytarır |
+| pending | Sahib eyni emailə yeni dəvət yaradır | revoked | Əvvəlki bearer token etibarsız olur; yeni dəvət və property seçimləri ayrıca yazılır |
+
+accepted, revoked və expired terminaldır. Yanlış email/token neytral 404-dür, replay və mövcud aktiv membership-i permission dəyişmək üçün işlətmək rədd edilir. SMTP göndərişi təsdiqlənməyibsə UI/API emaili göndərildi kimi göstərmir.
+
 ## Rezervasiya
 
 | Hazırkı vəziyyət | Düymə / hadisə | Yeni vəziyyət | Yoxlama və atomik nəticə |
