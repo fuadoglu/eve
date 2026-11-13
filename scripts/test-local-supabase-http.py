@@ -115,6 +115,13 @@ def verify(name, condition, detail):
     print("PASS " + name)
 
 
+def safe_error_detail(status, data):
+    error = data[0] if isinstance(data, list) and data else data
+    if isinstance(error, dict):
+        return f"{status}:{error.get('code', '')}:{error.get('message', '')}"
+    return f"{status}:{type(data).__name__}:{str(data)[:160]}"
+
+
 def rpc(name, actor, key, arguments, *, role="authenticated", bearer=None):
     status, body = request("/rest/v1/rpc/" + name, actor=actor, key=key,
                            role=role, bearer=bearer, payload=arguments)
@@ -132,7 +139,7 @@ def main():
     try:
         status, data = rpc("is_my_session_active", session_a, key, {}, bearer=old_session_token)
         verify("session new user without profile active", status == 200 and data is True,
-               str(status))
+               safe_error_detail(status, data))
         status, data = rpc("revoke_my_sessions", session_a, key, {})
         verify("session logout-all cutoff recorded", status == 200 and data is True,
                str(status))
