@@ -12,6 +12,11 @@ begin
   end if;
 end $$;
 
+insert into auth.users(id) values
+  ('dddddddd-dddd-dddd-dddd-dddddddddddd'),
+  ('eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee')
+on conflict (id) do nothing;
+
 begin;
 set local request.jwt.claim.sub = 'dddddddd-dddd-dddd-dddd-dddddddddddd';
 do $$
@@ -67,6 +72,10 @@ begin
 
 end $$;
 rollback;
+
+delete from auth.users
+where id in ('dddddddd-dddd-dddd-dddd-dddddddddddd',
+             'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee');
 
 begin;
 set local role authenticated;
