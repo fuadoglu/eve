@@ -1,6 +1,6 @@
 # EVE-007.2 — Session refresh and logout-all evidence
 
-Status: **implementation in progress**. This evidence covers the local adapter, route, and synthetic DB contract. It is not hosted Supabase or production session acceptance.
+Status: **local package scope complete**. PR #73 squash-merged to `main` as `40eeebc19186c5362c0a430fa89fc65380a90d5b`. This evidence covers the local adapter, route, and synthetic DB contract. It is not hosted Supabase or production session acceptance.
 
 ## Acceptance mapping
 
@@ -25,7 +25,7 @@ Status: **implementation in progress**. This evidence covers the local adapter, 
 
 ## External and release limitations
 
-- CI and independent QA review passed; merge is pending.
+- CI, independent QA review and merge passed for the local package scope. Main branch protection required `docs`, had zero required approvals, enforced linear history and disallowed force-pushes. No GitHub human approval is claimed.
 - Real Supabase refresh rotation/global revoke, current access JWT lifetime, cross-device logout and AT02 have not been tested against a hosted project.
 - Provider global sign-out failure returns an error and triggers a local cookie clear attempt; the application cutoff remains active. No success acknowledgement is returned for the partial provider failure.
 - This package does not establish production readiness or the M1 exit gate.
