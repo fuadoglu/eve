@@ -15,17 +15,17 @@ Status: **implementation in progress; not Done**. This record covers local code 
 | Check | Result |
 |---|---|
 | `pnpm typecheck` | Passed locally. |
-| `pnpm test:identity` | 11/11 passed locally, including actual `/api/v1` route wrapper validation and noindex/private headers. |
+| `pnpm test:identity` | 11/11 passed locally, including actual `/api/v1` route wrapper validation and noindex/private headers. CI `docs` job passed the same suite. |
 | `pnpm test:env` | 10/10 passed locally. |
-| `node scripts/docs-check.mjs` | Passed locally. |
-| `node scripts/verify-contracts.mjs` | Passed locally: 117 operations, 52 tables, 255 field bindings, 90 packages, 36 scenarios. |
-| `python3 scripts/verify-storage-config.py` | Passed locally. |
+| `node scripts/docs-check.mjs` | Passed locally and in CI run #43382432384. |
+| `node scripts/verify-contracts.mjs` | Passed locally and in CI run #43382432384: 117 operations, 52 tables, 255 field bindings, 90 packages, 36 scenarios. |
+| `python3 scripts/verify-storage-config.py` | Passed locally and in CI run #43382432384. |
 | `node scripts/test-prototype.mjs` | 71 synthetic VM/fake-DOM assertions passed; not browser/backend evidence. |
-| `pnpm build` | Passed locally after the `/api/v1` route-prefix adjustment. Next.js reported both `/api/v1/auth/confirm` and `/api/v1/auth/email-link`, with the separate `/auth/confirm` landing page. |
+| `pnpm build` | Passed locally and in CI run #43382432384. Next.js reported both `/api/v1/auth/confirm` and `/api/v1/auth/email-link`, with the separate `/auth/confirm` landing page. |
 | `pnpm test:ui` | 124 assertions passed locally against the final production build on port 4177: 320/360/390/430 widths, safe area, accessibility tree, axe checks, keyboard, 404 recovery and overflow. The test exercises the existing mobile shell, not the new auth flow. |
-| Python JSON Schema validator | Passed locally: 207 schemas, 12 positive and 20 negative examples. |
+| Python JSON Schema validator | Passed locally and in CI run #43382432384: 207 schemas, 12 positive and 20 negative examples. |
 
-Independent read-only QA/red-team review found no code blocker after the route-prefix correction. This is not GitHub human approval. No CI run or merge exists yet.
+CI run #43382432384 passed all required `docs`, `sql_schema`, and `supabase_local` jobs at PR #72 head `8166c101d91ba5d8ec1464030bf81911b042645f`. Independent read-only QA/red-team review found no code blocker after the route-prefix correction. This is not GitHub human approval. PR #72 is open; merge has not yet been recorded.
 
 ## Remaining evidence and limitations
 
