@@ -126,6 +126,7 @@ jobs:
             ('eve-public-property',false), ('eve-public-guide',false),
             ('eve-private-guest',false), ('eve-private-receipt',false),
             ('eve-private-inspection',false), ('eve-private-task',false),
+            ('eve-private-inventory',false),
             ('unrelated-bucket',false);
           SQL
       - name: Storage boundary migration tətbiq et
@@ -232,6 +233,16 @@ jobs:
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261113001300_eve_property_create_trial.sql
       - name: Ev yaradılması, trial və owner scope smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_property_create_trial_smoke.sql
+      - name: Şəxsi inventar media enum migration
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261113001400_eve_private_inventory_enum.sql
+      - name: Şəxsi inventar bucket və Storage deny migration
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261113001500_eve_private_inventory_bucket.sql
+      - name: Şəxsi inventar bucket/Storage sərhədi smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_inventory_media_smoke.sql
+      - name: Inventar otaq/əşya/şablon migration
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261113001600_eve_inventory_foundation.sql
+      - name: Inventar DTO, entitlement və tenant isolation smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_inventory_foundation_smoke.sql
       - name: 52 cədvəlin RLS və grant coverage smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_rls_coverage_smoke.sql
       - name: Data API RPC allowlist və grant smoke
@@ -274,6 +285,10 @@ jobs:
         run: |
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
             < supabase/tests/0062_property_create_trial_smoke.sql
+          docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
+            < supabase/tests/0062_inventory_media_smoke.sql
+          docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
+            < supabase/tests/0062_inventory_foundation_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
             < supabase/tests/0062_api_surface_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \

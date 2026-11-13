@@ -342,7 +342,8 @@ def main():
     verify("AT04 cross-owner contact deny", status == 200 and data == [], str(status))
 
     buckets = ("eve-public-property", "eve-public-guide", "eve-private-guest",
-               "eve-private-receipt", "eve-private-inspection", "eve-private-task")
+               "eve-private-receipt", "eve-private-inspection", "eve-private-task",
+               "eve-private-inventory")
     try:
         for bucket in buckets:
             name = "local-boundary-" + uuid.uuid4().hex + ".txt"

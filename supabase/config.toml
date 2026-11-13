@@ -38,3 +38,7 @@ file_size_limit = "100MiB"
 [storage.buckets.eve-private-task]
 public = false
 file_size_limit = "100MiB"
+
+[storage.buckets.eve-private-inventory]
+public = false
+file_size_limit = "100MiB"

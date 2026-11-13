@@ -1,4 +1,4 @@
-"""Check D33's machine mapping against local Supabase bucket/API configuration."""
+"""Check D33/D34 machine mapping against local Supabase bucket/API configuration."""
 
 import json
 import tomllib
@@ -26,4 +26,4 @@ expected = ' OR '.join(
     for classification, bucket_id in mapping.items()
 )
 assert check['enforcement'] == 'CHECK' and check['expression'] == expected, 'DB CHECK differs'
-print(f"Storage config OK: api-only; {len(mapping)} private buckets and DB CHECK align with D33.")
+print(f"Storage config OK: api-only; {len(mapping)} private buckets and DB CHECK align with D33/D34.")

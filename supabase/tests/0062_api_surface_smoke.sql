@@ -21,7 +21,11 @@ begin
       'api.list_reservation_rent_summaries(uuid,timestamptz,uuid,integer)'::regprocedure,
       'api.is_my_session_active()'::regprocedure,
       'api.revoke_my_sessions()'::regprocedure,
-      'api.create_property(text,text,text)'::regprocedure)
+      'api.create_property(text,text,text)'::regprocedure,
+      'api.get_inventory(uuid)'::regprocedure,
+      'api.create_room(uuid,text,integer)'::regprocedure,
+      'api.create_inventory_item(uuid,uuid,text,numeric,text,text,numeric,bigint,date,date,text,text,text,uuid[])'::regprocedure,
+      'api.apply_inventory_template(uuid,text,text)'::regprocedure)
       or p.prokind <> 'f'
       or (p.oid = 'api.is_my_session_active()'::regprocedure and p.proowner <> 'app_session_reader'::regrole)
       or (p.oid = 'api.revoke_my_sessions()'::regprocedure and p.proowner <> 'app_executor'::regrole)
@@ -29,10 +33,16 @@ begin
           and p.proowner <> 'app_executor'::regrole)
       or not p.prosecdef
       or (p.oid not in ('api.revoke_my_sessions()'::regprocedure,
-                        'api.create_property(text,text,text)'::regprocedure)
+                        'api.create_property(text,text,text)'::regprocedure,
+                        'api.create_room(uuid,text,integer)'::regprocedure,
+                        'api.create_inventory_item(uuid,uuid,text,numeric,text,text,numeric,bigint,date,date,text,text,text,uuid[])'::regprocedure,
+                        'api.apply_inventory_template(uuid,text,text)'::regprocedure)
           and p.provolatile <> 's')
       or (p.oid in ('api.revoke_my_sessions()'::regprocedure,
-                    'api.create_property(text,text,text)'::regprocedure)
+                    'api.create_property(text,text,text)'::regprocedure,
+                    'api.create_room(uuid,text,integer)'::regprocedure,
+                    'api.create_inventory_item(uuid,uuid,text,numeric,text,text,numeric,bigint,date,date,text,text,text,uuid[])'::regprocedure,
+                    'api.apply_inventory_template(uuid,text,text)'::regprocedure)
           and p.provolatile <> 'v')
       or not (coalesce(p.proconfig, array[]::text[]) @> array['search_path=""']::text[])
       or has_function_privilege('anon',p.oid,'EXECUTE')
@@ -44,7 +54,7 @@ begin
   select count(*) into mismatch_count
   from pg_proc p
   where p.pronamespace='api'::regnamespace;
-  if mismatch_count <> 10 then
+  if mismatch_count <> 14 then
     raise exception 'api RPC inventory changed: %', mismatch_count;
   end if;
 
