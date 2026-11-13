@@ -12,9 +12,16 @@ import time
 import uuid
 
 
+def psql_args() -> list[str]:
+    target = (
+        "host=localhost hostaddr=127.0.0.1 port=5432 "
+        "dbname=eve_schema_test user=postgres password=local_schema_test_only"
+    )
+    return ["psql", "-X", "-q", "-v", "ON_ERROR_STOP=1", "-At", f"--dbname={target}"]
+
+
 def psql(sql: str, *, check: bool = True) -> subprocess.CompletedProcess[str]:
-    command = ["psql", "-X", "-q", "-v", "ON_ERROR_STOP=1", "-At"]
-    result = subprocess.run(command, input=sql, text=True, capture_output=True, timeout=20)
+    result = subprocess.run(psql_args(), input=sql, text=True, capture_output=True, timeout=20)
     if check and result.returncode != 0:
         raise RuntimeError(result.stderr.strip() or result.stdout.strip())
     return result
@@ -30,7 +37,7 @@ select pg_sleep(1.5);
 commit;
 """
     winner = subprocess.Popen(
-        ["psql", "-X", "-q", "-v", "ON_ERROR_STOP=1", "-At"],
+        psql_args(),
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -64,7 +71,7 @@ values ('{occupancy_b}','{account}','{property_id}','{block_b}',daterange('2040-
 commit;
 """
         loser = subprocess.run(
-            ["psql", "-X", "-q", "-v", "ON_ERROR_STOP=1", "-At"],
+            psql_args(),
             input=loser_sql,
             text=True,
             capture_output=True,
@@ -108,6 +115,9 @@ def main() -> int:
         or os.environ.get("PGPORT") != "5432"
         or os.environ.get("PGUSER") != "postgres"
         or os.environ.get("PGPASSWORD") != "local_schema_test_only"
+        or os.environ.get("PGHOSTADDR")
+        or os.environ.get("PGSERVICE")
+        or os.environ.get("PGSERVICEFILE")
     ):
         print("refusing to run: target must be the marked localhost eve_schema_test database", file=sys.stderr)
         return 2
