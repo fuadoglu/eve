@@ -859,7 +859,7 @@
       "parent_issue": 18,
       "milestone": "M2",
       "title": "Unified occupancy və exclusion",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-006.3",
         "EVE-008.3"
