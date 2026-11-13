@@ -1,14 +1,14 @@
 # EVE-008.2 — Email dəvəti və ev icazəsi
 
-Tarix: 2026-11-13. Status: **PR-də implementasiya və lokal komponent gate-ləri keçib; merge gözlənilir**.
+Tarix: 2026-11-13. Status: **merged; EVE-008.2 local DB/RPC component DoD tamamlandı**.
 
 ## İzləmə
 
 - Issue: [#16 — EVE-008](https://github.com/fuadoglu/eve/issues/16)
 - Branch: `feat/EVE-008-2-manager-invite`
-- Head: `88c0822e11b81be77f8f5321c3f966edb8f7f4f1`
-- CI: [run #43404878447](https://github.com/fuadoglu/eve/actions/runs/43404878447) — `docs`, `sql_schema`, `supabase_local` hamısı PASS.
-- Paket statusu: `in_progress`; main ledger 24/90 (26.7%), bu branch hələ sayılmır.
+- PR: [#79 — feat(EVE-008.2): add manager invite persistence](https://github.com/fuadoglu/eve/pull/79), squash merge `59fea750fbb1a3bcb34b6407085c059e1982475e`.
+- Final PR head: `afc24586155f42f905d3de1712b034984a3812fd`; main branch merge commit CI: [run #43405445062](https://github.com/fuadoglu/eve/actions/runs/43405445062); final PR CI: [run #43405186105](https://github.com/fuadoglu/eve/actions/runs/43405186105). Hər iki run-da `docs`, `sql_schema`, `supabase_local` PASS.
+- Paket statusu: `done`; PR #80 closure-record merge olunduqdan sonra delivery ledger 25/90 (27.8%) olacaq; PR #80-dən əvvəlki main snapshot 24/90 (26.7%) idi.
 - DB migration: `20261113001700_eve_manager_invites.sql` (yalnız forward; verified `auth.users` email və client tərəfindən saxtalaşdırıla bilməyən transaction-scoped accept context ilə).
 - D35: birdəfəlik email-match dəvət üçün 24 saatlıq maximum TTL; NIST istinadı yalnız comparator-dur, Eve auth deyil.
 - D33 media seçimi: ayrı private inventory bucket artıq main-dakı D34 qərarı və EVE-019.1 ilə tətbiq olunub.
@@ -32,7 +32,7 @@ Tarix: 2026-11-13. Status: **PR-də implementasiya və lokal komponent gate-lər
 - `node --conditions=react-server --experimental-strip-types --test tests/unit/access/invite-token.test.ts` — PASS (2/2).
 - `node_modules/.bin/tsc --noEmit -p tsconfig.json` — PASS.
 - `git diff --check` — PASS.
-- `supabase/tests/0062_manager_invite_smoke.sql` və `0062_rls_coverage_smoke.sql` PostgreSQL 17 `sql_schema` job-unda, həmçinin fresh synthetic Supabase local stack-də CI run #43404878447 ilə PASS; local Docker daemon yoxdur.
+- `supabase/tests/0062_manager_invite_smoke.sql` və `0062_rls_coverage_smoke.sql` PostgreSQL 17 `sql_schema` job-unda, həmçinin fresh synthetic Supabase local stack-də CI run #43405186105 və main CI #43405445062 ilə PASS; local Docker daemon yoxdur.
 - EVE-008.2 üzrə müstəqil read-only QA review son diff-də P1/P2 blocker tapmadı; bu GitHub human approval deyil.
 
 ## API sərhədi və idempotency
@@ -41,4 +41,4 @@ OpenAPI create/accept əməliyyatları `Idempotency-Key` tələb edir. Bu PR-də
 
 ## Scope və açıq gate-lər
 
-Bu komponent yoxlaması HTTP/server route, browser UI, real SMTP/provider delivery, hosted Eve Supabase, full AT04–06/AT25, backup/restore və production acceptance deyil. SMTP göndərmə təsdiqi yoxdursa server `saved/sent` uğuru göstərməməlidir. PR #79 merge olunana qədər paket `in_progress` qalır; bu nəticə production readiness deyil.
+Bu komponent yoxlaması HTTP/server route, browser UI, real SMTP/provider delivery, hosted Eve Supabase, full AT04–06/AT25, backup/restore və production acceptance deyil. SMTP göndərmə təsdiqi yoxdursa server `saved/sent` uğuru göstərməməlidir. Bu paket DoD-ni bağlayır, amma parent EVE-008/#16 və production gate-lərini bağlamır.
