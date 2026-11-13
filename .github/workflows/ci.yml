@@ -97,7 +97,11 @@ jobs:
           create role anon;
           create role authenticated;
           create schema auth;
-          create table auth.users (id uuid primary key);
+          create table auth.users (
+            id uuid primary key,
+            email varchar(254),
+            email_confirmed_at timestamptz
+          );
           create table auth.sessions (id uuid primary key, user_id uuid not null, created_at timestamptz not null default now());
           alter table auth.sessions enable row level security;
           create function auth.uid() returns uuid language sql stable

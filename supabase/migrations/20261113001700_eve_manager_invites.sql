@@ -19,6 +19,29 @@ create index manager_invites_owner_email_pending_idx
   on app_private.manager_invites(owner_account_id,normalized_email)
   where state='pending';
 
+create table app_private.manager_invite_accept_context (
+  transaction_id bigint not null,
+  backend_pid integer not null,
+  actor_id uuid not null,
+  invite_id uuid not null references app_private.manager_invites(id) on delete cascade,
+  primary key (transaction_id,backend_pid,actor_id)
+);
+revoke all on app_private.manager_invite_accept_context from public, anon, authenticated;
+grant insert, delete on app_private.manager_invite_accept_context to app_executor;
+alter table app_private.manager_invite_accept_context enable row level security;
+create policy manager_invite_accept_context_insert on app_private.manager_invite_accept_context
+  for insert to app_executor with check (
+    transaction_id=pg_catalog.txid_current()
+    and backend_pid=pg_catalog.pg_backend_pid()
+    and actor_id=(select app_private.current_actor_id())
+  );
+create policy manager_invite_accept_context_delete on app_private.manager_invite_accept_context
+  for delete to app_executor using (
+    transaction_id=pg_catalog.txid_current()
+    and backend_pid=pg_catalog.pg_backend_pid()
+    and actor_id=(select app_private.current_actor_id())
+  );
+
 create function app_private.current_actor_email()
 returns text
 language sql stable security invoker set search_path = ''
@@ -27,6 +50,44 @@ as $$
 $$;
 revoke all on function app_private.current_actor_email() from public, anon, authenticated;
 grant execute on function app_private.current_actor_email() to app_executor;
+
+-- Read only the current JWT actor's confirmed email; app_executor never receives auth schema access.
+create function app_private.current_actor_email_verified()
+returns boolean
+language plpgsql stable security definer set search_path = ''
+as $$
+declare
+  v_actor uuid := app_private.current_actor_id();
+  v_claim_email text;
+  v_auth_email text;
+  v_confirmed_at timestamptz;
+begin
+  if v_actor is null then return false; end if;
+  begin
+    v_claim_email := lower(btrim(nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'email'));
+  exception when others then
+    return false;
+  end;
+  if v_claim_email is null or v_claim_email='' then return false; end if;
+  select lower(btrim(u.email)),u.email_confirmed_at into v_auth_email,v_confirmed_at
+  from auth.users u where u.id=v_actor;
+  return found and v_confirmed_at is not null and v_auth_email=v_claim_email;
+end;
+$$;
+revoke all on function app_private.current_actor_email_verified() from public, anon, authenticated;
+grant execute on function app_private.current_actor_email_verified() to app_executor;
+
+create function app_private.current_manager_invite_accept_id()
+returns uuid
+language sql volatile security definer set search_path = ''
+as $$
+  select c.invite_id from app_private.manager_invite_accept_context c
+  where c.transaction_id=pg_catalog.txid_current()
+    and c.backend_pid=pg_catalog.pg_backend_pid()
+    and c.actor_id=app_private.current_actor_id();
+$$;
+revoke all on function app_private.current_manager_invite_accept_id() from public, anon, authenticated;
+grant execute on function app_private.current_manager_invite_accept_id() to app_executor;
 
 grant select, insert, update on app_private.manager_invites to app_executor;
 grant select, insert on app_private.invite_properties to app_executor;
@@ -42,6 +103,9 @@ create policy subscriptions_matching_invite_read on app_private.subscriptions
     where ip.property_id=subscriptions.property_id
       and ip.owner_account_id=subscriptions.owner_account_id
       and i.state='pending' and i.normalized_email=(select app_private.current_actor_email())
+      and i.id=(select app_private.current_manager_invite_accept_id())
+      and i.expires_at>statement_timestamp()
+      and (select app_private.current_actor_email_verified())
       and (select app_private.current_actor_id()) is not null
   ));
 create policy properties_matching_invite_read on app_private.properties
@@ -50,6 +114,9 @@ create policy properties_matching_invite_read on app_private.properties
     join app_private.invite_properties ip on ip.invite_id=i.id and ip.owner_account_id=i.owner_account_id
     where ip.property_id=properties.id and ip.owner_account_id=properties.owner_account_id
       and i.state='pending' and i.normalized_email=(select app_private.current_actor_email())
+      and i.id=(select app_private.current_manager_invite_accept_id())
+      and i.expires_at>statement_timestamp()
+      and (select app_private.current_actor_email_verified())
       and (select app_private.current_actor_id()) is not null
   ));
 create policy manager_invites_owner_read on app_private.manager_invites
@@ -62,13 +129,16 @@ create policy manager_invites_owner_update on app_private.manager_invites
 create policy manager_invites_matching_email_read on app_private.manager_invites
   for select to app_executor using (
     normalized_email=(select app_private.current_actor_email())
+    and (select app_private.current_actor_email_verified())
     and (select app_private.current_actor_id()) is not null
   );
 create policy manager_invites_matching_email_update on app_private.manager_invites
   for update to app_executor
   using (state='pending' and normalized_email=(select app_private.current_actor_email())
+    and (select app_private.current_actor_email_verified())
     and (select app_private.current_actor_id()) is not null)
   with check (normalized_email=(select app_private.current_actor_email())
+    and (select app_private.current_actor_email_verified())
     and ((state='accepted' and accepted_user_id=(select app_private.current_actor_id()))
       or (state='expired' and accepted_user_id is null)));
 
@@ -81,6 +151,9 @@ create policy invite_properties_matching_email_read on app_private.invite_proper
     select 1 from app_private.manager_invites i
     where i.id=invite_properties.invite_id and i.owner_account_id=invite_properties.owner_account_id
       and i.state='pending' and i.normalized_email=(select app_private.current_actor_email())
+      and i.id=(select app_private.current_manager_invite_accept_id())
+      and i.expires_at>statement_timestamp()
+      and (select app_private.current_actor_email_verified())
       and (select app_private.current_actor_id()) is not null
   ));
 
@@ -91,6 +164,9 @@ create policy property_memberships_invite_create on app_private.property_members
     where i.owner_account_id=property_memberships.owner_account_id
       and ip.property_id=property_memberships.property_id
       and i.state='pending' and i.normalized_email=(select app_private.current_actor_email())
+      and i.id=(select app_private.current_manager_invite_accept_id())
+      and i.expires_at>statement_timestamp()
+      and (select app_private.current_actor_email_verified())
       and property_memberships.user_id=(select app_private.current_actor_id())
       and property_memberships.permission=ip.permission
   ));
@@ -102,6 +178,9 @@ create policy property_memberships_invite_reactivate on app_private.property_mem
     where i.owner_account_id=property_memberships.owner_account_id
       and ip.property_id=property_memberships.property_id
       and i.state='pending' and i.normalized_email=(select app_private.current_actor_email())
+      and i.id=(select app_private.current_manager_invite_accept_id())
+      and i.expires_at>statement_timestamp()
+      and (select app_private.current_actor_email_verified())
       and property_memberships.user_id=(select app_private.current_actor_id())
   ))
   with check (revoked_at is null and exists (
@@ -213,7 +292,8 @@ declare
   v_items jsonb;
   v_now timestamptz := statement_timestamp();
 begin
-  if v_actor is null or v_email is null or v_email='' then
+  if v_actor is null or v_email is null or v_email=''
+     or not app_private.current_actor_email_verified() then
     raise exception using errcode='28000', message='authenticated_email_required';
   end if;
   if p_token_hash is null or p_token_hash !~ '^[0-9a-f]{64}$' then
@@ -245,6 +325,9 @@ begin
       where id=v_invite.id;
     return jsonb_build_object('status','expired');
   end if;
+
+  insert into app_private.manager_invite_accept_context(transaction_id,backend_pid,actor_id,invite_id)
+  values (pg_catalog.txid_current(),pg_catalog.pg_backend_pid(),v_actor,v_invite.id);
 
   if (select count(*) from app_private.invite_properties ip
       join app_private.properties p on p.id=ip.property_id and p.owner_account_id=ip.owner_account_id
@@ -312,6 +395,10 @@ begin
   update app_private.manager_invites
     set state='accepted',accepted_user_id=v_actor,updated_at=v_now,version=version+1
     where id=v_invite.id;
+
+  delete from app_private.manager_invite_accept_context
+    where transaction_id=pg_catalog.txid_current()
+      and backend_pid=pg_catalog.pg_backend_pid() and actor_id=v_actor;
 
   return jsonb_build_object('status','accepted','items',coalesce(v_items,'[]'::jsonb),'next_cursor',null);
 end;

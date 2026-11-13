@@ -5,8 +5,25 @@ insert into auth.users(id) values
   ('f0000000-0000-0000-0000-000000000001'), -- owner A
   ('f0000000-0000-0000-0000-000000000002'), -- owner B
   ('f0000000-0000-0000-0000-000000000003'), -- manager
-  ('f0000000-0000-0000-0000-000000000004')  -- mismatched email
+  ('f0000000-0000-0000-0000-000000000004'), -- mismatched email
+  ('f0000000-0000-0000-0000-000000000005'), -- unconfirmed email
+  ('f0000000-0000-0000-0000-000000000006')  -- expired invite recipient
 on conflict (id) do nothing;
+update auth.users set
+  email=case id
+    when 'f0000000-0000-0000-0000-000000000001' then 'owner-a@example.test'
+    when 'f0000000-0000-0000-0000-000000000002' then 'owner-b@example.test'
+    when 'f0000000-0000-0000-0000-000000000003' then 'manager@example.test'
+    when 'f0000000-0000-0000-0000-000000000004' then 'other@example.test'
+    when 'f0000000-0000-0000-0000-000000000005' then 'unconfirmed@example.test'
+    when 'f0000000-0000-0000-0000-000000000006' then 'expired@example.test'
+  end,
+  email_confirmed_at=case when id='f0000000-0000-0000-0000-000000000005' then null else now() end
+where id in (
+  'f0000000-0000-0000-0000-000000000001','f0000000-0000-0000-0000-000000000002',
+  'f0000000-0000-0000-0000-000000000003','f0000000-0000-0000-0000-000000000004',
+  'f0000000-0000-0000-0000-000000000005','f0000000-0000-0000-0000-000000000006'
+);
 
 insert into app_private.owner_accounts(id,owner_user_id) values
   ('f1000000-0000-0000-0000-000000000001','f0000000-0000-0000-0000-000000000001'),
@@ -96,6 +113,43 @@ begin
            and owner_account_id='f1000000-0000-0000-0000-000000000001'
            and revoked_at is null and permission='daily') <> 2 then
     raise exception 'acceptance did not atomically grant all scoped memberships';
+  end if;
+end $$;
+do $$
+begin
+  if exists (select 1 from app_private.manager_invite_accept_context
+      where actor_id='f0000000-0000-0000-0000-000000000003') then
+    raise exception 'successful accept left transaction context behind';
+  end if;
+end $$;
+
+set local role authenticated;
+set local request.jwt.claims = '{"sub":"f0000000-0000-0000-0000-000000000001","email":"owner-a@example.test"}';
+do $$
+begin
+  perform api.create_manager_invite(
+    'f2000000-0000-0000-0000-000000000001','unconfirmed@example.test',
+    array['f2000000-0000-0000-0000-000000000001'::uuid],
+    'daily',repeat('9',64));
+end $$;
+reset role;
+set local role authenticated;
+set local request.jwt.claims = '{"sub":"f0000000-0000-0000-0000-000000000005","email":"unconfirmed@example.test"}';
+do $$
+begin
+  begin
+    perform api.accept_manager_invite(repeat('9',64));
+    raise exception 'unconfirmed auth email accepted manager invite';
+  exception when sqlstate '28000' then null;
+  end;
+end $$;
+reset role;
+do $$
+begin
+  if (select state from app_private.manager_invites where token_hash=repeat('9',64)) <> 'pending'
+     or exists (select 1 from app_private.property_memberships
+       where user_id='f0000000-0000-0000-0000-000000000005' and revoked_at is null) then
+    raise exception 'unconfirmed recipient changed invite or gained membership';
   end if;
 end $$;
 
@@ -209,8 +263,20 @@ values ('f1000000-0000-0000-0000-000000000001','f2000000-0000-0000-0000-00000000
 update app_private.manager_invites set created_at=now()-interval '25 hours',expires_at=now()-interval '1 hour'
 where id=:'expired_invite_id';
 
+set local role app_executor;
+set local request.jwt.claims = '{"sub":"f0000000-0000-0000-0000-000000000006","email":"expired@example.test"}';
+select set_config('app.manager_invite_accept_id',:'expired_invite_id',true);
+do $$
+begin
+  if exists (select 1 from app_private.properties where id='f2000000-0000-0000-0000-000000000001')
+     or exists (select 1 from app_private.subscriptions where property_id='f2000000-0000-0000-0000-000000000001')
+     or exists (select 1 from app_private.invite_properties
+       where invite_id=(select id from app_private.manager_invites where token_hash=repeat('d',64))) then
+    raise exception 'expired invite or client-set GUC bypassed accept-context RLS';
+  end if;
+end $$;
+reset role;
 set local role authenticated;
-set local request.jwt.claims = '{"sub":"f0000000-0000-0000-0000-000000000004","email":"expired@example.test"}';
 do $$
 declare v_result jsonb;
 begin

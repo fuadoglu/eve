@@ -6,7 +6,7 @@ Maşın mənbəyi: [traceability.json](traceability.json). API/data/test dəyiş
 |---|---|---|---|---|
 | R01 — Şifrəsiz giriş | UI01, UI02, UI03, UI18 | 7 / 1 | EVE-003, EVE-007 | AT01, AT02, AT03 |
 | R02 — Tenant və çox ev | UI06, UI07, UI16 | 6 / 2 | EVE-006, EVE-008 | AT04, AT05, AT06 |
-| R03 — Çoxsahibli menecer | UI06, UI07, UI16 | 8 / 3 | EVE-006, EVE-008 | AT04, AT05, AT06 |
+| R03 — Çoxsahibli menecer | UI06, UI07, UI16 | 8 / 4 | EVE-006, EVE-008 | AT04, AT05, AT06 |
 | R04 — Rezervasiya və təqvim | UI04, UI05, UI08 | 11 / 6 | EVE-010, EVE-011, EVE-012, EVE-013 | AT07, AT08, AT09, AT10 |
 | R05 — Kirayə pul uçotu | UI07, UI08 | 9 / 7 | EVE-011, EVE-014, EVE-015 | AT11, AT12, AT13 |
 | R06 — Xərclər | UI07, UI09 | 9 / 4 | EVE-016 | AT14 |

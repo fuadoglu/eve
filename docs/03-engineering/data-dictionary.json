@@ -877,7 +877,7 @@
       ],
       "rls": {
         "enabled": true,
-        "select": "owner OR current_membership(property_id) OR exact-email recipient of pending invite for this property; financial data separately projected",
+        "select": "owner OR current_membership(property_id) OR verified exact-email invite recipient only inside the transaction context for that locked, pending, unexpired invite; financial data separately projected",
         "insert": "RPC-only: owner creates own tenant property; owner_account_id derived, never client-selected",
         "update": "RPC-only allowlisted property fields; owner_account_id immutable; archived_at owner-only; see ACCESS-BOUNDARY.md",
         "delete": "deny; retention_service_only"
@@ -1277,10 +1277,85 @@
       ],
       "rls": {
         "enabled": true,
-        "select": "owner OR exact normalized email recipient",
+        "select": "owner OR auth.users-confirmed exact normalized email recipient; all invite states are safe metadata only",
         "insert": "owner_only",
         "update": "owner OR matching invite recipient may accept/expire pending invite",
         "delete": "deny; retention_service_only"
+      }
+    },
+    {
+      "name": "manager_invite_accept_context",
+      "description": "Yalnız manager invite qəbul tranzaksiyasında RLS üçün daxili actor context; API-dən oxunmur",
+      "requirements": [
+        "R03"
+      ],
+      "tenant_scope": "transaction_actor",
+      "write_mode": "transactional_ephemeral",
+      "retention_class": "ephemeral",
+      "columns": [
+        {
+          "name": "transaction_id",
+          "type": "bigint",
+          "nullable": false,
+          "default": null,
+          "description": "Cari PostgreSQL tranzaksiyasının ID-si",
+          "validation": []
+        },
+        {
+          "name": "backend_pid",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "description": "Tranzaksiyanı icra edən backend prosesi",
+          "validation": []
+        },
+        {
+          "name": "actor_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "description": "Dəvəti qəbul edən təsdiqli istifadəçi",
+          "validation": []
+        },
+        {
+          "name": "invite_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "description": "Row-lock ilə təsdiqlənmiş konkret dəvət",
+          "validation": []
+        }
+      ],
+      "primary_key": [
+        "transaction_id",
+        "backend_pid",
+        "actor_id"
+      ],
+      "unique": [],
+      "foreign_keys": [
+        {
+          "columns": [
+            "invite_id"
+          ],
+          "references": {
+            "table": "manager_invites",
+            "columns": [
+              "id"
+            ]
+          },
+          "on_delete": "CASCADE",
+          "on_update": "NO ACTION",
+          "deferrable": false
+        }
+      ],
+      "checks": [],
+      "indexes": [],
+      "rls": {
+        "enabled": true,
+        "select": "SECURITY DEFINER policy helper only; app_executor has no SELECT grant",
+        "insert": "app_executor current transaction/backend/actor only",
+        "update": "deny",
+        "delete": "app_executor current transaction/backend/actor only"
       }
     },
     {
@@ -1420,7 +1495,7 @@
       "indexes": [],
       "rls": {
         "enabled": true,
-        "select": "owner OR matching invite recipient while pending",
+        "select": "owner OR verified matching recipient only inside the transaction context for that locked, pending, unexpired invite",
         "insert": "owner_only",
         "update": "deny",
         "delete": "deny; retention_service_only"
@@ -8272,7 +8347,7 @@
       "indexes": [],
       "rls": {
         "enabled": true,
-        "select": "owner; assigned manager status/end projection; exact-email pending invite recipient only for selected property entitlement check",
+        "select": "owner; assigned manager status/end projection; verified exact-email recipient only inside the transaction context for a locked, pending, unexpired invite property entitlement check",
         "insert": "billing verified transaction only; opt-in owner explicit",
         "update": "billing verified transaction only; opt-in owner explicit",
         "delete": "deny; retention_service_only"
