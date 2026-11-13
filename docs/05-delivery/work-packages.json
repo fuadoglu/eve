@@ -1720,7 +1720,7 @@
       "parent_issue": 27,
       "milestone": "M4",
       "title": "İcazəli copy və import preview",
-      "status": "backlog",
+      "status": "in_progress",
       "depends_on": [
         "EVE-019.1"
       ],
