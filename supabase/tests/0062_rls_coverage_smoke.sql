@@ -1,4 +1,4 @@
--- EVE-006.2 catalog guard: all 52 private tables remain FORCE RLS.
+-- EVE-006.2 catalog guard: all 53 private tables remain FORCE RLS.
 -- Only the reviewed scoped RPC allowlists have executor grants; all other tables deny.
 do $$
 declare
@@ -8,7 +8,7 @@ begin
   select count(*) into table_count
   from pg_class c join pg_namespace n on n.oid=c.relnamespace
   where n.nspname='app_private' and c.relkind='r';
-  if table_count <> 52 then
+  if table_count <> 53 then
     raise exception 'private table inventory changed: %',table_count;
   end if;
 
@@ -22,11 +22,13 @@ begin
       or has_table_privilege('authenticated',c.oid,
         'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER')
       or has_table_privilege('app_executor',c.oid,
-        'DELETE,TRUNCATE,REFERENCES,TRIGGER')
+        'TRUNCATE,REFERENCES,TRIGGER')
+      or has_table_privilege('app_executor',c.oid,'DELETE') is distinct from
+        (c.relname='manager_invite_accept_context')
       or has_table_privilege('app_executor',c.oid,'UPDATE') is distinct from
         (c.relname in ('manager_invites','property_memberships'))
       or has_table_privilege('app_executor',c.oid,'INSERT') is distinct from
-        (c.relname in ('owner_accounts','properties','trial_claims','subscriptions','rooms','inventory_items','media_bindings','manager_invites','invite_properties','property_memberships'))
+        (c.relname in ('owner_accounts','properties','trial_claims','subscriptions','rooms','inventory_items','media_bindings','manager_invites','invite_properties','property_memberships','manager_invite_accept_context'))
       or has_table_privilege('app_executor',c.oid,'SELECT') is distinct from
         (c.relname in ('profiles','owner_accounts','properties',
           'property_memberships','reservations','reservation_placements',

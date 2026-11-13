@@ -29,6 +29,7 @@ create table app_private.manager_invite_accept_context (
 revoke all on app_private.manager_invite_accept_context from public, anon, authenticated;
 grant insert, delete on app_private.manager_invite_accept_context to app_executor;
 alter table app_private.manager_invite_accept_context enable row level security;
+alter table app_private.manager_invite_accept_context force row level security;
 create policy manager_invite_accept_context_insert on app_private.manager_invite_accept_context
   for insert to app_executor with check (
     transaction_id=pg_catalog.txid_current()
