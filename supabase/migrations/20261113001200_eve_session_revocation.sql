@@ -25,13 +25,8 @@ begin
 end $$;
 
 grant usage on schema app_private to app_session_reader;
-grant usage on schema auth to app_session_reader;
 grant select (user_id, session_revoked_before) on app_private.profiles to app_session_reader;
 grant execute on function app_private.current_actor_id() to app_session_reader;
-grant select (id, user_id, created_at) on auth.sessions to app_session_reader;
-create policy sessions_session_reader_self on auth.sessions
-  for select to app_session_reader
-  using (user_id = (select app_private.current_actor_id()));
 
 create policy profiles_session_reader_self on app_private.profiles
   for select to app_session_reader
@@ -44,6 +39,37 @@ create policy profiles_self_session_insert on app_private.profiles
   for insert to app_executor
   with check (user_id = (select app_private.current_actor_id()));
 
+-- Supabase does not allow custom roles to receive USAGE on its managed auth
+-- schema. Keep that read inside a fixed, current-session-only helper owned by
+-- postgres; callers cannot choose a user or session identifier.
+create function app_private.current_session_created_at()
+returns timestamptz
+language plpgsql stable security definer set search_path = ''
+as $$
+declare
+  actor_id uuid := app_private.current_actor_id();
+  session_id uuid;
+  claims jsonb;
+  session_created_at timestamptz;
+begin
+  if actor_id is null then return null; end if;
+  begin
+    claims := nullif(current_setting('request.jwt.claims', true), '')::jsonb;
+    session_id := nullif(claims ->> 'session_id', '')::uuid;
+  exception when others then
+    return null;
+  end;
+  if session_id is null then return null; end if;
+
+  select s.created_at into session_created_at
+  from auth.sessions s
+  where s.id = session_id and s.user_id = actor_id;
+  return session_created_at;
+end;
+$$;
+revoke all on function app_private.current_session_created_at() from public, anon, authenticated;
+grant execute on function app_private.current_session_created_at() to app_session_reader;
+
 create policy profiles_self_session_update on app_private.profiles
   for update to app_executor
   using (user_id = (select app_private.current_actor_id()))
@@ -55,24 +81,12 @@ language plpgsql stable security definer set search_path = ''
 as $$
 declare
   actor_id uuid := app_private.current_actor_id();
-  session_id uuid;
   session_created_at timestamptz;
   revoked_before timestamptz;
-  claims jsonb;
 begin
   if actor_id is null then return false; end if;
-  begin
-    claims := nullif(current_setting('request.jwt.claims', true), '')::jsonb;
-    session_id := nullif(claims ->> 'session_id', '')::uuid;
-  exception when others then
-    return false;
-  end;
-  if session_id is null then return false; end if;
-
-  select s.created_at into session_created_at
-  from auth.sessions s
-  where s.id = session_id and s.user_id = actor_id;
-  if not found then return false; end if;
+  session_created_at := app_private.current_session_created_at();
+  if session_created_at is null then return false; end if;
 
   select p.session_revoked_before into revoked_before
   from app_private.profiles p where p.user_id = actor_id;

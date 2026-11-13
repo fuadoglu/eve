@@ -16,15 +16,13 @@ begin
   end if;
   if (select rolbypassrls or rolsuper or rolcanlogin
       from pg_roles where rolname='app_session_reader')
-     or not (select relrowsecurity from pg_class where oid='auth.sessions'::regclass)
-     or not exists (
-       select 1 from pg_policy p
-       where p.polrelid='auth.sessions'::regclass
-         and p.polname='sessions_session_reader_self'
-         and p.polcmd='r'
-         and p.polroles=array['app_session_reader'::regrole::oid]
-     ) then
-    raise exception 'Auth session reader must be non-bypass and actor-scoped';
+     or has_schema_privilege('app_session_reader','auth','USAGE')
+     or has_table_privilege('app_session_reader','auth.sessions','SELECT')
+     or (select proowner from pg_proc where oid='app_private.current_session_created_at()'::regprocedure) <> 'postgres'::regrole
+     or not (select prosecdef from pg_proc where oid='app_private.current_session_created_at()'::regprocedure)
+     or has_function_privilege('authenticated','app_private.current_session_created_at()','EXECUTE')
+     or has_function_privilege('anon','app_private.current_session_created_at()','EXECUTE') then
+    raise exception 'Auth session lookup must use the private postgres-owned helper';
   end if;
   if has_table_privilege('authenticated','app_private.profiles','UPDATE')
      or has_table_privilege('authenticated','app_private.profiles','INSERT')
@@ -32,16 +30,8 @@ begin
      or has_table_privilege('app_session_reader','auth.sessions','UPDATE') then
     raise exception 'session roles have excessive privileges';
   end if;
-  if not has_schema_privilege('app_session_reader','auth','USAGE')
-     or not has_column_privilege('app_session_reader','auth.sessions','id','SELECT')
-     or not has_column_privilege('app_session_reader','auth.sessions','user_id','SELECT')
-     or not has_column_privilege('app_session_reader','auth.sessions','created_at','SELECT') then
-    raise exception 'session reader grants missing: auth_usage=%, id=%, user_id=%, created_at=%, acl=%',
-      has_schema_privilege('app_session_reader','auth','USAGE'),
-      has_column_privilege('app_session_reader','auth.sessions','id','SELECT'),
-      has_column_privilege('app_session_reader','auth.sessions','user_id','SELECT'),
-      has_column_privilege('app_session_reader','auth.sessions','created_at','SELECT'),
-      (select nspacl from pg_namespace where nspname='auth');
+  if not has_function_privilege('app_session_reader','app_private.current_session_created_at()','EXECUTE') then
+    raise exception 'session reader cannot execute its private Auth lookup helper';
   end if;
 end $$;
 
