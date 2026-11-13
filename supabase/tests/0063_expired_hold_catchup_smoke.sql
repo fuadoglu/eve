@@ -3,6 +3,7 @@ do $$
 declare
   owner_a uuid := gen_random_uuid();
   owner_b uuid := gen_random_uuid();
+  manager_id uuid := gen_random_uuid();
   account_a uuid;
   account_b uuid;
   property_a uuid;
@@ -12,14 +13,19 @@ declare
   future_placement uuid := gen_random_uuid();
   confirmed_reservation uuid := gen_random_uuid();
   confirmed_placement uuid := gen_random_uuid();
+  broken_reservation uuid := gen_random_uuid();
+  broken_placement uuid := gen_random_uuid();
   block_id uuid;
   expired_count integer;
 begin
-  insert into auth.users(id) values (owner_a),(owner_b);
+  insert into auth.users(id) values (owner_a),(owner_b),(manager_id);
   insert into app_private.owner_accounts(owner_user_id) values (owner_a) returning id into account_a;
   insert into app_private.owner_accounts(owner_user_id) values (owner_b) returning id into account_b;
   insert into app_private.properties(owner_account_id,name,area)
     values (account_a,'Catch-up fixture','Bakı') returning id into property_a;
+  insert into app_private.property_memberships(
+    owner_account_id,property_id,user_id,permission,granted_by
+  ) values (account_a,property_a,manager_id,'daily',owner_a);
   insert into app_private.manual_blocks(owner_account_id,property_id,check_in,check_out)
     values (account_a,property_a,'2027-05-01','2027-05-03') returning id into block_id;
   insert into app_private.occupancy(owner_account_id,property_id,manual_block_id,date_range)
@@ -50,7 +56,8 @@ begin
     (account_a,property_a,confirmed_placement,daterange('2027-06-01','2027-06-03','[)'),null);
   set constraints all immediate;
 
-  perform set_config('request.jwt.claim.sub',owner_a::text,true);
+  -- Daily managers have reservation.write for their delegated property scope.
+  perform set_config('request.jwt.claim.sub',manager_id::text,true);
   expired_count := app_private.expire_property_holds(property_a);
   if expired_count <> 1 then
     raise exception 'expected one due hold to expire, got %',expired_count;
@@ -66,9 +73,10 @@ begin
     raise exception 'catch-up changed a future hold, confirmed booking or manual block';
   end if;
   if not exists (select 1 from app_private.audit_events
-      where resource_id=expired_reservation and reason='hold_expired'
+      where resource_id=expired_reservation and actor_user_id=manager_id
+        and capability='system.hold_expiry' and reason='hold_expired'
         and redacted_diff->>'reason'='hold_expired') then
-    raise exception 'expired hold audit reason missing';
+    raise exception 'expired hold audit capability/actor/reason missing';
   end if;
   if app_private.expire_property_holds(property_a) <> 0 then
     raise exception 'repeated catch-up was not idempotent';
@@ -79,6 +87,32 @@ begin
     raise exception 'cross-owner catch-up unexpectedly succeeded';
   exception when insufficient_privilege then null;
   end;
+
+  -- A missing occupancy is a hard invariant error; all state and audit writes
+  -- in the catch-up statement must roll back together.
+  perform set_config('request.jwt.claim.sub',owner_a::text,true);
+  set constraints all deferred;
+  insert into app_private.reservations(
+    id,owner_account_id,property_id,current_placement_id,guest_name,
+    check_in,check_out,check_in_time,check_out_time,state,hold_expires_at,total_minor
+  ) values (broken_reservation,account_a,property_a,broken_placement,'Broken fixture',
+    '2027-07-01','2027-07-03','14:00','12:00','hold',statement_timestamp()-interval '1 hour',100);
+  insert into app_private.reservation_placements(
+    id,owner_account_id,property_id,reservation_id,placement_no,
+    check_in_snapshot,check_out_snapshot,effective_from,created_by
+  ) values (broken_placement,account_a,property_a,broken_reservation,1,
+    '2027-07-01','2027-07-03',now(),owner_a);
+  set constraints all immediate;
+  begin
+    perform app_private.expire_property_holds(property_a);
+    raise exception 'missing occupancy unexpectedly accepted';
+  exception when integrity_constraint_violation then null;
+  end;
+  if (select state from app_private.reservations where id=broken_reservation) <> 'hold'
+     or (select version from app_private.reservations where id=broken_reservation) <> 1
+     or exists (select 1 from app_private.audit_events where resource_id=broken_reservation) then
+    raise exception 'failed catch-up did not roll back reservation and audit changes';
+  end if;
   perform set_config('request.jwt.claim.sub','',true);
   begin
     perform app_private.expire_property_holds(property_a);

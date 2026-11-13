@@ -21,8 +21,18 @@ begin
   select p.owner_account_id into v_owner_account_id
   from app_private.properties p
   join app_private.owner_accounts a
-    on a.id = p.owner_account_id and a.owner_user_id = v_actor
+    on a.id = p.owner_account_id
   where p.id = p_property_id
+    and (
+      a.owner_user_id = v_actor
+      or exists (
+        select 1 from app_private.property_memberships m
+        where m.property_id = p.id
+          and m.owner_account_id = p.owner_account_id
+          and m.user_id = v_actor
+          and m.revoked_at is null
+      )
+    )
   for update of p;
 
   if not found then
@@ -72,7 +82,7 @@ begin
       owner_account_id, property_id, actor_user_id, capability,
       resource_type, resource_id, request_id, redacted_diff, reason, created_at
     ) values (
-      v_owner_account_id, p_property_id, v_actor, 'reservation.write',
+      v_owner_account_id, p_property_id, v_actor, 'system.hold_expiry',
       'reservation', v_reservation.id, 'hold-expiry:' || v_reservation.id::text,
       jsonb_build_object('state_from','hold','state_to','cancelled',
         'reason','hold_expired','version',v_reservation.version + 1),
