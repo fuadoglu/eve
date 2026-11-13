@@ -27,17 +27,11 @@ create table app_private.manager_invite_accept_context (
   primary key (transaction_id,backend_pid,actor_id)
 );
 revoke all on app_private.manager_invite_accept_context from public, anon, authenticated;
-grant select, insert, delete on app_private.manager_invite_accept_context to app_executor;
+grant insert on app_private.manager_invite_accept_context to app_executor;
 alter table app_private.manager_invite_accept_context enable row level security;
 alter table app_private.manager_invite_accept_context force row level security;
 create policy manager_invite_accept_context_insert on app_private.manager_invite_accept_context
   for insert to app_executor with check (
-    transaction_id=pg_catalog.txid_current()
-    and backend_pid=pg_catalog.pg_backend_pid()
-    and actor_id=(select app_private.current_actor_id())
-  );
-create policy manager_invite_accept_context_delete on app_private.manager_invite_accept_context
-  for delete to app_executor using (
     transaction_id=pg_catalog.txid_current()
     and backend_pid=pg_catalog.pg_backend_pid()
     and actor_id=(select app_private.current_actor_id())
@@ -77,6 +71,18 @@ end;
 $$;
 revoke all on function app_private.current_actor_email_verified() from public, anon, authenticated;
 grant execute on function app_private.current_actor_email_verified() to app_executor;
+
+create function app_private.clear_manager_invite_accept_context()
+returns void
+language sql volatile security definer set search_path = ''
+as $$
+  delete from app_private.manager_invite_accept_context
+  where transaction_id=pg_catalog.txid_current()
+    and backend_pid=pg_catalog.pg_backend_pid()
+    and actor_id=app_private.current_actor_id();
+$$;
+revoke all on function app_private.clear_manager_invite_accept_context() from public, anon, authenticated;
+grant execute on function app_private.clear_manager_invite_accept_context() to app_executor;
 
 create function app_private.current_manager_invite_accept_id()
 returns uuid
@@ -397,9 +403,7 @@ begin
     set state='accepted',accepted_user_id=v_actor,updated_at=v_now,version=version+1
     where id=v_invite.id;
 
-  delete from app_private.manager_invite_accept_context
-    where transaction_id=pg_catalog.txid_current()
-      and backend_pid=pg_catalog.pg_backend_pid() and actor_id=v_actor;
+  perform app_private.clear_manager_invite_accept_context();
 
   return jsonb_build_object('status','accepted','items',coalesce(v_items,'[]'::jsonb),'next_cursor',null);
 end;

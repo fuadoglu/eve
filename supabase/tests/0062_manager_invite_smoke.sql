@@ -106,8 +106,7 @@ begin
      or exists (select 1 from app_private.subscriptions where property_id in (
         'f2000000-0000-0000-0000-000000000001','f2000000-0000-0000-0000-000000000002'))
      or exists (select 1 from app_private.invite_properties
-        where invite_id=(select id from app_private.manager_invites where token_hash=repeat('a',64)))
-     or exists (select 1 from app_private.manager_invite_accept_context) then
+        where invite_id=(select id from app_private.manager_invites where token_hash=repeat('a',64))) then
     raise exception 'client-set GUC bypassed pending invite transaction-context RLS';
   end if;
 end $$;

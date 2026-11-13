@@ -22,9 +22,7 @@ begin
       or has_table_privilege('authenticated',c.oid,
         'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER')
       or has_table_privilege('app_executor',c.oid,
-        'TRUNCATE,REFERENCES,TRIGGER')
-      or has_table_privilege('app_executor',c.oid,'DELETE') is distinct from
-        (c.relname='manager_invite_accept_context')
+        'DELETE,TRUNCATE,REFERENCES,TRIGGER')
       or has_table_privilege('app_executor',c.oid,'UPDATE') is distinct from
         (c.relname in ('manager_invites','property_memberships'))
       or has_table_privilege('app_executor',c.oid,'INSERT') is distinct from
@@ -33,7 +31,7 @@ begin
         (c.relname in ('profiles','owner_accounts','properties',
           'property_memberships','reservations','reservation_placements',
           'manual_blocks','contacts','contact_properties','rent_entries','subscriptions','rooms','inventory_items','media_assets','media_bindings',
-          'manager_invites','invite_properties','manager_invite_accept_context')));
+          'manager_invites','invite_properties')));
   if bad_count <> 0 then
     raise exception 'private RLS/grant allowlist mismatch: % tables',bad_count;
   end if;
@@ -87,16 +85,13 @@ begin
   select count(*) into table_count
   from pg_policy p join pg_class c on c.oid=p.polrelid
   where c.relnamespace='app_private'::regnamespace;
-  if table_count <> 40 then
+  if table_count <> 39 then
     raise exception 'unexpected private table policies: %',table_count;
   end if;
   if not exists (select 1 from pg_policy where polrelid='app_private.manager_invite_accept_context'::regclass
       and polname='manager_invite_accept_context_insert' and polcmd='a'
-      and polroles=array['app_executor'::regrole::oid])
-     or not exists (select 1 from pg_policy where polrelid='app_private.manager_invite_accept_context'::regclass
-      and polname='manager_invite_accept_context_delete' and polcmd='d'
       and polroles=array['app_executor'::regrole::oid]) then
-    raise exception 'manager invite accept context policies missing or mis-scoped';
+    raise exception 'manager invite accept context INSERT policy missing or mis-scoped';
   end if;
   if not exists (select 1 from pg_policy where polrelid='app_private.owner_accounts'::regclass
       and polname='owner_accounts_self_create' and polcmd='a'
