@@ -1352,7 +1352,7 @@
       "indexes": [],
       "rls": {
         "enabled": true,
-        "select": "SECURITY DEFINER policy helper only; app_executor has no SELECT grant",
+        "select": "No SELECT policy; SECURITY DEFINER helper only (app_executor SELECT privilege is needed for scoped DELETE predicate, but FORCE RLS returns no rows)",
         "insert": "app_executor current transaction/backend/actor only",
         "update": "deny",
         "delete": "app_executor current transaction/backend/actor only"

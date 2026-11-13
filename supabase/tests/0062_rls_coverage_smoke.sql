@@ -33,7 +33,7 @@ begin
         (c.relname in ('profiles','owner_accounts','properties',
           'property_memberships','reservations','reservation_placements',
           'manual_blocks','contacts','contact_properties','rent_entries','subscriptions','rooms','inventory_items','media_assets','media_bindings',
-          'manager_invites','invite_properties')));
+          'manager_invites','invite_properties','manager_invite_accept_context')));
   if bad_count <> 0 then
     raise exception 'private RLS/grant allowlist mismatch: % tables',bad_count;
   end if;
