@@ -1690,7 +1690,7 @@
       "parent_issue": 27,
       "milestone": "M4",
       "title": "Otaq/əşya və standart şablon",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-006.3",
         "EVE-009.3"
