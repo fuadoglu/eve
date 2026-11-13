@@ -10,6 +10,9 @@ declare
   property_a uuid;
   block_a uuid;
   block_b uuid;
+  block_c uuid;
+  reservation_id uuid := gen_random_uuid();
+  placement_id uuid := gen_random_uuid();
 begin
   insert into auth.users(id) values (owner_a), (owner_b), (manager_id);
   insert into app_private.owner_accounts(owner_user_id) values (owner_a) returning id into account_a;
@@ -50,6 +53,36 @@ begin
     insert into app_private.occupancy(owner_account_id,property_id,manual_block_id,date_range)
       values (account_a,property_a,block_b,daterange('2027-01-03','2027-01-05','[)'));
     raise exception 'overlapping occupancy unexpectedly accepted';
+  exception when exclusion_violation then null;
+  end;
+
+  -- A reservation may start exactly at a block's checkout boundary ([)).
+  -- Its placement and the block share the same active occupancy constraint.
+  set constraints all deferred;
+  insert into app_private.reservations(
+    id,owner_account_id,property_id,current_placement_id,guest_name,
+    check_in,check_out,check_in_time,check_out_time,total_minor
+  ) values (
+    reservation_id,account_a,property_a,placement_id,'Occupancy smoke',
+    '2027-01-04','2027-01-05','14:00','12:00',100
+  );
+  insert into app_private.reservation_placements(
+    id,owner_account_id,property_id,reservation_id,placement_no,
+    check_in_snapshot,check_out_snapshot,effective_from,created_by
+  ) values (
+    placement_id,account_a,property_a,reservation_id,1,
+    '2027-01-04','2027-01-05',now(),owner_a
+  );
+  insert into app_private.occupancy(owner_account_id,property_id,placement_id,date_range)
+    values (account_a,property_a,placement_id,daterange('2027-01-04','2027-01-05','[)'));
+  set constraints all immediate;
+
+  insert into app_private.manual_blocks(owner_account_id,property_id,check_in,check_out)
+    values (account_a,property_a,'2027-01-04','2027-01-05') returning id into block_c;
+  begin
+    insert into app_private.occupancy(owner_account_id,property_id,manual_block_id,date_range)
+      values (account_a,property_a,block_c,daterange('2027-01-04','2027-01-05','[)'));
+    raise exception 'manual block overlapped a reservation occupancy unexpectedly';
   exception when exclusion_violation then null;
   end;
 
