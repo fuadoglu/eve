@@ -1560,29 +1560,34 @@
       "parent_issue": 25,
       "milestone": "M3",
       "title": "Scoped link və WhatsApp fallback",
-      "status": "backlog",
+      "status": "in_progress",
       "depends_on": [
         "EVE-017.1"
       ],
       "role": "domain_engineer",
       "owned_path_candidates": [
-        "src/modules/finance/",
-        "src/modules/operations/"
+        "src/modules/operations/task-share.ts",
+        "src/modules/operations/task-share-panel.tsx",
+        "src/app/globals.css",
+        "tests/unit/operations/task-share.test.ts",
+        "package.json",
+        ".github/workflows/ci.yml",
+        "docs/05-delivery/work-packages.json"
       ],
-      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "ownership_rule": "Scope yalnız DB-dən server ack almış task share result-in WhatsApp/clipboard handoff UI-si və local contract tests-dir; link minting, HTTP route, cookie exchange, migration və full AT15–16 başqa paketlərdədir. İnteqrator package ledger, package script və CI-ni koordinasiya edir.",
       "deliverable": "Scoped link və WhatsApp fallback üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
       "acceptance": [
         "Scoped link və WhatsApp fallback üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
         "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
         "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
       ],
-      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "verification": "Component/unit yoxlaması; package-dən kənar provider/real-device gate tamamlanmış sayılmır.",
       "reviewer_role": "qa_redteam",
       "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
       "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
       "external_gates": [],
       "expected_result": "Scoped link və WhatsApp fallback üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
-      "parent_acceptance_reference": "AT15–16 token/GET"
+      "parent_acceptance_reference": "AT15 WhatsApp link/fallback davranışının UI component hissəsi; GET/prefetch və real endpoint testi EVE-017.3-də."
     },
     {
       "id": "EVE-017.3",

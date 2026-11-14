@@ -109,3 +109,13 @@ h1 { font-size: clamp(30px, 8vw, 38px); line-height: 1.15; margin: 0 0 var(--spa
 .reservation-note p { margin: var(--space-2) 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
 @media (min-width: 560px) { .reservation-card { padding: var(--space-6); } .reservation-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (prefers-reduced-motion: no-preference) { .plus-button, .nav-link, .primary-link { transition: background-color .15s ease, color .15s ease; } }
+.task-share-card { display: grid; gap: var(--space-3); padding: var(--space-4); border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+.task-share-card h2 { margin: 0; font-size: 20px; line-height: 1.3; }
+.task-share-note, .task-share-status { margin: 0; color: var(--muted); font-size: 14px; }
+.task-share-field { font-weight: 700; }
+.task-share-input { width: 100%; min-height: 48px; padding: var(--space-3); border: 1px solid var(--border); border-radius: var(--radius); background: white; color: var(--ink); }
+.task-share-message { min-height: 96px; resize: vertical; }
+.task-share-actions { display: grid; grid-template-columns: 1fr; gap: var(--space-2); }
+.task-share-whatsapp, .task-share-copy { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: var(--space-3) var(--space-4); border: 1px solid var(--teal); border-radius: var(--radius); background: var(--teal); color: white; font: inherit; font-weight: 700; text-align: center; text-decoration: none; cursor: pointer; }
+.task-share-copy { background: var(--surface); color: var(--teal); }
+@media (min-width: 480px) { .task-share-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
