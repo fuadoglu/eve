@@ -1,0 +1,153 @@
+import assert from "node:assert/strict";
+import { spawn, spawnSync } from "node:child_process";
+import { setTimeout as delay } from "node:timers/promises";
+import { createClient } from "@supabase/supabase-js";
+import { chromium } from "playwright";
+import { createHmac, randomUUID } from "node:crypto";
+
+const baseUrl = "http://127.0.0.1:4178";
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+const serviceKey = process.env.EVE_LOCAL_SERVICE_ROLE_KEY || localServiceRoleJwt();
+if (!supabaseUrl || !publishableKey || !serviceKey) throw new Error("local_reservation_test_configuration_missing");
+
+const suffix = randomUUID().replaceAll("-", "");
+const email = `eve-reservation-${suffix}@example.test`;
+const password = `${randomUUID()}aA1!`;
+const ownerAccountId = randomUUID();
+const propertyId = randomUUID();
+let nextServer;
+let browser;
+
+try {
+  const admin = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
+  const { data: createdUser, error: createError } = await admin.auth.admin.createUser({ email, password, email_confirm: true });
+  if (createError || !createdUser.user) throw new Error("local_auth_fixture_creation_failed");
+
+  const userClient = createClient(supabaseUrl, publishableKey, { auth: { persistSession: false, autoRefreshToken: false } });
+  const { data: signedIn, error: signInError } = await userClient.auth.signInWithPassword({ email, password });
+  if (signInError || !signedIn.session) throw new Error("local_auth_fixture_sign_in_failed");
+
+  const fixtureSql = `
+    insert into app_private.owner_accounts(id,owner_user_id) values ('${ownerAccountId}','${createdUser.user.id}');
+    insert into app_private.properties(id,owner_account_id,name,area,max_guests,default_check_in,default_check_out)
+      values ('${propertyId}','${ownerAccountId}','E2E test home','Bakı',4,'15:00','11:00');
+    insert into app_private.subscriptions(owner_account_id,property_id,state,current_end)
+      values ('${ownerAccountId}','${propertyId}','trialing',now()+interval '7 days');
+  `;
+  const fixture = spawnSync("docker", ["exec", "-i", "supabase_db_eve", "psql", "-U", "supabase_admin", "-d", "postgres", "-v", "ON_ERROR_STOP=1", "-q"], {
+    input: fixtureSql,
+    encoding: "utf8",
+    stdio: ["pipe", "ignore", "pipe"],
+  });
+  if (fixture.status !== 0) throw new Error("local_reservation_fixture_database_insert_failed");
+
+  const childEnv = { ...process.env };
+  delete childEnv.EVE_LOCAL_SERVICE_ROLE_KEY;
+  delete childEnv.SERVICE_ROLE_KEY;
+  delete childEnv.SECRET_KEY;
+  delete childEnv.SUPABASE_SECRET_KEY;
+  delete childEnv.JWT_SECRET;
+  delete childEnv.PGRST_JWT_SECRET;
+  nextServer = spawn("node", ["node_modules/next/dist/bin/next", "start", "--port", "4178"], {
+    env: childEnv,
+    stdio: "ignore",
+  });
+  await waitForServer(baseUrl);
+
+  browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const cookieName = `sb-${new URL(supabaseUrl).hostname.split(".")[0]}-auth-token`;
+  const cookieValue = `base64-${Buffer.from(JSON.stringify(signedIn.session)).toString("base64url")}`;
+  await context.addCookies([{ name: cookieName, value: cookieValue, url: baseUrl, httpOnly: true, sameSite: "Lax" }]);
+  const page = await context.newPage();
+  await page.goto(`${baseUrl}/calendar`, { waitUntil: "networkidle" });
+  await page.getByRole("heading", { name: "E2E test home" }).waitFor();
+  await page.getByLabel("Giriş tarixi").fill("2027-08-01");
+  await page.getByLabel("Çıxış tarixi").fill("2027-08-04");
+  await page.getByLabel("Qonağın adı").fill("Synthetic guest");
+  await page.getByLabel("Ümumi qiymət (AZN)").fill("300,00");
+  await page.locator(".reservation-more summary").click();
+  await page.getByLabel("Alınan pul (AZN, istəyə bağlı)").fill("100,00");
+  await context.setOffline(true);
+  await page.getByRole("button", { name: "Təsdiqlə" }).click();
+  await page.getByRole("alert").getByText("Bağlantı yoxdur. Son dəyişiklik hələ saxlanılmayıb.").waitFor();
+  assert.equal(await page.getByRole("heading", { name: "Pul xülasəsi" }).count(), 0);
+  await context.setOffline(false);
+  await page.getByLabel("Qonağın adı").fill("Synthetic guest");
+  const createRequest = page.waitForRequest((request) => request.url().endsWith("/api/v1/reservations") && request.method() === "POST");
+  const createResponse = page.waitForResponse((response) => response.url().endsWith("/api/v1/reservations") && response.request().method() === "POST");
+  await page.getByRole("button", { name: "Təsdiqlə" }).click();
+  const capturedRequest = await createRequest;
+  const firstResponse = await createResponse;
+  assert.equal(firstResponse.status(), 201);
+  const firstEnvelope = await firstResponse.json();
+  await page.getByRole("heading", { name: "Pul xülasəsi" }).waitFor();
+  const createdText = await page.locator(".reservation-card").innerText();
+  assert.match(createdText, /Balans serverdən alınıb/);
+  assert.match(createdText, /200,00/);
+  const body = capturedRequest.postDataJSON();
+  const key = capturedRequest.headers()["idempotency-key"];
+  assert.equal(typeof key, "string");
+  const retryResponse = await page.request.post(`${baseUrl}/api/v1/reservations`, {
+    headers: { Origin: baseUrl, "Idempotency-Key": key, "Content-Type": "application/json" },
+    data: body,
+  });
+  assert.equal(retryResponse.status(), 201);
+  const firstDto = await retryResponse.json();
+  assert.equal(firstDto.data.guest_name, "Synthetic guest");
+  assert.equal(firstDto.data.id, firstEnvelope.data.id);
+  assert.equal(firstDto.data.balance.rent_received_minor, 10000);
+  assert.equal(firstDto.data.balance.remaining_minor, 20000);
+
+  const countResult = spawnSync("docker", ["exec", "-i", "supabase_db_eve", "psql", "-U", "supabase_admin", "-d", "postgres", "-Atqc",
+    `select (select count(*) from app_private.reservations where id='${firstEnvelope.data.id}')::text || ':' || (select count(*) from app_private.rent_entries where reservation_id='${firstEnvelope.data.id}')::text;`], {
+    encoding: "utf8", stdio: ["ignore", "pipe", "pipe"],
+  });
+  if (countResult.status !== 0) throw new Error("reservation_retry_database_count_failed");
+  assert.equal(countResult.stdout.trim(), "1:1");
+
+  const conflictResponse = await page.request.post(`${baseUrl}/api/v1/reservations`, {
+    headers: { Origin: baseUrl, "Idempotency-Key": `reservation-conflict-${suffix}`, "Content-Type": "application/json" },
+    data: { ...body, guest_name: "Other synthetic guest" },
+  });
+  assert.equal(conflictResponse.status(), 409);
+  console.log("PASS reservation browser E2E: authenticated property context, mobile offline guard, server acknowledgement/balance, DB-backed idempotent retry and occupancy conflict");
+  await context.close();
+} catch (error) {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(`FAIL reservation browser E2E: ${message}`);
+  process.exitCode = 1;
+} finally {
+  await browser?.close();
+  if (nextServer && !nextServer.killed) nextServer.kill("SIGTERM");
+}
+
+async function waitForServer(url) {
+  for (let attempt = 0; attempt < 45; attempt++) {
+    try {
+      const response = await fetch(url, { redirect: "manual" });
+      if (response.status < 500) return;
+    } catch { /* the local Next server has not bound its port yet */ }
+    await delay(1000);
+  }
+  throw new Error("next_server_start_failed");
+}
+
+function localServiceRoleJwt() {
+  const inspected = spawnSync("docker", ["inspect", "supabase_rest_eve"], { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] });
+  if (inspected.status !== 0) throw new Error("local_jwt_fixture_configuration_missing");
+  const environment = JSON.parse(inspected.stdout)[0]?.Config?.Env ?? [];
+  const config = environment.find((item) => item.startsWith("PGRST_JWT_SECRET="))?.split("=", 2)[1];
+  const jwk = config ? JSON.parse(config).keys?.find((item) => item.kty === "oct") : null;
+  if (!jwk?.k) throw new Error("local_jwt_fixture_configuration_missing");
+  const key = Buffer.from(jwk.k, "base64url");
+  const encode = (value) => Buffer.from(JSON.stringify(value)).toString("base64url");
+  const now = Math.floor(Date.now() / 1000);
+  const signingInput = `${encode({ alg: "HS256", typ: "JWT" })}.${encode({
+    role: "service_role", sub: "00000000-0000-4000-8000-000000000000", aud: "authenticated",
+    iat: now, exp: now + 300,
+  })}`;
+  const signature = createHmac("sha256", key).update(signingInput).digest("base64url");
+  return `${signingInput}.${signature}`;
+}

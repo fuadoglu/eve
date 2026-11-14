@@ -33,7 +33,7 @@ begin
           'manual_blocks','contacts','contact_properties','rent_entries','subscriptions','rooms','inventory_items','media_assets','media_bindings','idempotency_keys',
           'manager_invites','invite_properties','tasks','access_links','inspection_submissions',
           'inspection_snapshot_rooms','inspection_room_answers','task_transition_events','task_transition_media',
-          'expenses','expense_allocations','inspection_answers','inspection_events','guides','guide_versions','link_session_rate_limits')));
+          'expenses','expense_allocations','inspection_answers','inspection_events','guides','guide_versions','link_session_rate_limits','realtor_accounts')));
   if bad_count <> 0 then
     raise exception 'private RLS/grant allowlist mismatch: % tables',bad_count;
   end if;
@@ -121,6 +121,7 @@ begin
     ('property_memberships','property_memberships_self_or_owner_read'),
     ('reservations','reservations_current_property_read'),
     ('reservation_placements','reservation_placements_current_read'),
+    ('realtor_accounts','realtor_accounts_current_reservation_read'),
     ('manual_blocks','manual_blocks_property_read'),
     ('contacts','contacts_linked_or_owner_read'),
     ('contacts','contacts_reservation_write_read'),

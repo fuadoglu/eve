@@ -1021,31 +1021,39 @@
       "parent": "EVE-011",
       "parent_issue": 19,
       "milestone": "M2",
-      "title": "Retry/validation mobil E2E",
-      "status": "backlog",
+      "title": "Rezervasiya create mobil inteqrasiyası, retry və validation",
+      "status": "in_progress",
       "depends_on": [
         "EVE-011.2"
       ],
-      "role": "qa_redteam",
+      "role": "integrator",
       "owned_path_candidates": [
+        "src/app/api/v1/reservations/",
+        "src/app/calendar/",
         "src/modules/reservations/",
-        "src/modules/properties/",
-        "app/(panel)/calendar/"
+        "supabase/migrations/20261115002500_eve_reservation_create_read.sql",
+        "supabase/tests/0250_reservation_create_read_smoke.sql",
+        "tests/unit/reservations/reservation-handlers.test.ts",
+        "scripts/test-reservation-route-http.mjs",
+        ".github/workflows/ci.yml"
       ],
-      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
-      "deliverable": "Retry/validation mobil E2E üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
+      "ownership_rule": "İnteqrator konkret faylları və CI inteqrasiyasını koordinasiya edir; OpenAPI mövcud create contract-ı dəyişmədən implement edilir; migration yalnız safe reservation read DTO RPC və grant-lar üçündür.",
+      "deliverable": "Authenticated reservation create route və calendar provider wiring; server acknowledgement ilə form/detail; create retry idempotency, field validation, occupancy conflict və expired-hold catch-up üçün inteqrasiya sübutu.",
       "acceptance": [
-        "AT07–11 E2E",
-        "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
+        "Reservation form authenticated create route-a qoşulur; yalnız server acknowledgement-dən sonra uğur/detail görünür.",
+        "Retry eyni idempotency key ilə təkrarlananda duplicate reservation/receipt yaranmır; payload validation server tərəfində tətbiq edilir.",
+        "Property/date interval occupancy conflict və gecikmiş expired-hold catch-up üçün PostgreSQL integration/concurrency sübutu var.",
+        "Initial receipt və balance server DTO-dan integer minor units ilə göstərilir; client balance hesablamır.",
+        "EVE-011.3 yalnız AT07/AT09-un create/occupancy və AT11-in initial-receipt hissələrini sübut edir; AT08 public availability (EVE-025), AT10 transition matrix (EVE-012) və AT11 refund/overpayment (EVE-014) paketlərində açıq qalır.",
         "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
       ],
-      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "verification": "Reservation unit tests, PostgreSQL 17 0250 smoke, Playwright browser→cookie-scoped HTTP→PostgreSQL E2E; node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
       "reviewer_role": "integration_reviewer",
       "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
       "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
       "external_gates": [],
-      "expected_result": "Retry/validation mobil E2E üçün nəzərdə tutulan konkret artefakt mövcuddur; parent qəbul ssenarisinin mənfi və inteqrasiya nəticəsi real sübutla bağlanıb; bağlı xarici gate varsa status blocked qalır.",
-      "parent_acceptance_reference": "AT07–11 E2E"
+      "expected_result": "Rezervasiya yaratma mobil inteqrasiyası, validation, retry/idempotency, occupancy conflict/expiry davranışı və initial receipt/balance real inteqrasiya sübutuna malikdir. Bu paket parent AT07–11 qəbulunu bütöv bağlamır.",
+      "parent_acceptance_reference": "AT07/AT09 reservation-create slice; AT11 initial receipt slice"
     },
     {
       "id": "EVE-012.1",

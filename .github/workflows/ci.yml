@@ -26,6 +26,11 @@ jobs:
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
         with:
           node-version-file: .nvmrc
+      - name: pnpm quraşdır
+        uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115
+        with:
+          version: 12.18.0
+          run_install: false
           cache: pnpm
       - name: Python versiyasını seç
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
@@ -290,6 +295,10 @@ jobs:
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261115002400_eve_billing_period_apply.sql
       - name: Trial, leap, retry və billing entitlement DB smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0240_billing_period_apply_smoke.sql
+      - name: Reservation create DTO və property context migration
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261115002500_eve_reservation_create_read.sql
+      - name: Reservation DTO balance və idempotent retry DB smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0250_reservation_create_read_smoke.sql
       - name: 56 cədvəlin RLS və grant coverage smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_rls_coverage_smoke.sql
       - name: Data API RPC allowlist və grant smoke
@@ -306,10 +315,15 @@ jobs:
 
   supabase_local:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Repository-ni aç
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: pnpm quraşdır
+        uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115
+        with:
+          version: 12.18.0
+          run_install: false
       - name: Node.js versiyasını seç
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
         with:
@@ -317,7 +331,7 @@ jobs:
       - name: Təzə sintetik Supabase stack-i qur
         run: |
           if ! npx -y supabase@3.1.0 start \
-            -x gotrue,realtime,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor \
+            -x realtime,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor \
             > /tmp/eve-local-stack.log 2>&1; then
             echo 'Local Supabase startup failed; applied migration names follow.'
             sed -nE 's/^Applying migration ([0-9]{14}_[A-Za-z0-9_]+[.]sql)[.][.][.]$/\1/p' \
@@ -351,6 +365,8 @@ jobs:
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
             < supabase/tests/0064_reservation_create_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
+            < supabase/tests/0250_reservation_create_read_smoke.sql
+          docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
             < supabase/tests/0221_upload_quota_reservation_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
             < supabase/tests/0222_media_finalize_smoke.sql
@@ -366,6 +382,20 @@ jobs:
             < supabase/tests/0062_api_surface_smoke.sql
       - name: Data API və Storage mənfi HTTP sınağı
         run: python3 scripts/test-local-supabase-http.py
+      - name: Browser və route inteqrasiyası üçün app dependency-ləri
+        run: |
+          eval "$(npx -y supabase@3.1.0 status -o env)"
+          export NEXT_PUBLIC_SUPABASE_URL="$API_URL"
+          export NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="${PUBLISHABLE_KEY:-$ANON_KEY}"
+          pnpm install --frozen-lockfile
+          pnpm build
+          pnpm exec playwright install --with-deps chromium
+      - name: Cookie-scoped browser-to-PostgreSQL reservation E2E
+        run: |
+          eval "$(npx -y supabase@3.1.0 status -o env)"
+          export NEXT_PUBLIC_SUPABASE_URL="$API_URL"
+          export NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="${PUBLISHABLE_KEY:-$ANON_KEY}"
+          node scripts/test-reservation-route-http.mjs
       - name: Lokal sintetik stack-i sil
         if: always()
         run: npx -y supabase@3.1.0 stop --project-id eve --no-backup
