@@ -24,13 +24,13 @@ begin
       or has_table_privilege('app_executor',c.oid,
         'DELETE,TRUNCATE,REFERENCES,TRIGGER')
       or has_table_privilege('app_executor',c.oid,'UPDATE') is distinct from
-        (c.relname in ('manager_invites','property_memberships'))
+        (c.relname in ('manager_invites','property_memberships','idempotency_keys'))
       or has_table_privilege('app_executor',c.oid,'INSERT') is distinct from
-        (c.relname in ('owner_accounts','properties','trial_claims','subscriptions','rooms','inventory_items','media_bindings','manager_invites','invite_properties','property_memberships','manager_invite_accept_context'))
+        (c.relname in ('owner_accounts','properties','trial_claims','subscriptions','rooms','inventory_items','media_bindings','manager_invites','invite_properties','property_memberships','manager_invite_accept_context','reservations','reservation_placements','occupancy','rent_entries','realtor_accounts','outbox','audit_events','idempotency_keys'))
       or has_table_privilege('app_executor',c.oid,'SELECT') is distinct from
         (c.relname in ('profiles','owner_accounts','properties',
           'property_memberships','reservations','reservation_placements',
-          'manual_blocks','contacts','contact_properties','rent_entries','subscriptions','rooms','inventory_items','media_assets','media_bindings',
+          'manual_blocks','contacts','contact_properties','rent_entries','subscriptions','rooms','inventory_items','media_assets','media_bindings','idempotency_keys',
           'manager_invites','invite_properties')));
   if bad_count <> 0 then
     raise exception 'private RLS/grant allowlist mismatch: % tables',bad_count;
@@ -60,9 +60,11 @@ begin
     ('reservation_placements','reservation_placements_current_read'),
     ('manual_blocks','manual_blocks_property_read'),
     ('contacts','contacts_linked_or_owner_read'),
+    ('contacts','contacts_reservation_write_read'),
     ('contact_properties','contact_properties_assigned_read'),
     ('rent_entries','rent_entries_current_or_finance_read'),
     ('subscriptions','subscriptions_inventory_read'),
+    ('subscriptions','subscriptions_reservation_write_read'),
     ('subscriptions','subscriptions_owner_invite_read'),
     ('subscriptions','subscriptions_matching_invite_read'),
     ('manager_invites','manager_invites_owner_read'),
@@ -72,7 +74,8 @@ begin
     ('rooms','rooms_inventory_read'),
     ('inventory_items','inventory_items_inventory_read'),
     ('media_assets','media_assets_inventory_read'),
-    ('media_bindings','media_bindings_inventory_read')
+    ('media_bindings','media_bindings_inventory_read'),
+    ('idempotency_keys','idempotency_keys_reservation_read')
   ) as expected(table_name,policy_name)
   left join pg_class c on c.relname=expected.table_name
     and c.relnamespace='app_private'::regnamespace
@@ -85,13 +88,23 @@ begin
   select count(*) into table_count
   from pg_policy p join pg_class c on c.oid=p.polrelid
   where c.relnamespace='app_private'::regnamespace;
-  if table_count <> 39 then
+  if table_count <> 51 then
     raise exception 'unexpected private table policies: %',table_count;
   end if;
   if not exists (select 1 from pg_policy where polrelid='app_private.manager_invite_accept_context'::regclass
       and polname='manager_invite_accept_context_insert' and polcmd='a'
       and polroles=array['app_executor'::regrole::oid]) then
     raise exception 'manager invite accept context INSERT policy missing or mis-scoped';
+  end if;
+  if (select count(*) from pg_policy where polroles=array['app_executor'::regrole::oid]
+      and polcmd='a' and polname in ('reservations_create','reservation_placements_create',
+        'occupancy_reservation_create','rent_entries_reservation_create',
+        'realtor_accounts_reservation_create','idempotency_keys_reservation_create',
+        'outbox_reservation_create','audit_events_reservation_create')) <> 8
+     or not exists (select 1 from pg_policy where polrelid='app_private.idempotency_keys'::regclass
+       and polname='idempotency_keys_reservation_update' and polcmd='w'
+       and polroles=array['app_executor'::regrole::oid]) then
+    raise exception 'reservation write/idempotency policies missing or mis-scoped';
   end if;
   if not exists (select 1 from pg_policy where polrelid='app_private.owner_accounts'::regclass
       and polname='owner_accounts_self_create' and polcmd='a'

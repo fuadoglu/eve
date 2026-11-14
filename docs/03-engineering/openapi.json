@@ -9847,6 +9847,13 @@
               "required": [
                 "contact_id"
               ]
+            },
+            "else": {
+              "not": {
+                "required": [
+                  "contact_id"
+                ]
+              }
             }
           }
         ]
