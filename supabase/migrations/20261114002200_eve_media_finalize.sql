@@ -170,7 +170,36 @@ revoke all on function api.finalize_media_upload_for_server(uuid,uuid,text,bigin
   from public,anon,authenticated,service_role;
 grant execute on function api.finalize_media_upload_for_server(uuid,uuid,text,bigint,integer,text,text)
   to service_role;
+
+create function api.get_media_finalize_source_for_server(p_actor_user_id uuid,p_media_id uuid)
+returns jsonb language plpgsql volatile security definer set search_path = ''
+as $$
+declare v_media app_private.media_assets%rowtype;
+begin
+  if current_setting('request.jwt.claim.role',true) is distinct from 'service_role'
+     or p_actor_user_id is null or p_media_id is null then
+    raise exception using errcode='42501',message='server_adapter_required';
+  end if;
+  perform pg_catalog.set_config('request.jwt.claim.sub',p_actor_user_id::text,true);
+  select * into v_media from app_private.media_assets a
+  where a.id=p_media_id and a.state='pending' and a.deleted_at is null
+    and a.upload_expires_at>statement_timestamp()
+    and app_private.can_write_media(a.property_id,a.owner_account_id,a.classification)
+    and (a.classification<>'private_inventory' or
+      app_private.has_property_capability(a.property_id,a.owner_account_id,'inventory.manage'));
+  if not found then raise exception using errcode='P0002',message='media_not_found'; end if;
+  return jsonb_build_object('id',v_media.id,'classification',v_media.classification::text,
+    'bucket',v_media.bucket,'object_key',v_media.object_key,'mime',v_media.mime,
+    'max_size_bytes',v_media.size_bytes,'duration_seconds',v_media.duration_seconds);
+end;
+$$;
+revoke all on function api.get_media_finalize_source_for_server(uuid,uuid)
+  from public,anon,authenticated,service_role;
+grant execute on function api.get_media_finalize_source_for_server(uuid,uuid)
+  to service_role;
 grant app_executor to current_user with set true, inherit false;
+alter function api.get_media_finalize_source_for_server(uuid,uuid)
+  owner to app_executor;
 alter function api.finalize_media_upload_for_server(uuid,uuid,text,bigint,integer,text,text)
   owner to app_executor;
 revoke app_executor from current_user;

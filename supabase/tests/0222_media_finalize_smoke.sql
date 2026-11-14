@@ -3,7 +3,9 @@
 do $$ begin
   if has_function_privilege('anon','api.finalize_media_upload_for_server(uuid,uuid,text,bigint,integer,text,text)','EXECUTE')
      or has_function_privilege('authenticated','api.finalize_media_upload_for_server(uuid,uuid,text,bigint,integer,text,text)','EXECUTE')
+     or has_function_privilege('authenticated','api.get_media_finalize_source_for_server(uuid,uuid)','EXECUTE')
      or not has_function_privilege('service_role','api.finalize_media_upload_for_server(uuid,uuid,text,bigint,integer,text,text)','EXECUTE')
+     or not has_function_privilege('service_role','api.get_media_finalize_source_for_server(uuid,uuid)','EXECUTE')
      or has_function_privilege('service_role','app_private.finalize_media_upload(uuid,text,bigint,integer,text,text)','EXECUTE') then
     raise exception 'finalize server-only function grant boundary changed';
   end if;
@@ -47,12 +49,24 @@ do $$ begin
     raise exception 'authenticated client invoked server-only finalize';
   exception when insufficient_privilege then null;
   end;
+  begin
+    perform api.get_media_finalize_source_for_server('a0222000-0000-4000-8000-000000000011',
+      'a0222300-0000-4000-8000-000000000011');
+    raise exception 'authenticated client read private storage metadata';
+  exception when insufficient_privilege then null;
+  end;
 end $$;
 reset role;
 
 set local role service_role;
 set local request.jwt.claim.role='service_role';
-do $$ declare v_result jsonb; v_replay jsonb; begin
+do $$ declare v_result jsonb; v_replay jsonb; v_source jsonb; begin
+  v_source := api.get_media_finalize_source_for_server('a0222000-0000-4000-8000-000000000012',
+    'a0222300-0000-4000-8000-000000000012');
+  if v_source->>'bucket'<>'eve-private-inventory' or v_source->>'max_size_bytes'<>'1024'
+     or v_source->>'classification'<>'private_inventory' then
+    raise exception 'server source DTO has wrong classification/bucket/reservation';
+  end if;
   perform api.finalize_media_upload_for_server('a0222000-0000-4000-8000-000000000012',
     'a0222300-0000-4000-8000-000000000012','image/jpeg',4,null,repeat('d',64),
     'finalize-revoked-inventory-key');

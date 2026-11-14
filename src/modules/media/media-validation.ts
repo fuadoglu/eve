@@ -35,14 +35,15 @@ const MAX_AUDIO_SECONDS = 60;
 export function validateMediaBytes(input: {
   kind: MediaKind;
   declaredMime: string;
-  declaredSizeBytes: number;
+  maxSizeBytes: number;
   declaredDurationSeconds: number | null;
   bytes: Uint8Array;
 }): ValidatedMedia {
-  const { kind, declaredMime, declaredSizeBytes, declaredDurationSeconds, bytes } = input;
-  if (!Number.isSafeInteger(declaredSizeBytes) || declaredSizeBytes < 1 || bytes.byteLength !== declaredSizeBytes) {
+  const { kind, declaredMime, maxSizeBytes, declaredDurationSeconds, bytes } = input;
+  if (!Number.isSafeInteger(maxSizeBytes) || maxSizeBytes < 1 || bytes.byteLength < 1) {
     throw new MediaValidationError("size_mismatch");
   }
+  if (bytes.byteLength > maxSizeBytes) throw new MediaValidationError("size_limit");
   const maxBytes = kind === "image" ? MAX_PHOTO_BYTES : MAX_FILE_BYTES;
   if (bytes.byteLength > maxBytes) throw new MediaValidationError("size_limit");
 

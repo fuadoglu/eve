@@ -5,13 +5,14 @@ Status: **in progress**. This evidence records the current implementation increm
 ## Implemented in this increment
 
 - `src/modules/media/media-validation.ts` validates exact downloaded bytes against supported passive image, audio/video container, and PDF signatures; enforces the existing kind/size/duration limits; and computes SHA-256 from bytes. Client MIME and size declarations are compared with the actual object.
-- Forward migration `20261114002200_eve_media_finalize.sql` adds an idempotent `app_private.finalize_media_upload` primitive and a narrow service-role-only `api.finalize_media_upload_for_server` bridge. The private primitive is not executable through anon/authenticated roles. Finalized actual bytes may be below the reservation but may not exceed it, so finalize cannot increase quota usage beyond the amount admitted under EVE-022.1's property lock. Current membership and the existing `inventory.manage` capability boundary are checked before both first finalize and any authorized replay. D39 records this bridge boundary.
-- `supabase/tests/0222_media_finalize_smoke.sql` covers grants, authenticated denial, over-reservation rejection, validated metadata, idempotent replay/mismatch, cross-owner denial, and denial after inventory membership revocation.
+- `src/modules/media/supabase-media-finalizer.ts` reads the pending object's server-only bucket/key metadata, downloads bytes from private Storage, validates measured MIME/size/duration/hash, then calls DB finalize. The `POST /api/v1/media/{id}/finalize` route requires an active session, same-origin empty JSON, and an idempotency key; it returns success only after the DB acknowledges the transition.
+- Forward migration `20261114002200_eve_media_finalize.sql` adds an idempotent `app_private.finalize_media_upload` primitive and narrow service-role-only source/finalize `api` bridges. The private primitive and source location are unavailable to anon/authenticated roles. Finalized actual bytes may be below the reservation but may not exceed it, so finalize cannot increase quota usage beyond the amount admitted under EVE-022.1's property lock. Current membership and the existing `inventory.manage` capability boundary are checked before both first finalize and any authorized replay. D39 records this bridge boundary.
+- `supabase/tests/0222_media_finalize_smoke.sql` covers grants, authenticated denial of both bridges, source bucket/reservation mapping, over-reservation rejection, validated metadata, idempotent replay/mismatch, cross-owner denial, and denial after inventory membership revocation.
 - CI runs the byte-validation unit suite and, after the 022 migration, the PostgreSQL finalize smoke and catalog guards.
 
 ## Verification observed
 
-- Node 24.22.2 / pnpm 12.18.0 `pnpm test:media`: **4/4 passed**.
+- Node 24.22.2 / pnpm 12.18.0 `pnpm test:media`: **7/7 passed**.
 - Node 24.22.2 / pnpm 12.18.0 `pnpm typecheck`: **passed**.
 - `node scripts/docs-check.mjs`: **passed**, 73 Markdown files.
 - `node scripts/verify-contracts.mjs`: **passed**, 117 operations, 55 tables, 256 field bindings, 90 acyclic packages, 16 trace rows, 36 scenarios.
@@ -23,7 +24,6 @@ Status: **in progress**. This evidence records the current implementation increm
 
 ## Remaining before package closure
 
-- Wire the validator and finalize primitive to an authenticated server adapter that retrieves the reserved object from its private bucket and trusts only server-validated session/scope.
 - Implement private media serving with a fresh authorization/revoke/expiry/current-placement check per request; do not issue signed read URLs.
-- Extend the smoke suite to exercise the integrated server/storage behavior and verify it in CI. Scoped task/guest media must respect EVE-017.3/link-session dependencies; do not treat owner/property-only checks as their substitute.
+- Extend integration smoke to exercise private Storage byte download/finalize behavior. Scoped task/guest media must respect EVE-017.3/link-session dependencies; do not treat owner/property-only checks as their substitute.
 - Obtain independent final review and merge after the remaining adapter/proxy work. These tasks are intentionally open; package status remains `in_progress`.

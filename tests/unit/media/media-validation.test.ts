@@ -13,7 +13,7 @@ test("accepts the supported passive image/PDF signatures and hashes the exact ob
     const result = validateMediaBytes({
       kind: fixture.kind,
       declaredMime: fixture.mime,
-      declaredSizeBytes: fixture.bytes.byteLength,
+      maxSizeBytes: fixture.bytes.byteLength,
       declaredDurationSeconds: null,
       bytes: fixture.bytes,
     });
@@ -23,19 +23,24 @@ test("accepts the supported passive image/PDF signatures and hashes the exact ob
   }
 });
 
-test("rejects declared size mismatch, unsupported/active MIME and signature spoofing", () => {
+test("uses the reservation as a maximum and rejects unsupported/active MIME and signature spoofing", () => {
+  const smaller = Buffer.from([0xff, 0xd8, 0xff]);
+  assert.equal(validateMediaBytes({
+    kind: "image", declaredMime: "image/jpeg", maxSizeBytes: smaller.byteLength + 1,
+    declaredDurationSeconds: null, bytes: smaller,
+  }).sizeBytes, smaller.byteLength);
   const bytes = Buffer.from("<svg onload=alert(1)>");
   assert.throws(() => validateMediaBytes({
-    kind: "image", declaredMime: "image/jpeg", declaredSizeBytes: bytes.byteLength + 1,
+    kind: "image", declaredMime: "image/jpeg", maxSizeBytes: bytes.byteLength - 1,
     declaredDurationSeconds: null, bytes,
-  }), (error: unknown) => error instanceof MediaValidationError && error.code === "size_mismatch");
+  }), (error: unknown) => error instanceof MediaValidationError && error.code === "size_limit");
   assert.throws(() => validateMediaBytes({
-    kind: "image", declaredMime: "image/svg+xml", declaredSizeBytes: bytes.byteLength,
+    kind: "image", declaredMime: "image/svg+xml", maxSizeBytes: bytes.byteLength,
     declaredDurationSeconds: null, bytes,
   }), (error: unknown) => error instanceof MediaValidationError && error.code === "mime_mismatch");
   const png = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
   assert.throws(() => validateMediaBytes({
-    kind: "image", declaredMime: "image/jpeg", declaredSizeBytes: png.byteLength,
+    kind: "image", declaredMime: "image/jpeg", maxSizeBytes: png.byteLength,
     declaredDurationSeconds: null, bytes: png,
   }), (error: unknown) => error instanceof MediaValidationError && error.code === "mime_mismatch");
 });
@@ -44,12 +49,12 @@ test("rejects photo above 15 MiB and MIME-kind mismatches", () => {
   const large = new Uint8Array(15 * 1024 * 1024 + 1);
   large.set([0xff, 0xd8, 0xff]);
   assert.throws(() => validateMediaBytes({
-    kind: "image", declaredMime: "image/jpeg", declaredSizeBytes: large.byteLength,
+    kind: "image", declaredMime: "image/jpeg", maxSizeBytes: large.byteLength,
     declaredDurationSeconds: null, bytes: large,
   }), (error: unknown) => error instanceof MediaValidationError && error.code === "size_limit");
   const pdf = Buffer.from("%PDF-1.7");
   assert.throws(() => validateMediaBytes({
-    kind: "video", declaredMime: "application/pdf", declaredSizeBytes: pdf.byteLength,
+    kind: "video", declaredMime: "application/pdf", maxSizeBytes: pdf.byteLength,
     declaredDurationSeconds: 1, bytes: pdf,
   }), (error: unknown) => error instanceof MediaValidationError && error.code === "mime_mismatch");
 });
@@ -78,14 +83,14 @@ test("parses MP4 duration and distinguishes video from audio MP4", () => {
   ] as const) {
     const bytes = mp4(12, handler);
     const result = validateMediaBytes({
-      kind, declaredMime: mime, declaredSizeBytes: bytes.byteLength,
+      kind, declaredMime: mime, maxSizeBytes: bytes.byteLength,
       declaredDurationSeconds: 12, bytes,
     });
     assert.equal(result.durationSeconds, 12);
   }
   const tooLong = mp4(301, "vide");
   assert.throws(() => validateMediaBytes({
-    kind: "video", declaredMime: "video/mp4", declaredSizeBytes: tooLong.byteLength,
+    kind: "video", declaredMime: "video/mp4", maxSizeBytes: tooLong.byteLength,
     declaredDurationSeconds: 301, bytes: tooLong,
   }), (error: unknown) => error instanceof MediaValidationError && error.code === "duration_limit");
 });
