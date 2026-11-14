@@ -3,6 +3,7 @@
 import { useState } from "react";
 import {
   copyTaskShareMessage,
+  buildTaskShareMessage,
   createWhatsAppShareUrl,
   formatTaskShareExpiry,
   type TaskShareResult,
@@ -10,13 +11,14 @@ import {
 
 export function TaskSharePanel({ result }: { result: TaskShareResult }) {
   const [copyState, setCopyState] = useState<"idle" | "copied" | "unavailable">("idle");
-  const whatsappUrl = createWhatsAppShareUrl(result.message);
+  const shareMessage = buildTaskShareMessage(result.message, result.url);
+  const whatsappUrl = createWhatsAppShareUrl(shareMessage);
   const expiresAt = formatTaskShareExpiry(result.expires_at);
 
   async function copyLink() {
     const outcome = await copyTaskShareMessage(
       typeof navigator === "undefined" ? undefined : navigator.clipboard,
-      result.message,
+      shareMessage,
     );
     setCopyState(outcome);
   }
@@ -38,17 +40,19 @@ export function TaskSharePanel({ result }: { result: TaskShareResult }) {
         aria-describedby="task-share-status"
       />
       <div className="task-share-actions">
-        <a className="task-share-whatsapp" href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+        {whatsappUrl && <a className="task-share-whatsapp" href={whatsappUrl} target="_blank" rel="noopener noreferrer">
           WhatsApp-da aç
-        </a>
+        </a>}
         <button className="task-share-copy" type="button" onClick={copyLink}>
-          Keçidi kopyala
+          Mətni və keçidi kopyala
         </button>
       </div>
       <p id="task-share-status" className="task-share-status" role="status" aria-live="polite">
         {copyState === "copied" && "Keçid kopyalandı. Göndərilmə statusu izlənmir."}
         {copyState === "unavailable" && "Avtomatik kopyalama alınmadı. Keçidi seçib əl ilə kopyalayın."}
-        {copyState === "idle" && "WhatsApp quraşdırılmayıbsa, keçidi seçib əl ilə kopyalaya bilərsiniz."}
+        {copyState === "idle" && (whatsappUrl
+          ? "WhatsApp quraşdırılmayıbsa, mətni və keçidi kopyalaya bilərsiniz. Göndərilmə statusu izlənmir."
+          : "WhatsApp keçidi bu mesaj üçün çox uzundur. Mətni və keçidi kopyalayın.")}
       </p>
     </section>
   );

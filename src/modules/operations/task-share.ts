@@ -10,11 +10,21 @@ export type TaskShareResult = {
 export type ClipboardWriter = Pick<Clipboard, "writeText">;
 
 /** Use the fixed WhatsApp web entry point; never interpolate an untrusted host. */
-export function createWhatsAppShareUrl(message: string): string {
-  if (!message.trim() || message.length > 3000) throw new TypeError("invalid_task_share_message");
+export function createWhatsAppShareUrl(message: string): string | null {
+  if (!message.trim() || message.length > 3000) return null;
   const url = new URL("https://wa.me/");
   url.searchParams.set("text", message);
-  return url.toString();
+  const value = url.toString();
+  return value.length <= 2048 ? value : null;
+}
+
+export function buildTaskShareMessage(message: string, taskUrl: string): string {
+  const text = message.trim();
+  const link = taskUrl.trim();
+  if (!text) return link.slice(0, 3000);
+  if (!link || text.includes(link)) return text.slice(0, 3000);
+  const complete = `${text}\n${link}`;
+  return complete.length <= 3000 ? complete : link.slice(0, 3000);
 }
 
 /** Clipboard success is acknowledged only after the browser promise resolves. */
@@ -22,7 +32,7 @@ export async function copyTaskShareMessage(
   clipboard: ClipboardWriter | null | undefined,
   message: string,
 ): Promise<"copied" | "unavailable"> {
-  if (!clipboard || !message.trim()) return "unavailable";
+  if (!clipboard || !message.trim() || message.length > 3000) return "unavailable";
   try {
     await clipboard.writeText(message);
     return "copied";
