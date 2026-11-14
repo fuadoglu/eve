@@ -39,6 +39,16 @@ export function TaskSharePanel({ result }: { result: TaskShareResult }) {
         onFocus={(event) => event.currentTarget.select()}
         aria-describedby="task-share-status"
       />
+      <label className="task-share-field" htmlFor="task-share-message">WhatsApp mətni və keçidi</label>
+      <textarea
+        id="task-share-message"
+        className="task-share-input task-share-message"
+        readOnly
+        rows={3}
+        value={shareMessage}
+        onFocus={(event) => event.currentTarget.select()}
+        aria-describedby="task-share-status"
+      />
       <div className="task-share-actions">
         {whatsappUrl && <a className="task-share-whatsapp" href={whatsappUrl} target="_blank" rel="noopener noreferrer">
           WhatsApp-da aç
@@ -48,11 +58,11 @@ export function TaskSharePanel({ result }: { result: TaskShareResult }) {
         </button>
       </div>
       <p id="task-share-status" className="task-share-status" role="status" aria-live="polite">
-        {copyState === "copied" && "Keçid kopyalandı. Göndərilmə statusu izlənmir."}
-        {copyState === "unavailable" && "Avtomatik kopyalama alınmadı. Keçidi seçib əl ilə kopyalayın."}
+        {copyState === "copied" && "Mətn və keçid kopyalandı. Göndərilmə statusu izlənmir."}
+        {copyState === "unavailable" && "Avtomatik kopyalama alınmadı. Aşağıdakı mətni və keçidi seçib əl ilə kopyalayın."}
         {copyState === "idle" && (whatsappUrl
           ? "WhatsApp quraşdırılmayıbsa, mətni və keçidi kopyalaya bilərsiniz. Göndərilmə statusu izlənmir."
-          : "WhatsApp keçidi bu mesaj üçün çox uzundur. Mətni və keçidi kopyalayın.")}
+          : "WhatsApp keçidi bu mesaj üçün çox uzundur. Aşağıdakı mətni və keçidi kopyalayın.")}
       </p>
     </section>
   );
