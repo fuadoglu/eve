@@ -38,6 +38,64 @@ begin
     raise exception 'private RLS/grant allowlist mismatch: % tables',bad_count;
   end if;
 
+  if not exists (select 1 from pg_roles where rolname='billing_executor'
+       and not rolcanlogin and not rolsuper and not rolcreaterole and not rolcreatedb
+       and not rolreplication and not rolbypassrls and not rolinherit)
+     or exists (select 1 from pg_auth_members m
+       where m.roleid='billing_executor'::regrole or m.member='billing_executor'::regrole)
+     or has_table_privilege('billing_executor','app_private.properties','UPDATE')
+     or has_table_privilege('billing_executor','app_private.properties','INSERT')
+     or not has_column_privilege('billing_executor','app_private.properties','archived_at','UPDATE')
+     or has_table_privilege('billing_executor','app_private.billing_orders','DELETE,TRUNCATE,REFERENCES,TRIGGER')
+     or has_table_privilege('billing_executor','app_private.billing_order_lines','DELETE,TRUNCATE,REFERENCES,TRIGGER')
+     or has_table_privilege('billing_executor','app_private.subscriptions','DELETE,TRUNCATE,REFERENCES,TRIGGER')
+     or has_table_privilege('billing_executor','app_private.subscription_periods','DELETE,TRUNCATE,REFERENCES,TRIGGER')
+     or has_table_privilege('billing_executor','app_private.properties','DELETE,TRUNCATE,REFERENCES,TRIGGER') then
+    raise exception 'billing executor role boundary is unsafe';
+  end if;
+  if exists (select 1 from pg_class c
+       where c.relnamespace='app_private'::regnamespace and c.relkind='r'
+         and c.relname not in ('billing_orders','billing_order_lines','properties','subscriptions','subscription_periods')
+         and (has_table_privilege('billing_executor',c.oid,'SELECT')
+           or has_table_privilege('billing_executor',c.oid,'INSERT')
+           or has_table_privilege('billing_executor',c.oid,'UPDATE')
+           or has_table_privilege('billing_executor',c.oid,'DELETE')
+           or has_table_privilege('billing_executor',c.oid,'TRUNCATE')
+           or has_table_privilege('billing_executor',c.oid,'REFERENCES')
+           or has_table_privilege('billing_executor',c.oid,'TRIGGER')))
+     or (select count(*) from pg_class c
+       join pg_namespace n on n.oid=c.relnamespace
+       join pg_attribute a on a.attrelid=c.oid and a.attnum>0 and not a.attisdropped
+       cross join lateral aclexplode(a.attacl) acl
+       where n.nspname='app_private' and acl.grantee='billing_executor'::regrole::oid) <> 1
+     or not exists (select 1 from pg_class c
+       join pg_namespace n on n.oid=c.relnamespace
+       join pg_attribute a on a.attrelid=c.oid and a.attname='archived_at'
+       cross join lateral aclexplode(a.attacl) acl
+       where n.nspname='app_private' and c.relname='properties'
+         and acl.grantee='billing_executor'::regrole::oid and acl.privilege_type='UPDATE')
+     or not has_table_privilege('billing_executor','app_private.billing_orders','SELECT')
+     or not has_table_privilege('billing_executor','app_private.billing_orders','UPDATE')
+     or has_table_privilege('billing_executor','app_private.billing_orders','INSERT')
+     or not has_table_privilege('billing_executor','app_private.billing_order_lines','SELECT')
+     or not has_table_privilege('billing_executor','app_private.billing_order_lines','UPDATE')
+     or has_table_privilege('billing_executor','app_private.billing_order_lines','INSERT')
+     or not has_table_privilege('billing_executor','app_private.properties','SELECT')
+     or not has_table_privilege('billing_executor','app_private.subscriptions','SELECT')
+     or not has_table_privilege('billing_executor','app_private.subscriptions','UPDATE')
+     or has_table_privilege('billing_executor','app_private.subscriptions','INSERT')
+     or not has_table_privilege('billing_executor','app_private.subscription_periods','SELECT')
+     or not has_table_privilege('billing_executor','app_private.subscription_periods','INSERT')
+     or has_table_privilege('billing_executor','app_private.subscription_periods','UPDATE')
+     or has_table_privilege('app_executor','app_private.billing_orders','SELECT')
+     or has_table_privilege('app_executor','app_private.billing_orders','UPDATE')
+     or has_table_privilege('app_executor','app_private.billing_order_lines','SELECT')
+     or has_table_privilege('app_executor','app_private.billing_order_lines','UPDATE')
+     or has_table_privilege('app_executor','app_private.subscription_periods','SELECT')
+     or has_table_privilege('app_executor','app_private.subscription_periods','INSERT') then
+    raise exception 'billing executor table grants differ from the reviewed allowlist';
+  end if;
+
   select count(*) into bad_count
   from pg_class c join pg_namespace n on n.oid=c.relnamespace
   where n.nspname='app_private' and c.relkind in ('v','m','f');
@@ -115,10 +173,23 @@ begin
   if bad_count <> 0 then
     raise exception 'expected executor SELECT policies missing or mis-scoped: %',bad_count;
   end if;
+  if (select count(*) from pg_policy where polroles=array['billing_executor'::regrole::oid]) <> 10
+     or not exists (select 1 from pg_policy where polrelid='app_private.billing_orders'::regclass
+       and polname='billing_orders_apply_read' and polcmd='r' and polroles=array['billing_executor'::regrole::oid])
+     or not exists (select 1 from pg_policy where polrelid='app_private.billing_order_lines'::regclass
+       and polname='billing_order_lines_apply_read' and polcmd='r' and polroles=array['billing_executor'::regrole::oid])
+     or not exists (select 1 from pg_policy where polrelid='app_private.properties'::regclass
+       and polname='properties_billing_apply_read' and polcmd='r' and polroles=array['billing_executor'::regrole::oid])
+     or not exists (select 1 from pg_policy where polrelid='app_private.subscriptions'::regclass
+       and polname='subscriptions_billing_apply_read' and polcmd='r' and polroles=array['billing_executor'::regrole::oid])
+     or not exists (select 1 from pg_policy where polrelid='app_private.subscription_periods'::regclass
+       and polname='subscription_periods_apply_read' and polcmd='r' and polroles=array['billing_executor'::regrole::oid]) then
+    raise exception 'billing executor read policies missing or mis-scoped';
+  end if;
   select count(*) into table_count
   from pg_policy p join pg_class c on c.oid=p.polrelid
   where c.relnamespace='app_private'::regnamespace;
-  if table_count <> 91 then
+  if table_count <> 101 then
     raise exception 'unexpected private table policies: %',table_count;
   end if;
   if not exists (select 1 from pg_policy where polrelid='app_private.link_session_rate_limits'::regclass
@@ -199,8 +270,25 @@ begin
       and polroles=array['app_executor'::regrole::oid])
      or not exists (select 1 from pg_policy where polrelid='app_private.access_links'::regclass
       and polname='access_links_task_transition_internal_update' and polcmd='w'
-      and polroles=array['app_executor'::regrole::oid]) then
+      and polroles=array['app_executor'::regrole::oid])
+     or not exists (select 1 from pg_policy where polrelid='app_private.billing_orders'::regclass
+      and polname='billing_orders_apply_update' and polcmd='w'
+      and polroles=array['billing_executor'::regrole::oid])
+     or not exists (select 1 from pg_policy where polrelid='app_private.billing_order_lines'::regclass
+      and polname='billing_order_lines_apply_update' and polcmd='w'
+      and polroles=array['billing_executor'::regrole::oid])
+     or not exists (select 1 from pg_policy where polrelid='app_private.subscriptions'::regclass
+      and polname='subscriptions_apply_update' and polcmd='w'
+      and polroles=array['billing_executor'::regrole::oid])
+     or not exists (select 1 from pg_policy where polrelid='app_private.properties'::regclass
+      and polname='properties_billing_apply_lock' and polcmd='w'
+      and polroles=array['billing_executor'::regrole::oid]) then
     raise exception 'manager invite update policies missing';
+  end if;
+  if not exists (select 1 from pg_policy where polrelid='app_private.subscription_periods'::regclass
+      and polname='subscription_periods_apply_insert' and polcmd='a'
+      and polroles=array['billing_executor'::regrole::oid]) then
+    raise exception 'billing executor period insert policy missing or mis-scoped';
   end if;
   if not exists (
     select 1 from pg_policy p
