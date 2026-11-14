@@ -215,10 +215,10 @@ end;
 $$;
 revoke all on function app_private.reserve_media_upload(uuid,text,text,text,text,bigint,integer,text)
   from public, anon, authenticated;
+grant execute on function app_private.reserve_media_upload(uuid,text,text,text,text,bigint,integer,text)
+  to app_executor;
 grant create on schema app_private to app_executor;
 grant app_executor to current_user with set true, inherit false;
 alter function app_private.reserve_media_upload(uuid,text,text,text,text,bigint,integer,text) owner to app_executor;
 revoke app_executor from current_user;
 revoke create on schema app_private from app_executor;
-grant execute on function app_private.reserve_media_upload(uuid,text,text,text,text,bigint,integer,text)
-  to app_executor;
