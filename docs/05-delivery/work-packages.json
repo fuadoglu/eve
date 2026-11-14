@@ -2390,7 +2390,7 @@
       "parent_issue": 34,
       "milestone": "M6",
       "title": "Calendar anchor və period application",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-026.1"
       ],
