@@ -2021,7 +2021,7 @@
       "parent_issue": 30,
       "milestone": "M5",
       "title": "MIME/finalize/private serving",
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "EVE-022.1"
       ],
