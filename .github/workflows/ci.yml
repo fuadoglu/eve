@@ -45,6 +45,8 @@ jobs:
         run: pnpm test:reservations
       - name: Task transition contract unit sınaqları
         run: pnpm test:operations
+      - name: Media upload bytes validation unit sınaqları
+        run: pnpm test:media
       - name: Billing catalog və order-line unit sınaqları
         run: pnpm test:billing
       - name: TypeScript yoxlaması
@@ -276,6 +278,10 @@ jobs:
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261114002100_eve_upload_quota_reservation.sql
       - name: Upload reservation, idempotency, quota və scope DB smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0221_upload_quota_reservation_smoke.sql
+      - name: Media MIME finalize migration tətbiq et
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261114002200_eve_media_finalize.sql
+      - name: Media finalize authorization və idempotency DB smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0222_media_finalize_smoke.sql
       - name: 55 cədvəlin RLS və grant coverage smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_rls_coverage_smoke.sql
       - name: Data API RPC allowlist və grant smoke
@@ -338,6 +344,8 @@ jobs:
             < supabase/tests/0064_reservation_create_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
             < supabase/tests/0221_upload_quota_reservation_smoke.sql
+          docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
+            < supabase/tests/0222_media_finalize_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
             < supabase/tests/0065_task_transition_history_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
