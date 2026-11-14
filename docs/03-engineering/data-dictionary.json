@@ -8031,7 +8031,7 @@
           "type": "varchar(100)",
           "nullable": false,
           "default": null,
-          "description": "Faktiki MIME",
+          "description": "Pending halda tələb edilən MIME; finalize zamanı baytlarla yoxlanmış MIME",
           "validation": [
             "char_length(mime) <= 100",
             "mime IN ('image/jpeg','image/png','image/webp','video/mp4','audio/webm','audio/mp4','application/pdf')"
@@ -8042,7 +8042,7 @@
           "type": "bigint",
           "nullable": false,
           "default": null,
-          "description": "Yoxlanmış ölçü",
+          "description": "Pending halda rezerv üçün bildirilmiş ölçü; finalize-dan sonra serverdə yoxlanmış ölçü",
           "validation": [
             "size_bytes>0",
             "size_bytes<=104857600"
@@ -8053,7 +8053,7 @@
           "type": "integer",
           "nullable": true,
           "default": null,
-          "description": "Video/səs müddəti",
+          "description": "Pending halda bildirilən müddət; finalize zamanı server metadata-sından yoxlanmış müddət",
           "validation": [
             "duration_seconds >= 0"
           ]
@@ -8066,6 +8066,17 @@
           "description": "Upload/finalize nəticəsi",
           "validation": [
             "enum:media_state"
+          ]
+        },
+        {
+          "name": "upload_expires_at",
+          "type": "timestamptz",
+          "nullable": true,
+          "default": null,
+          "description": "Upload intent rezervinin bitmə vaxtı; finalize olunmayan expired rezerv kvota cəmindən çıxır",
+          "validation": [
+            "pending intent expiry is server generated",
+            "upload_expires_at IS NULL OR state='pending'"
           ]
         },
         {
@@ -8152,6 +8163,11 @@
         }
       ],
       "checks": [
+        {
+          "name": "media_upload_expiry_state",
+          "expression": "upload_expires_at IS NULL OR state='pending'",
+          "enforcement": "CHECK"
+        },
         {
           "name": "media_bucket_classification",
           "expression": "(classification='public_property' AND bucket='eve-public-property') OR (classification='public_guide' AND bucket='eve-public-guide') OR (classification='private_guest' AND bucket='eve-private-guest') OR (classification='private_receipt' AND bucket='eve-private-receipt') OR (classification='private_inspection' AND bucket='eve-private-inspection') OR (classification='private_task' AND bucket='eve-private-task') OR (classification='private_inventory' AND bucket='eve-private-inventory')",

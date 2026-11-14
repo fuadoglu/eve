@@ -1981,15 +1981,23 @@
       "parent_issue": 30,
       "milestone": "M5",
       "title": "Upload intent/quota rezervi",
-      "status": "backlog",
+      "status": "in_progress",
       "depends_on": [
         "EVE-006.3",
         "EVE-008.3"
       ],
       "role": "domain_engineer",
       "owned_path_candidates": [
-        "src/modules/publishing/",
-        "src/modules/media/"
+        "supabase/migrations/20261114002100_eve_upload_quota_reservation.sql",
+        "supabase/tests/0221_upload_quota_reservation_smoke.sql",
+        "docs/01-product/configuration.json",
+        "docs/01-product/DECISIONS.md",
+        "docs/03-engineering/data-dictionary.json",
+        "docs/INDEX.md",
+        "docs/05-delivery/work-packages.json",
+        "docs/04-quality/evidence/eve-022-1-upload-intent.md",
+        "docs/05-delivery/STATUS.md",
+        ".github/workflows/ci.yml"
       ],
       "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
       "deliverable": "Upload intent/quota rezervi üçün task scope-u daxilində konkret fayllar və davranış sübutu.",

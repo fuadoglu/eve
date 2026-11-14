@@ -184,6 +184,16 @@
       "mutable": true
     },
     {
+      "key": "media.upload_intent_ttl_minutes",
+      "value": 15,
+      "unit": "dəqiqə",
+      "scope": "server",
+      "rationale": "Versiyalanmış server default-u; qısaömürlü upload səlahiyyəti vaxtı keçəndə kvotadan çıxır",
+      "requirement": "R10",
+      "acceptance": "AT21",
+      "mutable": false
+    },
+    {
       "key": "calendar.auth_query_max_days",
       "value": 93,
       "unit": "gün",
