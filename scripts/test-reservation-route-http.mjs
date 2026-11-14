@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { spawn, spawnSync } from "node:child_process";
 import { setTimeout as delay } from "node:timers/promises";
+import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import { chromium } from "playwright";
 import { createHmac, randomUUID } from "node:crypto";
@@ -67,8 +68,20 @@ try {
   browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const cookieName = `sb-${new URL(supabaseUrl).hostname.split(".")[0]}-auth-token`;
-  const cookieValue = `base64-${Buffer.from(JSON.stringify(signedIn.session)).toString("base64url")}`;
-  await context.addCookies([{ name: cookieName, value: cookieValue, url: baseUrl, httpOnly: true, sameSite: "Lax" }]);
+  let serializedCookies = [];
+  const serverAuthClient = createServerClient(supabaseUrl, publishableKey, {
+    cookies: {
+      getAll: () => serializedCookies,
+      setAll: (cookies) => { serializedCookies = cookies; },
+    },
+  });
+  const { error: cookieSessionError } = await serverAuthClient.auth.setSession(signedIn.session);
+  if (cookieSessionError || !serializedCookies.some((cookie) => cookie.name === cookieName)) {
+    throw new Error("local_ssr_cookie_serialization_failed");
+  }
+  await context.addCookies(serializedCookies.map(({ name, value }) => ({
+    name, value, url: baseUrl, httpOnly: true, sameSite: "Lax",
+  })));
   const page = await context.newPage();
   await page.goto(`${baseUrl}/calendar`, { waitUntil: "networkidle" });
   try {
