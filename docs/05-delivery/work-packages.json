@@ -986,17 +986,22 @@
       "parent_issue": 19,
       "milestone": "M2",
       "title": "Qısa form/detail və server balance",
-      "status": "backlog",
+      "status": "in_progress",
       "depends_on": [
         "EVE-011.1"
       ],
       "role": "ux_frontend",
       "owned_path_candidates": [
-        "src/modules/reservations/",
-        "src/modules/properties/",
-        "app/(panel)/calendar/"
+        "src/modules/reservations/reservation-contract.ts",
+        "src/modules/reservations/reservation-form.tsx",
+        "src/modules/reservations/reservation-detail.tsx",
+        "tests/unit/reservations/reservation-contract.test.ts",
+        "src/app/globals.css",
+        "docs/02-design/FLOW-SPEC.md",
+        "package.json",
+        ".github/workflows/ci.yml"
       ],
-      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "ownership_rule": "OpenAPI DTO vahid UI mənbəyidir; form server-dən gələn ReservationBalance-ı göstərir və qalıq hesablamır. FLOW-SPEC qonaq adı limitini OpenAPI/data model ilə 150 simvola uyğunlaşdırır. Test manifesti və CI inteqrator tərəfindən koordinasiya edilir; API, DB schema və provider route bu UI komponent paketinin scope-unda dəyişmir.",
       "deliverable": "Qısa form/detail və server balance üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
       "acceptance": [
         "Qısa form/detail və server balance üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",

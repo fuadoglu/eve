@@ -41,6 +41,8 @@ jobs:
         run: pnpm test:identity
       - name: Manager invite token unit sınaqları
         run: pnpm test:access
+      - name: Reservation input/DTO unit sınaqları
+        run: pnpm test:reservations
       - name: TypeScript yoxlaması
         run: pnpm typecheck
       - name: Production build

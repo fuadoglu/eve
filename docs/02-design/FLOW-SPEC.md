@@ -32,8 +32,8 @@ Xətalar: boş/yanlış email “Email ünvanını düzgün yazın.”; rate lim
 |---|---|---|
 | 1 | Ev | Kontekstdən hazır, başlıqda görünür |
 | 2 | Giriş–çıxış | Təqvim seçimi; çıxış girişdən sonradır, ≥1 gecə |
-| 3 | Qonağın adı | Məcburi 1–120 simvol |
-| 4 | Telefon | Opsional; varsa beynəlxalq formata normallaşdırılır |
+| 3 | Qonağın adı | Məcburi 1–150 simvol (OpenAPI/data model ilə eyni limit) |
+| 4 | Telefon | Opsional; beynəlxalq `+` formatı tələb olunur, boşluq/mötərizə/defis silinərək normallaşdırılır; ölkə kodu təxmin edilmir |
 | 5 | Ümumi qiymət | Məcburi AZN; gecəlik tarif varsa server hesabı hazır gəlir |
 | 6 | Alınan pul | Opsional, default boş=0; pulu alan default sahib/menecer |
 | 7 | Əlavə məlumat | Saatlar, qonaq sayı, realtor/komissiya, depozit, qeyd |
