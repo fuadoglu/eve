@@ -34,7 +34,7 @@ test("initial single-property order draft snapshots its server catalog price", (
   assert.equal(draft.auto_renew_opt_in, false);
 });
 
-test("foreign, missing, duplicate and malformed properties fail closed", () => {
+test("foreign, missing and malformed properties fail closed", () => {
   expectCode(() => buildBillingOrderDraft({
     owner_account_id: owner,
     lines: [{ property_id: propertyA, plan: "monthly" }],
