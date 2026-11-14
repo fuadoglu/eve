@@ -5,7 +5,7 @@ Bunlar yeni funksiya istəyi deyil; real sistemi işə salmaq üçün tələb ol
 | ID | Ehtiyac | Məsul | Hazırkı vəziyyət / təsir |
 |---|---|---|---|
 | EXT01 | Production domeni və DNS | Məhsul sahibi | Verilməyib; sabit QR/domain, SMTP və callback üçün lazımdır |
-| EXT02 | Supabase staging/production hesabı və region | Sahib + texniki komanda | Qoşulmayıb; local schema işi davam edə bilər |
+| EXT02 | Supabase staging/production hesabı və region | Sahib + texniki komanda | Yeni `eve-hosted-migration-check` hosted test layihəsində (billing planı CLI-dan təsdiqlənməyib) 001–021 fresh migration apply və remote history uyğunluğu sübut olunub; bu Eve staging/production deyil. Production/staging hesabı, remote config, Data API/Storage HTTP, backup/restore və release gate açıqdır. [Migration sübutu](../04-quality/evidence/eve-hosted-migration-check-2026-11-14.md) |
 | EXT03 | SMTP sender/domain və provider | Sahib + texniki komanda | Təsdiqlənməyib; real login email gate |
 | EXT04 | Payriff merchant, sandbox, production aktivliyi | Sahib + inteqrasiya | Təmin edilməyib; real checkout gate |
 | EXT05 | Payriff API version/status/webhook doğrulama və recurring/illik dəstək | İnteqrasiya + provider | Təsdiqlənməyib; format uydurulmur |
