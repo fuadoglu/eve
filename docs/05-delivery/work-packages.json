@@ -1981,7 +1981,7 @@
       "parent_issue": 30,
       "milestone": "M5",
       "title": "Upload intent/quota rezervi",
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "EVE-006.3",
         "EVE-008.3"
