@@ -18,6 +18,7 @@ Status: **in progress**. This evidence records the current implementation increm
 - `python3 scripts/verify-storage-config.py`: **passed**, API-only schema and seven private D33/D34 buckets align.
 - `git diff --check`: **passed**.
 - Independent read-only review confirmed the measured-size ceiling and current authorization checks, including private inventory replay. The reviewer did not execute SQL; GitHub PostgreSQL CI remains necessary.
+- Initial draft PR CI `43584187911` passed the docs job and TypeScript/build/unit checks, but exposed two SQL smoke integration issues: the RLS catalog test had an UPDATE policy listed among SELECT policies, and a manager fixture invalidated the intended cross-owner denial case. Both fixtures have been corrected in the follow-up commit; rerun status is pending.
 - PostgreSQL migration/smoke, CI, and hosted provider checks: **not run**. Local Docker daemon is unavailable; no hosted claim is made.
 
 ## Remaining before package closure

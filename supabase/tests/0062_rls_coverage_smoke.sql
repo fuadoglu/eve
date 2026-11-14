@@ -77,7 +77,6 @@ begin
     ('inventory_items','inventory_items_inventory_read'),
     ('media_assets','media_assets_inventory_read'),
     ('media_assets','media_assets_upload_quota_read'),
-    ('media_assets','media_assets_finalize_update'),
     ('media_bindings','media_bindings_inventory_read'),
     ('idempotency_keys','idempotency_keys_reservation_read'),
     ('idempotency_keys','idempotency_keys_upload_read'),

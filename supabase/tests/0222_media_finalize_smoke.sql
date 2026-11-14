@@ -12,7 +12,8 @@ end $$;
 begin;
 insert into auth.users(id) values
  ('a0222000-0000-4000-8000-000000000011'),
- ('a0222000-0000-4000-8000-000000000012') on conflict(id) do nothing;
+ ('a0222000-0000-4000-8000-000000000012'),
+ ('a0222000-0000-4000-8000-000000000013') on conflict(id) do nothing;
 insert into app_private.owner_accounts(id,owner_user_id) values
  ('a0222100-0000-4000-8000-000000000011','a0222000-0000-4000-8000-000000000011');
 insert into app_private.properties(id,owner_account_id,name,area) values
@@ -75,11 +76,11 @@ do $$ declare v_result jsonb; v_replay jsonb; begin
     raise exception 'idempotency payload mismatch was accepted';
   exception when unique_violation then null; end;
   begin
-    perform api.finalize_media_upload_for_server('a0222000-0000-4000-8000-000000000012',
+    perform api.finalize_media_upload_for_server('a0222000-0000-4000-8000-000000000013',
       'a0222300-0000-4000-8000-000000000011','image/jpeg',4,null,repeat('b',64),
       'finalize-cross-owner-key-01');
     raise exception 'cross-owner finalize was accepted';
-  exception when insufficient_privilege or unique_violation then null; end;
+  exception when insufficient_privilege or unique_violation or no_data_found then null; end;
 end $$;
 reset role;
 
