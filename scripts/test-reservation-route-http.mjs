@@ -79,6 +79,14 @@ try {
   if (cookieSessionError || !serializedCookies.some((cookie) => cookie.name === cookieName)) {
     throw new Error("local_ssr_cookie_serialization_failed");
   }
+  const cookieProbe = createServerClient(supabaseUrl, publishableKey, {
+    cookies: { getAll: () => serializedCookies, setAll: (cookies) => { serializedCookies = cookies; } },
+  });
+  const { data: cookieProbeUser, error: cookieProbeError } = await cookieProbe.auth.getUser();
+  const { data: cookieProbeActive, error: cookieProbeActiveError } = await cookieProbe.schema("api").rpc("is_my_session_active");
+  if (cookieProbeError || !cookieProbeUser.user || cookieProbeActiveError || cookieProbeActive !== true) {
+    throw new Error(`local_ssr_cookie_preflight_failed:${cookieProbeError?.status ?? cookieProbeActiveError?.code ?? String(cookieProbeActive)}`);
+  }
   await context.addCookies(serializedCookies.map(({ name, value }) => ({
     name, value, url: baseUrl, httpOnly: true, sameSite: "Lax",
   })));
