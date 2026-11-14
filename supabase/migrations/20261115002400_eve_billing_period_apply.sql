@@ -11,8 +11,8 @@ begin
      or exists (select 1 from pg_auth_members m
        where m.member='billing_executor'::regrole
           or (m.roleid='billing_executor'::regrole and m.member in (
-            'anon'::regrole,'authenticated'::regrole,'service_role'::regrole,
-            'authenticator'::regrole,'app_executor'::regrole))) then
+            select oid from pg_roles where rolname in
+              ('anon','authenticated','service_role','authenticator','app_executor')))) then
     raise exception 'billing_executor role attributes or memberships are unsafe';
   end if;
 end $$;
@@ -208,17 +208,26 @@ grant usage,create on schema app_private to billing_executor;
 do $$
 declare
   temporary_membership boolean;
+  changed_membership boolean := false;
+  previous_set boolean;
+  previous_inherit boolean;
 begin
-  temporary_membership := not exists (
-    select 1 from pg_auth_members
-    where roleid='billing_executor'::regrole and member=current_user::regrole
-  );
+  select set_option,inherit_option into previous_set,previous_inherit
+    from pg_auth_members where roleid='billing_executor'::regrole and member=current_user::regrole;
+  temporary_membership := not found;
   if temporary_membership then
     execute format('grant billing_executor to %I with set true,inherit false',current_user);
+  elsif not previous_set or previous_inherit then
+    execute format('grant billing_executor to %I with set true,inherit false',current_user);
+    changed_membership := true;
   end if;
   execute 'alter function app_private.apply_verified_billing_order(uuid) owner to billing_executor';
   if temporary_membership then
     execute format('revoke billing_executor from %I',current_user);
+  elsif changed_membership then
+    execute format('grant billing_executor to %I with set %s,inherit %s',
+      current_user,case when previous_set then 'true' else 'false' end,
+      case when previous_inherit then 'true' else 'false' end);
   end if;
 end $$;
 alter function api.apply_verified_billing_order_for_server(uuid) owner to app_executor;

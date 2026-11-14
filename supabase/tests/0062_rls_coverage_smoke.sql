@@ -44,8 +44,8 @@ begin
      or exists (select 1 from pg_auth_members m
        where m.member='billing_executor'::regrole
           or (m.roleid='billing_executor'::regrole and m.member in (
-            'anon'::regrole,'authenticated'::regrole,'service_role'::regrole,
-            'authenticator'::regrole,'app_executor'::regrole)))
+            select oid from pg_roles where rolname in
+              ('anon','authenticated','service_role','authenticator','app_executor'))))
      or has_table_privilege('billing_executor','app_private.properties','UPDATE')
      or has_table_privilege('billing_executor','app_private.properties','INSERT')
      or not has_column_privilege('billing_executor','app_private.properties','archived_at','UPDATE')
