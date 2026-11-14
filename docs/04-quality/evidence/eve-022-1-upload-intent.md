@@ -1,6 +1,6 @@
 # EVE-022.1 — upload intent/quota reservation
 
-Status: **implementation in review; PostgreSQL 17 CI pending**. This is a DB component result, not the complete upload pipeline.
+Status: **EVE-022.1 DB component implemented; final PR CI passed; merge/closure and parent gates remain**. This is not the complete upload pipeline.
 
 ## Delivered component
 
@@ -16,7 +16,8 @@ Status: **implementation in review; PostgreSQL 17 CI pending**. This is a DB com
 - `.venv-docs/bin/python scripts/validate-schemas.py` — PASS, 207 schemas; 12 positive and 20 negative examples.
 - `node scripts/test-prototype.mjs` — PASS, 71 assertions. This remains prototype-only evidence.
 - PostgreSQL 14.18 synthetic local clone based on the available empty 001–019 schema; EVE-017.1 and EVE-022.1 migrations were applied from temporary compatibility-adapted copies that removed only PG16+ `GRANT ... WITH SET` options. EVE-017.1 transition smoke, `supabase/tests/0221_upload_quota_reservation_smoke.sql`, `0062_rls_coverage_smoke.sql`, and `0062_api_surface_smoke.sql` — PASS. Upload coverage includes positive reservation, idempotent replay/mismatch, image/audio/MIME negatives, aggregate quota overflow/expiry release, cross-owner, daily manager receipt denial, and anonymous rejection. This PG14 run is diagnostic only; source migrations are unchanged.
-- Full unmodified migration and smoke have not yet run on PostgreSQL 17; the required `sql_schema` and `supabase_local` CI jobs remain the merge gate.
+- Final PR head `6aef350` CI run `43581014490`: `docs`, PostgreSQL 17 `sql_schema` and fresh synthetic `supabase_local` all passed. The `sql_schema` job ran the unmodified migration and upload smoke; `supabase_local` applied the ordered migration chain and ran upload smoke, RLS/grant coverage and API surface check.
+- Independent read-only QA review final follow-up: no blocking finding on privilege ordering, RLS allowlist or docs. This is not GitHub human approval.
 
 ## Explicit limits
 
