@@ -2359,7 +2359,7 @@
         ".github/workflows/ci.yml",
         "docs/05-delivery/work-packages.json"
       ],
-      "ownership_rule": "Scope: D07/BILLING-FINANCE catalog və same-owner order line local component contract. Price server catalog-dan götürülür, client price qəbul edilmir; provider route, DB persistence və calendar period başqa package-lərdədir. İnteqrator test script/CI və ledger-i koordinasiya edir.",
+      "ownership_rule": "Scope: D07/BILLING-FINANCE server catalog və initial one-property checkout order-line local component contract. Price server catalog-dan götürülür, client price qəbul edilmir; bulk checkout product spec üzrə ayrıca task-dır. Provider route, DB persistence və calendar period başqa package-lərdədir. İnteqrator test script/CI və ledger-i koordinasiya edir.",
       "deliverable": "Plan catalog və same-owner order lines üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
       "acceptance": [
         "Plan catalog və same-owner order lines üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",

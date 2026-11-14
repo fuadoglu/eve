@@ -22,21 +22,15 @@ test("server catalog matches fixed AZN minor-unit plans and keeps recurring disa
   });
 });
 
-test("order draft snapshots catalog prices for unique properties of one owner", () => {
+test("initial single-property order draft snapshots its server catalog price", () => {
   const draft = buildBillingOrderDraft({
     owner_account_id: owner,
-    lines: [
-      { property_id: propertyA, plan: "monthly", price_minor: 1 } as { property_id: string; plan: "monthly" },
-      { property_id: propertyB, plan: "yearly" },
-    ],
-    owner_properties: [
-      { id: propertyA, owner_account_id: owner },
-      { id: propertyB, owner_account_id: owner },
-    ],
+    lines: [{ property_id: propertyA, plan: "monthly", price_minor: 1 } as { property_id: string; plan: "monthly" }],
+    owner_properties: [{ id: propertyA, owner_account_id: owner }],
   });
-  assert.equal(draft.amount_minor, 10998);
+  assert.equal(draft.amount_minor, 999);
   assert.equal(draft.currency, "AZN");
-  assert.deepEqual(draft.lines.map(({ price_minor }) => price_minor), [999, 9999]);
+  assert.deepEqual(draft.lines.map(({ price_minor }) => price_minor), [999]);
   assert.equal(draft.auto_renew_opt_in, false);
 });
 
@@ -53,17 +47,12 @@ test("foreign, missing, duplicate and malformed properties fail closed", () => {
   }), "billing_property_scope_invalid");
   expectCode(() => buildBillingOrderDraft({
     owner_account_id: owner,
-    lines: [{ property_id: propertyA, plan: "monthly" }, { property_id: propertyA, plan: "yearly" }],
-    owner_properties: [{ id: propertyA, owner_account_id: owner }],
-  }), "duplicate_property");
-  expectCode(() => buildBillingOrderDraft({
-    owner_account_id: owner,
     lines: [{ property_id: "not-a-uuid", plan: "monthly" }],
     owner_properties: [],
   }), "invalid_plan");
 });
 
-test("unknown plan, unsafe request sizes and unsupported recurring opt-in are rejected", () => {
+test("bulk lines, unknown plan and unsupported recurring opt-in are rejected", () => {
   expectCode(() => buildBillingOrderDraft({
     owner_account_id: owner,
     lines: [{ property_id: propertyA, plan: "weekly" as "monthly" }],
@@ -71,8 +60,11 @@ test("unknown plan, unsafe request sizes and unsupported recurring opt-in are re
   }), "invalid_plan");
   expectCode(() => buildBillingOrderDraft({
     owner_account_id: owner,
-    lines: Array.from({ length: 101 }, () => ({ property_id: propertyA, plan: "monthly" as const })),
-    owner_properties: [{ id: propertyA, owner_account_id: owner }],
+    lines: [{ property_id: propertyA, plan: "monthly" }, { property_id: propertyB, plan: "yearly" }],
+    owner_properties: [
+      { id: propertyA, owner_account_id: owner },
+      { id: propertyB, owner_account_id: owner },
+    ],
   }), "invalid_order_lines");
   expectCode(() => buildBillingOrderDraft({
     owner_account_id: owner,

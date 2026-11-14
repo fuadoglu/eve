@@ -31,7 +31,7 @@ export type BillingOrderDraft = {
 };
 
 export class BillingContractError extends Error {
-  readonly code: "invalid_order_lines" | "invalid_plan" | "duplicate_property" | "billing_property_scope_invalid" | "recurring_not_available" | "unsafe_total";
+  readonly code: "invalid_order_lines" | "invalid_plan" | "billing_property_scope_invalid" | "recurring_not_available" | "unsafe_total";
 
   constructor(code: BillingContractError["code"]) {
     super(code);
@@ -72,7 +72,7 @@ export function buildBillingOrderDraft(input: {
 }): BillingOrderDraft {
   if (!UUID_PATTERN.test(input.owner_account_id) || !Array.isArray(input.lines)
       || !Array.isArray(input.owner_properties)
-      || input.lines.length < 1 || input.lines.length > 100) {
+      || input.lines.length !== 1) {
     throw new BillingContractError("invalid_order_lines");
   }
   if (input.auto_renew_opt_in === true) {
@@ -80,15 +80,12 @@ export function buildBillingOrderDraft(input: {
   }
 
   const owned = new Map(input.owner_properties.map((property) => [property.id.toLowerCase(), property]));
-  const seen = new Set<string>();
   const lines = input.lines.map((line) => {
     if (!line || !UUID_PATTERN.test(line.property_id) || !isBillingPlanKey(line.plan)) {
       throw new BillingContractError("invalid_plan");
     }
     const plan = line.plan as BillingPlanKey;
     const propertyId = line.property_id.toLowerCase();
-    if (seen.has(propertyId)) throw new BillingContractError("duplicate_property");
-    seen.add(propertyId);
     const property = owned.get(propertyId);
     if (!property || property.owner_account_id.toLowerCase() !== input.owner_account_id.toLowerCase()) {
       throw new BillingContractError("billing_property_scope_invalid");
