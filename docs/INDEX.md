@@ -50,6 +50,7 @@ Sənəd bazası: 2026-11-10, Asia/Baku. Dil: Azərbaycan dili. Status: **icra ü
 | [Email dəvət və ev icazəsi sübutu](04-quality/evidence/eve-008-2-manager-invite.md) | EVE-008.2 manager invite DB/RLS, email-match, expiry və açıq provider gate-ləri |
 | [Revoke və cross-owner mənfi sınaq sübutu](04-quality/evidence/eve-008-3-membership-revoke.md) | EVE-008.3 revoke sonrası authorization, qalan üzvlük və cross-owner rollback |
 | [Inventar otaq/əşya/şablon sübutu](04-quality/evidence/eve-019-1-inventory.md) | EVE-019.1 inventar RPC, private media binding, şablon və açıq gate-lər |
+| [Upload intent/quota component sübutu](04-quality/evidence/eve-022-1-upload-intent.md) | EVE-022.1 DB reservation, quota, idempotency və server adapter sərhədi |
 | [Prototip brauzer sübutu](04-quality/evidence/eve-002-1-2-browser.md) | EVE-002.1/.2 üçün 360 px Chrome, klaviatura və flow yoxlaması |
 | [Dəqiq form axınları](02-design/FLOW-SPEC.md) | Sahə, default, düymə, xəta və fallback |
 | [OpenAPI 3.1 JSON](03-engineering/openapi.json) | Tam request/response müqaviləsi |
