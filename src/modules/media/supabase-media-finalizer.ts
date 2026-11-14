@@ -109,6 +109,7 @@ export async function finalizeMediaUpload(input: {
 export async function readBoundedMediaResponse(response: Response, maxSizeBytes: number): Promise<Uint8Array> {
   const contentLength = response.headers.get("content-length");
   if (contentLength && /^\d+$/.test(contentLength) && Number(contentLength) > maxSizeBytes) {
+    try { await response.body?.cancel(); } catch { /* body may already be closed */ }
     throw new MediaValidationError("size_limit");
   }
   if (!Number.isSafeInteger(maxSizeBytes) || maxSizeBytes < 1 || !response.body) {

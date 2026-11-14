@@ -95,4 +95,12 @@ test("reads private objects under the reserved byte ceiling and cancels over-lim
   await assert.rejects(readBoundedMediaResponse(oversized, 3), (error: unknown) =>
     error instanceof MediaValidationError && error.code === "size_limit");
   assert.equal(cancelled, true);
+
+  let contentLengthCancelled = false;
+  const oversizedHeader = new Response(new ReadableStream({ cancel() { contentLengthCancelled = true; } }), {
+    headers: { "content-length": "10" },
+  });
+  await assert.rejects(readBoundedMediaResponse(oversizedHeader, 3), (error: unknown) =>
+    error instanceof MediaValidationError && error.code === "size_limit");
+  assert.equal(contentLengthCancelled, true);
 });
