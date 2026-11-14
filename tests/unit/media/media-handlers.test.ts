@@ -4,7 +4,7 @@ import type { SessionProvider } from "../../../src/modules/identity/session-cont
 import { SessionUnauthorizedError } from "../../../src/modules/identity/session-contract.ts";
 import { handleMediaFinalize } from "../../../src/modules/media/media-handlers.ts";
 import { MediaValidationError } from "../../../src/modules/media/media-validation.ts";
-import type { MediaFinalizeResult } from "../../../src/modules/media/supabase-media-finalizer.ts";
+import { readBoundedMediaResponse, type MediaFinalizeResult } from "../../../src/modules/media/supabase-media-finalizer.ts";
 
 const mediaId = "a0222300-0000-4000-8000-000000000011";
 const result: MediaFinalizeResult = {
@@ -79,4 +79,20 @@ test("maps unauthenticated sessions and byte validation failures to safe API err
   assert.equal(response.status, 422);
   const payload = await response.json() as { error: { message: string } };
   assert.doesNotMatch(payload.error.message, /bucket|object_key|sha/i);
+});
+
+test("reads private objects under the reserved byte ceiling and cancels over-limit streams", async () => {
+  const accepted = new Response(new ReadableStream({
+    start(controller) { controller.enqueue(new Uint8Array([1, 2])); controller.enqueue(new Uint8Array([3])); controller.close(); },
+  }), { headers: { "content-length": "3" } });
+  assert.deepEqual([...await readBoundedMediaResponse(accepted, 4)], [1, 2, 3]);
+
+  let cancelled = false;
+  const oversized = new Response(new ReadableStream({
+    start(controller) { controller.enqueue(new Uint8Array([1, 2])); controller.enqueue(new Uint8Array([3, 4])); },
+    cancel() { cancelled = true; },
+  }));
+  await assert.rejects(readBoundedMediaResponse(oversized, 3), (error: unknown) =>
+    error instanceof MediaValidationError && error.code === "size_limit");
+  assert.equal(cancelled, true);
 });

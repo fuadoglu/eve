@@ -5,22 +5,24 @@ Status: **in progress**. This evidence records the current implementation increm
 ## Implemented in this increment
 
 - `src/modules/media/media-validation.ts` validates exact downloaded bytes against supported passive image, audio/video container, and PDF signatures; enforces the existing kind/size/duration limits; and computes SHA-256 from bytes. Client MIME and size declarations are compared with the actual object.
-- `src/modules/media/supabase-media-finalizer.ts` reads the pending object's server-only bucket/key metadata, downloads bytes from private Storage, validates measured MIME/size/duration/hash, then calls DB finalize. The `POST /api/v1/media/{id}/finalize` route requires an active session, same-origin empty JSON, and an idempotency key; it returns success only after the DB acknowledges the transition.
+- `src/modules/media/supabase-media-finalizer.ts` reads the pending object's server-only bucket/key metadata, downloads bytes from private Storage with a bounded stream (checks `Content-Length`, enforces the reservation while streaming, cancels on overflow), validates measured MIME/size/duration/hash, then calls DB finalize. The `POST /api/v1/media/{id}/finalize` route requires an active session, same-origin empty JSON, and an idempotency key; it returns success only after the DB acknowledges the transition. A same actor/key/media retry returns the previously acknowledged DTO before downloading bytes again.
 - Forward migration `20261114002200_eve_media_finalize.sql` adds an idempotent `app_private.finalize_media_upload` primitive and narrow service-role-only source/finalize `api` bridges. The private primitive and source location are unavailable to anon/authenticated roles. Finalized actual bytes may be below the reservation but may not exceed it, so finalize cannot increase quota usage beyond the amount admitted under EVE-022.1's property lock. Current membership and the existing `inventory.manage` capability boundary are checked before both first finalize and any authorized replay. D39 records this bridge boundary.
-- `supabase/tests/0222_media_finalize_smoke.sql` covers grants, authenticated denial of both bridges, source bucket/reservation mapping, over-reservation rejection, validated metadata, idempotent replay/mismatch, cross-owner denial, and denial after inventory membership revocation.
+- `supabase/tests/0222_media_finalize_smoke.sql` covers grants, authenticated denial of both bridges, source bucket/reservation mapping, over-reservation rejection, validated metadata, HTTP retry replay/key misuse, idempotent DB replay/mismatch, cross-owner denial, and denial after inventory membership revocation.
 - CI runs the byte-validation unit suite and, after the 022 migration, the PostgreSQL finalize smoke and catalog guards.
 
 ## Verification observed
 
-- Node 24.22.2 / pnpm 12.18.0 `pnpm test:media`: **7/7 passed**.
+- Node 24.22.2 / pnpm 12.18.0 `pnpm test:media`: **8/8 passed**.
 - Node 24.22.2 / pnpm 12.18.0 `pnpm typecheck`: **passed**.
+- Node 24.22.2 / pnpm 12.18.0 `pnpm build`: **passed**; the authenticated finalize route appears in Next.js output.
 - `node scripts/docs-check.mjs`: **passed**, 73 Markdown files.
 - `node scripts/verify-contracts.mjs`: **passed**, 117 operations, 55 tables, 256 field bindings, 90 acyclic packages, 16 trace rows, 36 scenarios.
 - `python3 scripts/verify-storage-config.py`: **passed**, API-only schema and seven private D33/D34 buckets align.
 - `git diff --check`: **passed**.
-- Independent read-only review confirmed the measured-size ceiling and current authorization checks, including private inventory replay. The reviewer did not execute SQL; GitHub PostgreSQL CI remains necessary.
+- Independent read-only review of head `82e4897` confirmed the measured-size and authorization checks, then found the HTTP retry and unbounded-buffer issues now corrected here. It also confirmed private/scoped serving is still missing; the package remains open. Review is static and does not substitute for CI.
 - Initial draft PR CI `43584187911` exposed SQL smoke integration issues. The catalog SELECT list and cross-owner fixture were corrected; follow-up CI confirmed all checks pass.
 - Local PostgreSQL migration/smoke: **not run** because the Docker daemon is unavailable. GitHub Actions CI run `43584535175` at head `874318b` passed `docs`, PostgreSQL 17 `sql_schema` (migration, finalize/ACL smoke, RLS coverage and API allowlist), and fresh synthetic `supabase_local` (finalize smoke and Data API/Storage negative HTTP suite). This is synthetic CI evidence, not a hosted Eve or production result.
+- CI `43585116377` validated migration and finalize smoke but failed the shared API allowlist check on a missing closing SQL parenthesis. The syntax is corrected; that run's new source RPC/API count and replay checks still need a fresh CI result.
 
 ## Remaining before package closure
 

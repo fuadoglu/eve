@@ -18,6 +18,7 @@ export type MediaFinalizeResult = {
 };
 
 type PendingMediaSource = {
+  replay: false;
   id: string;
   classification: string;
   bucket: string;
@@ -27,14 +28,12 @@ type PendingMediaSource = {
   duration_seconds: number | null;
 };
 
+type FinalizeReplay = { replay: true; result: MediaFinalizeResult };
+type FinalizeSource = PendingMediaSource | FinalizeReplay;
+
 type ApiClient = {
   schema(name: "api"): {
     rpc(name: string, args: Record<string, unknown>): Promise<{ data: unknown; error: { code?: string } | null }>;
-  };
-  storage: {
-    from(bucket: string): {
-      download(path: string): Promise<{ data: Blob | null; error: { statusCode?: string } | null }>;
-    };
   };
 };
 
@@ -47,25 +46,26 @@ export async function finalizeMediaUpload(input: {
   mediaId: string;
   idempotencyKey: string;
 }): Promise<MediaFinalizeResult> {
-  const source = await loadPendingSource(input.actorUserId, input.mediaId);
+  const source = await loadPendingSource(input.actorUserId, input.mediaId, input.idempotencyKey);
+  if (source.replay) return source.result;
   const client = getApiClient();
-  let downloaded: { data: Blob | null; error: { statusCode?: string } | null };
+  const { url } = getSupabasePublicConfig();
+  const secretKey = getSupabaseSecretKey();
+  const objectUrl = new URL(`/storage/v1/object/${encodeURIComponent(source.bucket)}/${encodeURIComponent(source.object_key)}`, url);
+  let response: Response;
   try {
-    downloaded = await client.storage.from(source.bucket).download(source.object_key);
+    response = await fetch(objectUrl, {
+      method: "GET",
+      headers: { apikey: secretKey, Authorization: `Bearer ${secretKey}` },
+      cache: "no-store",
+      redirect: "error",
+    });
   } catch {
     throw new MediaFinalizeUnavailableError();
   }
-  if (downloaded.error || !downloaded.data) {
-    if (downloaded.error?.statusCode === "404" || !downloaded.error && !downloaded.data) {
-      throw new MediaFinalizeNotFoundError();
-    }
-    throw new MediaFinalizeUnavailableError();
-  }
-  if (downloaded.data.size > source.max_size_bytes) throw new MediaValidationError("size_limit");
-
-  let bytes: Uint8Array;
-  try { bytes = new Uint8Array(await downloaded.data.arrayBuffer()); }
-  catch { throw new MediaFinalizeUnavailableError(); }
+  if (response.status === 404) throw new MediaFinalizeNotFoundError();
+  if (!response.ok) throw new MediaFinalizeUnavailableError();
+  const bytes = await readBoundedMediaResponse(response, source.max_size_bytes);
   const kind = kindForMime(source.mime);
   let verified: ValidatedMedia;
   try {
@@ -106,19 +106,63 @@ export async function finalizeMediaUpload(input: {
   return result.data;
 }
 
-async function loadPendingSource(actorUserId: string, mediaId: string): Promise<PendingMediaSource> {
+export async function readBoundedMediaResponse(response: Response, maxSizeBytes: number): Promise<Uint8Array> {
+  const contentLength = response.headers.get("content-length");
+  if (contentLength && /^\d+$/.test(contentLength) && Number(contentLength) > maxSizeBytes) {
+    throw new MediaValidationError("size_limit");
+  }
+  if (!Number.isSafeInteger(maxSizeBytes) || maxSizeBytes < 1 || !response.body) {
+    throw new MediaFinalizeUnavailableError();
+  }
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let totalBytes = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      totalBytes += value.byteLength;
+      if (totalBytes > maxSizeBytes) {
+        await reader.cancel();
+        throw new MediaValidationError("size_limit");
+      }
+      chunks.push(value);
+    }
+  } catch (error) {
+    if (error instanceof MediaValidationError || error instanceof MediaFinalizeUnavailableError) throw error;
+    throw new MediaFinalizeUnavailableError();
+  } finally {
+    reader.releaseLock();
+  }
+  if (totalBytes === 0) throw new MediaValidationError("size_mismatch");
+  const bytes = new Uint8Array(totalBytes);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return bytes;
+}
+
+async function loadPendingSource(actorUserId: string, mediaId: string, idempotencyKey: string): Promise<FinalizeSource> {
   const client = getApiClient();
   let result: { data: unknown; error: { code?: string } | null };
   try {
     result = await client.schema("api").rpc("get_media_finalize_source_for_server", {
       p_actor_user_id: actorUserId,
       p_media_id: mediaId,
+      p_idempotency_key: idempotencyKey,
     });
   } catch {
     throw new MediaFinalizeUnavailableError();
   }
   if (result.error) {
+    if (result.error.code === "23505") throw new MediaFinalizeConflictError();
     if (["42501", "P0002"].includes(result.error.code ?? "")) throw new MediaFinalizeNotFoundError();
+    throw new MediaFinalizeUnavailableError();
+  }
+  if (isFinalizeReplay(result.data)) {
+    if (isMediaFinalizeResult(result.data.result) && result.data.result.id === mediaId) return result.data;
     throw new MediaFinalizeUnavailableError();
   }
   if (!isPendingMediaSource(result.data, mediaId)) throw new MediaFinalizeNotFoundError();
@@ -140,6 +184,10 @@ function kindForMime(mime: string): MediaKind {
   throw new MediaValidationError("mime_mismatch");
 }
 
+function isFinalizeReplay(value: unknown): value is FinalizeReplay {
+  return isRecord(value) && value.replay === true && isRecord(value.result);
+}
+
 function isPendingMediaSource(value: unknown, expectedId: string): value is PendingMediaSource {
   if (!isRecord(value)) return false;
   const buckets: Record<string, string> = {
@@ -148,7 +196,7 @@ function isPendingMediaSource(value: unknown, expectedId: string): value is Pend
     private_inspection: "eve-private-inspection", private_task: "eve-private-task",
     private_inventory: "eve-private-inventory",
   };
-  return value.id === expectedId && typeof value.classification === "string"
+  return value.replay === false && value.id === expectedId && typeof value.classification === "string"
     && buckets[value.classification] === value.bucket && isAllowedBucket(value.bucket)
     && value.object_key === expectedId
     && ["image/jpeg", "image/png", "image/webp", "video/mp4", "audio/webm", "audio/mp4", "application/pdf"].includes(value.mime as string)

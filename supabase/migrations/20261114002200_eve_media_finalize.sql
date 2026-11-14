@@ -171,16 +171,46 @@ revoke all on function api.finalize_media_upload_for_server(uuid,uuid,text,bigin
 grant execute on function api.finalize_media_upload_for_server(uuid,uuid,text,bigint,integer,text,text)
   to service_role;
 
-create function api.get_media_finalize_source_for_server(p_actor_user_id uuid,p_media_id uuid)
+create function api.get_media_finalize_source_for_server(
+  p_actor_user_id uuid,p_media_id uuid,p_idempotency_key text
+)
 returns jsonb language plpgsql volatile security definer set search_path = ''
 as $$
-declare v_media app_private.media_assets%rowtype;
+declare
+  v_media app_private.media_assets%rowtype;
+  v_prior app_private.idempotency_keys%rowtype;
+  v_kind text;
 begin
   if current_setting('request.jwt.claim.role',true) is distinct from 'service_role'
-     or p_actor_user_id is null or p_media_id is null then
+     or p_actor_user_id is null or p_media_id is null
+     or p_idempotency_key is null or p_idempotency_key !~ '^[A-Za-z0-9_-]{16,128}$' then
     raise exception using errcode='42501',message='server_adapter_required';
   end if;
   perform pg_catalog.set_config('request.jwt.claim.sub',p_actor_user_id::text,true);
+
+  select * into v_prior from app_private.idempotency_keys i
+  where i.actor_scope=p_actor_user_id::text||':finalizeMedia' and i.key=p_idempotency_key;
+  if found and v_prior.expires_at>statement_timestamp() then
+    if v_prior.operation_id<>'finalizeMedia' or v_prior.result_id is distinct from p_media_id then
+      raise exception using errcode='23505',message='idempotency_key_payload_conflict';
+    end if;
+    select * into v_media from app_private.media_assets a
+    where a.id=p_media_id and a.state='validated' and a.deleted_at is null
+      and app_private.can_write_media(a.property_id,a.owner_account_id,a.classification)
+      and (a.classification<>'private_inventory' or
+        app_private.has_property_capability(a.property_id,a.owner_account_id,'inventory.manage'));
+    if not found then raise exception using errcode='42501',message='media_capability_required'; end if;
+    v_kind := case when v_media.mime like 'image/%' then 'image'
+      when v_media.mime='video/mp4' then 'video'
+      when v_media.mime in ('audio/webm','audio/mp4') then 'audio'
+      else 'document' end;
+    return jsonb_build_object('replay',true,'result',jsonb_build_object(
+      'id',v_media.id,'property_id',v_media.property_id,'kind',v_kind,
+      'classification',v_media.classification::text,'status',v_media.state::text,
+      'size_bytes',v_media.size_bytes,'version',v_media.version,
+      'created_at',v_media.created_at,'updated_at',v_media.updated_at));
+  end if;
+
   select * into v_media from app_private.media_assets a
   where a.id=p_media_id and a.state='pending' and a.deleted_at is null
     and a.upload_expires_at>statement_timestamp()
@@ -188,17 +218,17 @@ begin
     and (a.classification<>'private_inventory' or
       app_private.has_property_capability(a.property_id,a.owner_account_id,'inventory.manage'));
   if not found then raise exception using errcode='P0002',message='media_not_found'; end if;
-  return jsonb_build_object('id',v_media.id,'classification',v_media.classification::text,
+  return jsonb_build_object('replay',false,'id',v_media.id,'classification',v_media.classification::text,
     'bucket',v_media.bucket,'object_key',v_media.object_key,'mime',v_media.mime,
     'max_size_bytes',v_media.size_bytes,'duration_seconds',v_media.duration_seconds);
 end;
 $$;
-revoke all on function api.get_media_finalize_source_for_server(uuid,uuid)
+revoke all on function api.get_media_finalize_source_for_server(uuid,uuid,text)
   from public,anon,authenticated,service_role;
-grant execute on function api.get_media_finalize_source_for_server(uuid,uuid)
+grant execute on function api.get_media_finalize_source_for_server(uuid,uuid,text)
   to service_role;
 grant app_executor to current_user with set true, inherit false;
-alter function api.get_media_finalize_source_for_server(uuid,uuid)
+alter function api.get_media_finalize_source_for_server(uuid,uuid,text)
   owner to app_executor;
 alter function api.finalize_media_upload_for_server(uuid,uuid,text,bigint,integer,text,text)
   owner to app_executor;

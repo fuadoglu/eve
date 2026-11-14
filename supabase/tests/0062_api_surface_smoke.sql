@@ -32,7 +32,7 @@ begin
       'api.create_reservation(jsonb,text)'::regprocedure,
       'api.transition_task(uuid,integer,text,text,text,text,uuid[],text)'::regprocedure,
       'api.finalize_media_upload_for_server(uuid,uuid,text,bigint,integer,text,text)'::regprocedure,
-      'api.get_media_finalize_source_for_server(uuid,uuid)'::regprocedure)
+      'api.get_media_finalize_source_for_server(uuid,uuid,text)'::regprocedure)
       or p.prokind <> 'f'
       or (p.oid = 'api.is_my_session_active()'::regprocedure and p.proowner <> 'app_session_reader'::regrole)
       or (p.oid = 'api.revoke_my_sessions()'::regprocedure and p.proowner <> 'app_executor'::regrole)
@@ -49,7 +49,7 @@ begin
                         'api.create_reservation(jsonb,text)'::regprocedure,
       'api.transition_task(uuid,integer,text,text,text,text,uuid[],text)'::regprocedure,
       'api.finalize_media_upload_for_server(uuid,uuid,text,bigint,integer,text,text)'::regprocedure,
-      'api.get_media_finalize_source_for_server(uuid,uuid)'::regprocedure)
+      'api.get_media_finalize_source_for_server(uuid,uuid,text)'::regprocedure)
           and p.provolatile <> 's')
       or (p.oid in ('api.revoke_my_sessions()'::regprocedure,
                     'api.create_property(text,text,text)'::regprocedure,
@@ -61,17 +61,17 @@ begin
                     'api.create_reservation(jsonb,text)'::regprocedure,
       'api.transition_task(uuid,integer,text,text,text,text,uuid[],text)'::regprocedure,
       'api.finalize_media_upload_for_server(uuid,uuid,text,bigint,integer,text,text)'::regprocedure,
-      'api.get_media_finalize_source_for_server(uuid,uuid)'::regprocedure)
+      'api.get_media_finalize_source_for_server(uuid,uuid,text)'::regprocedure)
           and p.provolatile <> 'v')
       or not (coalesce(p.proconfig, array[]::text[]) @> array['search_path=""']::text[])
       or has_function_privilege('anon',p.oid,'EXECUTE')
       or has_function_privilege('service_role',p.oid,'EXECUTE') is distinct from
         (p.oid in ('api.transition_task(uuid,integer,text,text,text,text,uuid[],text)'::regprocedure,
                    'api.finalize_media_upload_for_server(uuid,uuid,text,bigint,integer,text,text)'::regprocedure,
-                   'api.get_media_finalize_source_for_server(uuid,uuid)'::regprocedure))
+                   'api.get_media_finalize_source_for_server(uuid,uuid,text)'::regprocedure))
       or has_function_privilege('authenticated',p.oid,'EXECUTE') is distinct from
         (p.oid not in ('api.finalize_media_upload_for_server(uuid,uuid,text,bigint,integer,text,text)'::regprocedure,
-                       'api.get_media_finalize_source_for_server(uuid,uuid)'::regprocedure));
+                       'api.get_media_finalize_source_for_server(uuid,uuid,text)'::regprocedure)));
   if mismatch_count <> 0 then
     raise exception 'unsafe or unexpected api function: %', mismatch_count;
   end if;

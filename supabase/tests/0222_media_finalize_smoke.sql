@@ -3,9 +3,9 @@
 do $$ begin
   if has_function_privilege('anon','api.finalize_media_upload_for_server(uuid,uuid,text,bigint,integer,text,text)','EXECUTE')
      or has_function_privilege('authenticated','api.finalize_media_upload_for_server(uuid,uuid,text,bigint,integer,text,text)','EXECUTE')
-     or has_function_privilege('authenticated','api.get_media_finalize_source_for_server(uuid,uuid)','EXECUTE')
+     or has_function_privilege('authenticated','api.get_media_finalize_source_for_server(uuid,uuid,text)','EXECUTE')
      or not has_function_privilege('service_role','api.finalize_media_upload_for_server(uuid,uuid,text,bigint,integer,text,text)','EXECUTE')
-     or not has_function_privilege('service_role','api.get_media_finalize_source_for_server(uuid,uuid)','EXECUTE')
+     or not has_function_privilege('service_role','api.get_media_finalize_source_for_server(uuid,uuid,text)','EXECUTE')
      or has_function_privilege('service_role','app_private.finalize_media_upload(uuid,text,bigint,integer,text,text)','EXECUTE') then
     raise exception 'finalize server-only function grant boundary changed';
   end if;
@@ -51,7 +51,7 @@ do $$ begin
   end;
   begin
     perform api.get_media_finalize_source_for_server('a0222000-0000-4000-8000-000000000011',
-      'a0222300-0000-4000-8000-000000000011');
+      'a0222300-0000-4000-8000-000000000011','finalize-auth-denied-0001');
     raise exception 'authenticated client read private storage metadata';
   exception when insufficient_privilege then null;
   end;
@@ -62,7 +62,7 @@ set local role service_role;
 set local request.jwt.claim.role='service_role';
 do $$ declare v_result jsonb; v_replay jsonb; v_source jsonb; begin
   v_source := api.get_media_finalize_source_for_server('a0222000-0000-4000-8000-000000000012',
-    'a0222300-0000-4000-8000-000000000012');
+    'a0222300-0000-4000-8000-000000000012','finalize-revoked-inventory-key');
   if v_source->>'bucket'<>'eve-private-inventory' or v_source->>'max_size_bytes'<>'1024'
      or v_source->>'classification'<>'private_inventory' then
     raise exception 'server source DTO has wrong classification/bucket/reservation';
@@ -87,6 +87,16 @@ do $$ declare v_result jsonb; v_replay jsonb; v_source jsonb; begin
      or (v_result->>'version')::integer<>2 or v_replay<>v_result then
     raise exception 'finalize measured values or idempotent replay failed';
   end if;
+  v_source := api.get_media_finalize_source_for_server('a0222000-0000-4000-8000-000000000011',
+    'a0222300-0000-4000-8000-000000000011','finalize-media-key-00001');
+  if v_source->>'replay'<>'true' or v_source->'result'<>v_result then
+    raise exception 'HTTP retry preflight did not return the prior server-acknowledged DTO';
+  end if;
+  begin
+    perform api.get_media_finalize_source_for_server('a0222000-0000-4000-8000-000000000011',
+      'a0222300-0000-4000-8000-000000000013','finalize-media-key-00001');
+    raise exception 'HTTP retry key was reused for a different media id';
+  exception when unique_violation then null; end;
   begin
     perform api.finalize_media_upload_for_server('a0222000-0000-4000-8000-000000000011',
       'a0222300-0000-4000-8000-000000000011','image/jpeg',5,null,repeat('a',64),
@@ -108,9 +118,8 @@ set local role service_role;
 set local request.jwt.claim.role='service_role';
 do $$ begin
   begin
-    perform api.finalize_media_upload_for_server('a0222000-0000-4000-8000-000000000012',
-      'a0222300-0000-4000-8000-000000000012','image/jpeg',4,null,repeat('d',64),
-      'finalize-revoked-inventory-key');
+    perform api.get_media_finalize_source_for_server('a0222000-0000-4000-8000-000000000012',
+      'a0222300-0000-4000-8000-000000000012','finalize-revoked-inventory-key');
     raise exception 'revoked inventory capability idempotency replay was accepted';
   exception when insufficient_privilege or unique_violation then null; end;
 end $$;
