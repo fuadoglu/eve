@@ -306,6 +306,8 @@
         "contacts",
         "media_assets",
         "media_bindings",
+        "task_transition_events",
+        "task_transition_media",
         "tasks"
       ],
       "parent_tasks": [
@@ -343,11 +345,16 @@
       ],
       "tables": [
         "properties",
-        "tasks"
+        "task_transition_events",
+        "tasks",
+        "inspection_submissions",
+        "inspection_snapshot_rooms",
+        "inspection_room_answers"
       ],
       "parent_tasks": [
         "EVE-012",
         "EVE-013",
+        "EVE-017",
         "EVE-018"
       ],
       "packages": [
@@ -357,6 +364,7 @@
         "EVE-013.1",
         "EVE-013.2",
         "EVE-013.3",
+        "EVE-017.1",
         "EVE-018.1",
         "EVE-018.2",
         "EVE-018.3"

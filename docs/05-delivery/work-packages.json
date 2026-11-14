@@ -1514,17 +1514,32 @@
       "parent_issue": 25,
       "milestone": "M3",
       "title": "Kontakt və task state müqaviləsi",
-      "status": "backlog",
+      "status": "in_progress",
       "depends_on": [
         "EVE-008.3",
         "EVE-009.3"
       ],
       "role": "domain_engineer",
       "owned_path_candidates": [
-        "src/modules/finance/",
-        "src/modules/operations/"
+        "supabase/migrations/20261114002000_eve_task_transition_history.sql",
+        "supabase/tests/0065_task_transition_history_smoke.sql",
+        "supabase/tests/0062_api_surface_smoke.sql",
+        "supabase/tests/0062_rls_coverage_smoke.sql",
+        "docs/01-product/DECISIONS.md",
+        "docs/01-product/OPERATIONS.md",
+        "docs/03-engineering/ACCESS-BOUNDARY.md",
+        "docs/03-engineering/data-dictionary.json",
+        "docs/03-engineering/openapi.json",
+        "docs/03-engineering/field-bindings.json",
+        "docs/03-engineering/API-CONTRACT.md",
+        "docs/04-quality/TRACEABILITY.md",
+        "docs/04-quality/traceability.json",
+        "src/modules/operations/task-transition-contract.ts",
+        "tests/unit/operations/task-transition-contract.test.ts",
+        "package.json",
+        ".github/workflows/ci.yml"
       ],
-      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "ownership_rule": "İnteqrator migration nömrəsi, RLS/API allowlist, data dictionary/OpenAPI/field-binding uyğunluğu və CI-ni koordinasiya edir. Scope: append-only task transition event schema, media association, idempotent DB write RPC və local contract/negative tests. Provider/browser route, scoped-link exchange/WhatsApp delivery və full AT15–16 acceptance sonrakı package-lərdədir.",
       "deliverable": "Kontakt və task state müqaviləsi üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
       "acceptance": [
         "Kontakt və task state müqaviləsi üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",

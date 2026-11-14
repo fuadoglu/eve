@@ -12,7 +12,7 @@ Mixed-sensitivity base cədvəllər üçün alternativlər siyahısı yox, bir k
 | `app_executor` | NOLOGIN, NOBYPASSRLS, base-table sahibi deyil; lazım olan SELECT/INSERT/UPDATE grant, DELETE default yoxdur |
 | `authenticated` | `api` sxeminə USAGE və explicit allowlist funksiyalara EXECUTE; base schema/table grant yoxdur |
 | `anon` | Base data və user RPC üçün grant yoxdur; public trafik Next.js public endpoint-indən keçir |
-| Server billing/job client | Yalnız həmin server əməliyyatının explicit function grant-ı və payload yoxlaması; brauzerə credential verilmir |
+| Server billing/job/token client | Yalnız həmin server əməliyyatının explicit function grant-ı və payload yoxlaması; scoped task RPC token hash-ni yenidən yoxlayır; secret brauzerə verilmir |
 
 Domain cədvəllərdə ENABLE/FORCE RLS. RLS policy-ləri `app_executor` və Data API-nin yoxlanmış JWT-sindən `request.jwt.claim.sub`/`request.jwt.claims` oxuyan `app_private.current_actor_id()` üzrə cari membership yoxlayır. Hosted Supabase custom role-a `auth` sxemi USAGE vermədiyi üçün executor `auth.uid()` çağırmır; helper eyni doğrulanmış request actor-unu qaytarır. SQL funksiyasının owner-i login olmayan, table owner olmayan executor-dur; SECURITY DEFINER + sabit search_path + schema-qualified adlar. User-dən actor/owner/role parametrinə etibar edilmir. Public execute grant default-u revoke edilir, yalnız explicit funksiyalara qaytarılır. Birbaşa DB bağlantısında request JWT setting-inə user giriş verilmir; real Data API davranışı ayrıca sandbox testidir.
 
@@ -22,7 +22,7 @@ Bu arxitekturada security-invoker view ilə base SELECT grant-ını birlikdə t�
 
 Owner ID immutable-dir. Arxiv/public visibility/manager permission yalnız owner prosedurundadır; adi property patch bunları qəbul etmir. Daily manager üçün contact private_note, başqa ev allocation-u, subscription payment metadata və tenant finance RPC cavabından çıxarılır. RLS sətri açsa belə funksiya safe DTO qaytarır. Private təqvim blokunun səbəbi yalnız cari evə `property.read` hüququ olan authenticated RPC-də görünür; public availability proyeksiyasına ötürülmür.
 
-Public və tokenli Next.js route user funksiyasını yüksək səlahiyyətlə ümumi `SELECT *` etməyə çevirmir. Ayrı dar public/token projection funksiyası slug/token hash və expiry/public status/cari placement yoxlaması aparır. Dynamic SQL ilə table/column adı request-dən alınmır.
+Public və tokenli Next.js route user funksiyasını yüksək səlahiyyətlə ümumi `SELECT *` etməyə çevirmir. Tokenli Next.js server route service role ilə yalnız dar `api.transition_task` əməliyyatını çağıra bilər; DB token hash, expiry, revoke, scope və property aidiyyətini yenidən yoxlayır. Ayrı dar public/token projection funksiyası slug/token hash və expiry/public status/cari placement yoxlaması aparır. Dynamic SQL ilə table/column adı request-dən alınmır.
 
 ## İcra üçün mənfi test
 
