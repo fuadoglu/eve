@@ -1,6 +1,6 @@
 # EVE-022.2 — media byte validation, finalize, and private proxy
 
-Status: **component acceptance passed; closes when PR #104 is merged**. This evidence closes only EVE-022.2 component scope; it does not close EVE-022, AT06/AT21/AT32 end-to-end acceptance, or any production gate.
+Status: **EVE-022.2 component complete**. PR #104 squash-merged as `63b57a01a3738cb6fff0ca51ea707a34721f0ffd`; merge-commit CI #43589548620 passed. This closes only EVE-022.2 component scope; it does not close EVE-022, AT06/AT21/AT32 end-to-end acceptance, or any production gate.
 
 ## Implemented in this increment
 
