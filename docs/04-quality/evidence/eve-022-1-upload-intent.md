@@ -15,7 +15,7 @@ Status: **implementation in review; PostgreSQL 17 CI pending**. This is a DB com
 - `node scripts/verify-contracts.mjs` — PASS, 117 operations, 55 tables, 256 field bindings, 90 acyclic packages, 16 trace rows, 36 scenarios.
 - `.venv-docs/bin/python scripts/validate-schemas.py` — PASS, 207 schemas; 12 positive and 20 negative examples.
 - `node scripts/test-prototype.mjs` — PASS, 71 assertions. This remains prototype-only evidence.
-- PostgreSQL 14.18 synthetic local clone based on the available empty 001–019 schema; the new migration was applied from a temporary compatibility-adapted copy that removed only PG16+ `GRANT ... WITH SET` options, then `supabase/tests/0221_upload_quota_reservation_smoke.sql` — PASS. Covered positive reservation, idempotent replay/mismatch, image/audio/MIME negatives, aggregate quota overflow/expiry release, cross-owner, daily manager receipt denial, and anonymous rejection.
+- PostgreSQL 14.18 synthetic local clone based on the available empty 001–019 schema; EVE-017.1 and EVE-022.1 migrations were applied from temporary compatibility-adapted copies that removed only PG16+ `GRANT ... WITH SET` options. EVE-017.1 transition smoke, `supabase/tests/0221_upload_quota_reservation_smoke.sql`, `0062_rls_coverage_smoke.sql`, and `0062_api_surface_smoke.sql` — PASS. Upload coverage includes positive reservation, idempotent replay/mismatch, image/audio/MIME negatives, aggregate quota overflow/expiry release, cross-owner, daily manager receipt denial, and anonymous rejection. This PG14 run is diagnostic only; source migrations are unchanged.
 - Full unmodified migration and smoke have not yet run on PostgreSQL 17; the required `sql_schema` and `supabase_local` CI jobs remain the merge gate.
 
 ## Explicit limits

@@ -26,7 +26,7 @@ begin
       or has_table_privilege('app_executor',c.oid,'UPDATE') is distinct from
         (c.relname in ('manager_invites','property_memberships','idempotency_keys','tasks','access_links'))
       or has_table_privilege('app_executor',c.oid,'INSERT') is distinct from
-        (c.relname in ('owner_accounts','properties','trial_claims','subscriptions','rooms','inventory_items','media_bindings','manager_invites','invite_properties','property_memberships','manager_invite_accept_context','reservations','reservation_placements','occupancy','rent_entries','realtor_accounts','outbox','audit_events','idempotency_keys','task_transition_events','task_transition_media'))
+        (c.relname in ('owner_accounts','properties','trial_claims','subscriptions','rooms','inventory_items','media_bindings','media_assets','manager_invites','invite_properties','property_memberships','manager_invite_accept_context','reservations','reservation_placements','occupancy','rent_entries','realtor_accounts','outbox','audit_events','idempotency_keys','task_transition_events','task_transition_media'))
       or has_table_privilege('app_executor',c.oid,'SELECT') is distinct from
         (c.relname in ('profiles','owner_accounts','properties',
           'property_memberships','reservations','reservation_placements',
@@ -65,6 +65,7 @@ begin
     ('contact_properties','contact_properties_assigned_read'),
     ('rent_entries','rent_entries_current_or_finance_read'),
     ('subscriptions','subscriptions_inventory_read'),
+    ('subscriptions','subscriptions_media_upload_read'),
     ('subscriptions','subscriptions_reservation_write_read'),
     ('subscriptions','subscriptions_owner_invite_read'),
     ('subscriptions','subscriptions_matching_invite_read'),
@@ -75,8 +76,10 @@ begin
     ('rooms','rooms_inventory_read'),
     ('inventory_items','inventory_items_inventory_read'),
     ('media_assets','media_assets_inventory_read'),
+    ('media_assets','media_assets_upload_quota_read'),
     ('media_bindings','media_bindings_inventory_read'),
     ('idempotency_keys','idempotency_keys_reservation_read'),
+    ('idempotency_keys','idempotency_keys_upload_read'),
     ('tasks','tasks_transition_internal_read'),
     ('access_links','access_links_task_transition_internal_read'),
     ('subscriptions','subscriptions_task_transition_internal_read'),
@@ -98,7 +101,7 @@ begin
   select count(*) into table_count
   from pg_policy p join pg_class c on c.oid=p.polrelid
   where c.relnamespace='app_private'::regnamespace;
-  if table_count <> 65 then
+  if table_count <> 71 then
     raise exception 'unexpected private table policies: %',table_count;
   end if;
   if not exists (select 1 from pg_policy where polrelid='app_private.manager_invite_accept_context'::regclass
@@ -109,10 +112,14 @@ begin
   if (select count(*) from pg_policy where polroles=array['app_executor'::regrole::oid]
       and polcmd='a' and polname in ('reservations_create','reservation_placements_create',
         'occupancy_reservation_create','rent_entries_reservation_create',
+        'media_assets_upload_create','idempotency_keys_upload_create',
         'realtor_accounts_reservation_create','idempotency_keys_reservation_create',
-        'outbox_reservation_create','audit_events_reservation_create','task_transition_events_internal_insert','task_transition_media_internal_insert','outbox_task_transition_create')) <> 11
+        'outbox_reservation_create','audit_events_reservation_create','task_transition_events_internal_insert','task_transition_media_internal_insert','outbox_task_transition_create')) <> 13
      or not exists (select 1 from pg_policy where polrelid='app_private.idempotency_keys'::regclass
        and polname='idempotency_keys_reservation_update' and polcmd='w'
+       and polroles=array['app_executor'::regrole::oid])
+     or not exists (select 1 from pg_policy where polrelid='app_private.idempotency_keys'::regclass
+       and polname='idempotency_keys_upload_update' and polcmd='w'
        and polroles=array['app_executor'::regrole::oid]) then
     raise exception 'reservation write/idempotency policies missing or mis-scoped';
   end if;

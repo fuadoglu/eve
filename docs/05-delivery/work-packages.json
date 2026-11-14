@@ -1990,6 +1990,7 @@
       "owned_path_candidates": [
         "supabase/migrations/20261114002100_eve_upload_quota_reservation.sql",
         "supabase/tests/0221_upload_quota_reservation_smoke.sql",
+        "supabase/tests/0062_rls_coverage_smoke.sql",
         "docs/01-product/configuration.json",
         "docs/01-product/DECISIONS.md",
         "docs/03-engineering/data-dictionary.json",
