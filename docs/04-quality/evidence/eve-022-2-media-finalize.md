@@ -13,17 +13,17 @@ Status: **in progress**. This evidence records the current implementation increm
 
 - Node 24.22.2 / pnpm 12.18.0 `pnpm test:media`: **4/4 passed**.
 - Node 24.22.2 / pnpm 12.18.0 `pnpm typecheck`: **passed**.
-- `node scripts/docs-check.mjs`: **passed**, 72 Markdown files.
+- `node scripts/docs-check.mjs`: **passed**, 73 Markdown files.
 - `node scripts/verify-contracts.mjs`: **passed**, 117 operations, 55 tables, 256 field bindings, 90 acyclic packages, 16 trace rows, 36 scenarios.
 - `python3 scripts/verify-storage-config.py`: **passed**, API-only schema and seven private D33/D34 buckets align.
 - `git diff --check`: **passed**.
 - Independent read-only review confirmed the measured-size ceiling and current authorization checks, including private inventory replay. The reviewer did not execute SQL; GitHub PostgreSQL CI remains necessary.
-- Initial draft PR CI `43584187911` passed the docs job and TypeScript/build/unit checks, but exposed two SQL smoke integration issues: the RLS catalog test had an UPDATE policy listed among SELECT policies, and a manager fixture invalidated the intended cross-owner denial case. CI `43584358420` confirmed the catalog correction and exposed that the denial assertion also needed a separate pending row (testing a finalized row exited earlier on state). That fixture is now isolated; the next rerun is pending.
-- PostgreSQL migration/smoke, CI, and hosted provider checks: **not run**. Local Docker daemon is unavailable; no hosted claim is made.
+- Initial draft PR CI `43584187911` exposed SQL smoke integration issues. The catalog SELECT list and cross-owner fixture were corrected; follow-up CI confirmed all checks pass.
+- Local PostgreSQL migration/smoke: **not run** because the Docker daemon is unavailable. GitHub Actions CI run `43584535175` at head `874318b` passed `docs`, PostgreSQL 17 `sql_schema` (migration, finalize/ACL smoke, RLS coverage and API allowlist), and fresh synthetic `supabase_local` (finalize smoke and Data API/Storage negative HTTP suite). This is synthetic CI evidence, not a hosted Eve or production result.
 
 ## Remaining before package closure
 
 - Wire the validator and finalize primitive to an authenticated server adapter that retrieves the reserved object from its private bucket and trusts only server-validated session/scope.
 - Implement private media serving with a fresh authorization/revoke/expiry/current-placement check per request; do not issue signed read URLs.
 - Extend the smoke suite to exercise the integrated server/storage behavior and verify it in CI. Scoped task/guest media must respect EVE-017.3/link-session dependencies; do not treat owner/property-only checks as their substitute.
-- Obtain independent read-only review and merged-branch CI evidence. These tasks are intentionally open; package status remains `in_progress`.
+- Obtain independent final review and merge after the remaining adapter/proxy work. These tasks are intentionally open; package status remains `in_progress`.
