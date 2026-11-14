@@ -2419,7 +2419,7 @@
       "parent_issue": 34,
       "milestone": "M6",
       "title": "Trial/leap/ay sonu/plan keçid sınağı",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-026.2"
       ],
@@ -2434,7 +2434,7 @@
         "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
         "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
       ],
-      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "verification": "Merged PR #108 squash commit 3d352dbaa51b1f1e7a7ef2859905a27f0988ec84; PR CI #43645609538 and merge-commit CI #43645789988 passed docs, PostgreSQL 17 sql_schema (migration 024, entitlement smoke, exact RLS/API grants, concurrency), and fresh synthetic supabase_local. Independent transaction/security and ACL reviews found no remaining blocker. Local billing suite 14/14; local typecheck/build and docs/contracts/schema/storage/prototype validators passed. Local Node v24.5.0 is below the repo engine floor 24.22.2; conforming runtime is covered by CI. Local PG14 diagnostic could not reach migration 024 because pre-existing migration 002 requires pg_auth_members.inherit_option.",
       "reviewer_role": "integration_reviewer",
       "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
       "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
