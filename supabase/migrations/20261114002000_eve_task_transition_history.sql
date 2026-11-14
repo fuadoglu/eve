@@ -108,7 +108,15 @@ create policy access_links_task_transition_internal_read on app_private.access_l
 create policy access_links_task_transition_internal_update on app_private.access_links
   for update to app_executor using (true) with check (true);
 create policy subscriptions_task_transition_internal_read on app_private.subscriptions
-  for select to app_executor using (true);
+  for select to app_executor using (
+    app_private.is_owner(owner_account_id) or exists (
+      select 1 from app_private.property_memberships m
+      where m.property_id=subscriptions.property_id
+        and m.owner_account_id=subscriptions.owner_account_id
+        and m.user_id=(select app_private.current_actor_id())
+        and m.revoked_at is null and m.permission in ('daily','full')
+    )
+  );
 create policy inspection_submissions_task_transition_internal_read on app_private.inspection_submissions
   for select to app_executor using (true);
 create policy inspection_snapshot_rooms_task_transition_internal_read on app_private.inspection_snapshot_rooms
