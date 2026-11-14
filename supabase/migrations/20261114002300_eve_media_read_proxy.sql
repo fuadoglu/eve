@@ -113,6 +113,7 @@ $$;
 revoke all on function app_private.media_actor_can_read(uuid) from public,anon,authenticated,service_role;
 grant execute on function app_private.media_actor_can_read(uuid) to app_executor;
 grant app_executor to current_user with set true, inherit false;
+grant create on schema app_private to app_executor;
 alter function app_private.media_actor_can_read(uuid) owner to app_executor;
 
 create function app_private.get_media_actor_source(p_media_id uuid)
@@ -318,4 +319,5 @@ alter function api.exchange_scoped_link_for_server(text) owner to app_executor;
 
 -- app_executor is the sole function owner; API exposure is server-role only.
 revoke app_executor from current_user;
+revoke create on schema app_private from app_executor;
 revoke create on schema api from app_executor;

@@ -31,6 +31,7 @@ Status: **in progress**. This evidence records the current implementation increm
 - Independent read-only review of committed proxy head `6892569` found no concrete authorization bypass; it is static review only and the migration-owner transfer issue described below required fresh synthetic Supabase execution to reveal.
 - First proxy CI run `43588572416` passed the migration but exposed a smoke-fixture privilege mistake: the `service_role` test block attempted to call `extensions.digest` without schema permission. The test now uses the precomputed SHA-256 of its synthetic token, avoiding any extension grant; rerun CI is required for closure.
 - Follow-up CI `43588734409` passed docs and full PostgreSQL 17 `sql_schema`, including migration 023, access smoke, RLS catalog and API allowlist. Fresh synthetic `supabase_local` found that `supabase_admin` needs the repo-standard temporary `SET ROLE app_executor` grant around function-owner transfers. That grant is now added and revoked in migration 023; a further CI run is required before treating the fresh-stack migration as passed.
+- Third CI `43588922821` passed docs and PostgreSQL 17 `sql_schema`, including access smoke, but fresh synthetic Supabase then showed `app_executor` also needs temporary `CREATE` on `app_private` to own the new private functions. Migration 023 now grants/revokes that privilege along with the temporary role membership. A new fresh-stack CI run is required.
 
 ## Remaining before package closure
 
