@@ -295,6 +295,106 @@ commit;
                 delayed_job.wait(timeout=3)
 
 
+def run_verified_billing_order_race() -> None:
+    """Two concurrent server callbacks apply one verified order exactly once."""
+    owner_user, order_id, line_id = (str(uuid.uuid4()) for _ in range(3))
+    property_info = psql(
+        f"""
+        insert into auth.users(id) values ('{owner_user}');
+        set request.jwt.claim.sub='{owner_user}';
+        select id||':'||owner_account_id from api.create_property('Billing concurrency','Synthetic','villa');
+        """
+    ).stdout.strip()
+    if ":" not in property_info:
+        raise RuntimeError(f"billing fixture property was not created: {property_info!r}")
+    property_id, owner_account_id = property_info.split(":", 1)
+    psql(
+        f"""
+        insert into app_private.billing_orders(id,owner_account_id,currency,amount_minor,state,verified_paid_at)
+        values('{order_id}','{owner_account_id}','AZN',999,'verified_paid',statement_timestamp());
+        insert into app_private.billing_order_lines(id,owner_account_id,property_id,order_id,plan,price_minor)
+        values('{line_id}','{owner_account_id}','{property_id}','{order_id}','monthly',999);
+        """
+    )
+
+    apply_sql = f"""
+begin;
+set local request.jwt.claim.role='service_role';
+select api.apply_verified_billing_order_for_server('{order_id}');
+\\echo BILLING_ORDER_APPLIED
+"""
+    first = subprocess.Popen(
+        psql_args(), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        text=True, bufsize=1,
+    )
+    second: subprocess.Popen[str] | None = None
+    try:
+        assert first.stdin and first.stdout and first.stderr
+        first.stdin.write(apply_sql)
+        first.stdin.flush()
+        marker_seen, first_output = wait_for_marker(first.stdout, "BILLING_ORDER_APPLIED")
+        if not marker_seen:
+            raise RuntimeError(f"first billing application did not complete: {first_output.strip()}")
+
+        second = subprocess.Popen(
+            psql_args(), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            text=True, bufsize=1,
+        )
+        assert second.stdin
+        second.stdin.write(apply_sql)
+        second.stdin.close()
+        wait_for_lock_waiters(order_id, 1)
+        first.stdin.write("commit;\n")
+        first.stdin.close()
+        first_stdout = first.stdout.read()
+        first_stderr = first.stderr.read()
+        first_code = first.wait(timeout=20)
+        second_stdout = second.stdout.read() if second.stdout else ""
+        second_stderr = second.stderr.read() if second.stderr else ""
+        second_code = second.wait(timeout=20)
+        if first_code != 0 or second_code != 0:
+            raise RuntimeError(
+                "concurrent billing application failed: "
+                f"first={first_code} {first_stderr.strip()} {first_stdout.strip()}; "
+                f"second={second_code} {second_stderr.strip()} {second_stdout.strip()}"
+            )
+        combined = first_output + first_stdout + second_stdout
+        if '"replay": false' not in combined or '"replay": true' not in combined:
+            raise RuntimeError(f"concurrent billing calls did not return applied+replay: {combined.strip()}")
+        counts = psql(
+            f"select (select count(*) from app_private.subscription_periods where order_line_id='{line_id}')||':'||"
+            f"(select state::text from app_private.billing_orders where id='{order_id}')||':'||"
+            f"(select count(*) from app_private.subscriptions where property_id='{property_id}' and version=2);"
+        ).stdout.strip()
+        if counts != "1:entitlement_applied:1":
+            raise RuntimeError(f"concurrent billing calls mutated entitlement more than once: {counts}")
+    finally:
+        for process in (first, second):
+            if process is not None and process.poll() is None:
+                process.terminate()
+                try:
+                    process.wait(timeout=3)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    process.wait(timeout=3)
+        psql(
+            f"""
+            begin;
+            set local session_replication_role=replica;
+            delete from app_private.subscription_periods where order_line_id='{line_id}';
+            delete from app_private.billing_order_lines where id='{line_id}';
+            delete from app_private.billing_orders where id='{order_id}';
+            delete from app_private.subscriptions where property_id='{property_id}';
+            delete from app_private.trial_claims where property_id='{property_id}';
+            delete from app_private.audit_events where property_id='{property_id}';
+            delete from app_private.properties where id='{property_id}';
+            delete from app_private.owner_accounts where id='{owner_account_id}';
+            delete from auth.users where id='{owner_user}';
+            commit;
+            """
+        )
+
+
 def run_first_trial_race(owner_user: str) -> None:
     winner_sql = f"""
 begin;
@@ -468,6 +568,7 @@ commit;
             replacement_placement, replacement_occupancy,
         )
         run_first_trial_race(trial_owner)
+        run_verified_billing_order_race()
     finally:
         psql(cleanup)
         psql(
@@ -485,6 +586,7 @@ commit;
     print("PASS delayed-expiry catch-up: next booking waits for property lock, expires hold, then commits same interval")
     print("PASS hold-expiry retry: repeated catch-up is idempotent")
     print("PASS first-trial concurrency: 2 concurrent property creates, 1 trial claim, 1 trialing, 1 draft")
+    print("PASS billing concurrency: concurrent verified callbacks create one paid period and replay the winner")
     print("LIMIT synthetic PostgreSQL only; no booking-create/idempotency API, public departure query, hosted DB, or production evidence")
     return 0
 
@@ -493,5 +595,5 @@ if __name__ == "__main__":
     try:
         raise SystemExit(main())
     except (RuntimeError, subprocess.TimeoutExpired, OSError) as error:
-        print(f"FAIL occupancy concurrency: {error}", file=sys.stderr)
+        print(f"FAIL database concurrency: {error}", file=sys.stderr)
         raise SystemExit(1)
