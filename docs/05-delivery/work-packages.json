@@ -1560,7 +1560,7 @@
       "parent_issue": 25,
       "milestone": "M3",
       "title": "Scoped link və WhatsApp fallback",
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "EVE-017.1"
       ],
@@ -1581,13 +1581,13 @@
         "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
         "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
       ],
-      "verification": "Component/unit yoxlaması; package-dən kənar provider/real-device gate tamamlanmış sayılmır.",
+      "verification": "PR #97 CI run #43578181675: clean production build, Chromium mobile shell, docs/contracts, PostgreSQL 17 sql_schema və fresh synthetic supabase_local keçdi; 7 operations unit test keçdi. Müstəqil QA review düzəlişlərdən sonra finding saxlamadı. Server link minting/route full acceptance bu paketdə yoxdur; scope sübutu docs/04-quality/evidence/eve-017-2-task-share.md-dədir.",
       "reviewer_role": "qa_redteam",
       "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
       "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
       "external_gates": [],
       "expected_result": "Scoped link və WhatsApp fallback üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
-      "parent_acceptance_reference": "AT15 WhatsApp link/fallback davranışının UI component hissəsi; GET/prefetch və real endpoint testi EVE-017.3-də."
+      "parent_acceptance_reference": "AT15 WhatsApp/clipboard handoff component; server minting, GET/prefetch və real API acceptance sonrakı paketlərdə."
     },
     {
       "id": "EVE-017.3",
