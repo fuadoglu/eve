@@ -42,7 +42,10 @@ begin
        and not rolcanlogin and not rolsuper and not rolcreaterole and not rolcreatedb
        and not rolreplication and not rolbypassrls and not rolinherit)
      or exists (select 1 from pg_auth_members m
-       where m.roleid='billing_executor'::regrole or m.member='billing_executor'::regrole)
+       where m.member='billing_executor'::regrole
+          or (m.roleid='billing_executor'::regrole and m.member in (
+            'anon'::regrole,'authenticated'::regrole,'service_role'::regrole,
+            'authenticator'::regrole,'app_executor'::regrole)))
      or has_table_privilege('billing_executor','app_private.properties','UPDATE')
      or has_table_privilege('billing_executor','app_private.properties','INSERT')
      or not has_column_privilege('billing_executor','app_private.properties','archived_at','UPDATE')

@@ -9,7 +9,10 @@ begin
       and (rolcanlogin or rolsuper or rolcreaterole or rolcreatedb or rolreplication
         or rolbypassrls or rolinherit))
      or exists (select 1 from pg_auth_members m
-       where m.roleid='billing_executor'::regrole or m.member='billing_executor'::regrole) then
+       where m.member='billing_executor'::regrole
+          or (m.roleid='billing_executor'::regrole and m.member in (
+            'anon'::regrole,'authenticated'::regrole,'service_role'::regrole,
+            'authenticator'::regrole,'app_executor'::regrole))) then
     raise exception 'billing_executor role attributes or memberships are unsafe';
   end if;
 end $$;
@@ -201,11 +204,24 @@ revoke all on function api.apply_verified_billing_order_for_server(uuid) from pu
 grant execute on function api.apply_verified_billing_order_for_server(uuid) to service_role;
 
 grant app_executor to current_user with set true,inherit false;
-grant billing_executor to current_user with set true,inherit false;
 grant usage,create on schema app_private to billing_executor;
-alter function app_private.apply_verified_billing_order(uuid) owner to billing_executor;
+do $$
+declare
+  temporary_membership boolean;
+begin
+  temporary_membership := not exists (
+    select 1 from pg_auth_members
+    where roleid='billing_executor'::regrole and member=current_user::regrole
+  );
+  if temporary_membership then
+    execute format('grant billing_executor to %I with set true,inherit false',current_user);
+  end if;
+  execute 'alter function app_private.apply_verified_billing_order(uuid) owner to billing_executor';
+  if temporary_membership then
+    execute format('revoke billing_executor from %I',current_user);
+  end if;
+end $$;
 alter function api.apply_verified_billing_order_for_server(uuid) owner to app_executor;
-revoke billing_executor from current_user;
 revoke app_executor from current_user;
 revoke create on schema app_private from billing_executor;
 revoke create on schema api from app_executor;
