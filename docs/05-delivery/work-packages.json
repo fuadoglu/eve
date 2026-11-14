@@ -2345,7 +2345,7 @@
       "parent_issue": 34,
       "milestone": "M6",
       "title": "Plan catalog və same-owner order lines",
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "EVE-006.3",
         "EVE-008.3",
@@ -2366,13 +2366,13 @@
         "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
         "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
       ],
-      "verification": "Local unit/component contract, docs/contract validators, typecheck və CI clean build. Provider sandbox faktı bu vahid üçün deyil.",
+      "verification": "PR #99 CI run #43579005886: docs, clean typecheck/build, PG17 sql_schema və fresh synthetic supabase_local keçdi; billing unit 4/4 və local contract validators keçdi. Independent QA P2 multi-property scope mismatch tapdı; initial one-property checkout sərhədinə qaytarıldı və follow-up təsdiqlədi. Ətraflı evidence: docs/04-quality/evidence/eve-026-1-billing-catalog.md.",
       "reviewer_role": "qa_redteam",
       "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
       "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
       "external_gates": [],
       "expected_result": "Plan catalog və same-owner order lines üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
-      "parent_acceptance_reference": "AT25/AT28 catalog/order component; trial entitlement və calendar anchor/period behavior EVE-026.2/.3-də."
+      "parent_acceptance_reference": "AT25/AT28 catalog və initial one-property order component; first-trial entitlement/calendar periods EVE-026.2/.3-də."
     },
     {
       "id": "EVE-026.2",
