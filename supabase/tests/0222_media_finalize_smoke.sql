@@ -31,6 +31,10 @@ insert into app_private.media_assets(id,owner_account_id,property_id,classificat
 values ('a0222300-0000-4000-8000-000000000012','a0222100-0000-4000-8000-000000000011',
  'a0222200-0000-4000-8000-000000000011','private_inventory','eve-private-inventory',
  'a0222300-0000-4000-8000-000000000012','image/jpeg',1024,'pending',now()+interval '15 minutes');
+insert into app_private.media_assets(id,owner_account_id,property_id,classification,bucket,object_key,mime,size_bytes,state,upload_expires_at)
+values ('a0222300-0000-4000-8000-000000000013','a0222100-0000-4000-8000-000000000011',
+ 'a0222200-0000-4000-8000-000000000011','public_property','eve-public-property',
+ 'a0222300-0000-4000-8000-000000000013','image/jpeg',1024,'pending',now()+interval '15 minutes');
 
 -- Even authenticated users cannot call the server bridge directly.
 set local role authenticated;
@@ -77,7 +81,7 @@ do $$ declare v_result jsonb; v_replay jsonb; begin
   exception when unique_violation then null; end;
   begin
     perform api.finalize_media_upload_for_server('a0222000-0000-4000-8000-000000000013',
-      'a0222300-0000-4000-8000-000000000011','image/jpeg',4,null,repeat('b',64),
+      'a0222300-0000-4000-8000-000000000013','image/jpeg',4,null,repeat('b',64),
       'finalize-cross-owner-key-01');
     raise exception 'cross-owner finalize was accepted';
   exception when insufficient_privilege or unique_violation or no_data_found then null; end;
