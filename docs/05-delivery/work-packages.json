@@ -2345,7 +2345,7 @@
       "parent_issue": 34,
       "milestone": "M6",
       "title": "Plan catalog və same-owner order lines",
-      "status": "backlog",
+      "status": "in_progress",
       "depends_on": [
         "EVE-006.3",
         "EVE-008.3",
@@ -2353,22 +2353,26 @@
       ],
       "role": "domain_engineer",
       "owned_path_candidates": [
-        "src/modules/billing/"
+        "src/modules/billing/billing-contract.ts",
+        "tests/unit/billing/billing-contract.test.ts",
+        "package.json",
+        ".github/workflows/ci.yml",
+        "docs/05-delivery/work-packages.json"
       ],
-      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "ownership_rule": "Scope: D07/BILLING-FINANCE catalog və same-owner order line local component contract. Price server catalog-dan götürülür, client price qəbul edilmir; provider route, DB persistence və calendar period başqa package-lərdədir. İnteqrator test script/CI və ledger-i koordinasiya edir.",
       "deliverable": "Plan catalog və same-owner order lines üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
       "acceptance": [
         "Plan catalog və same-owner order lines üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
         "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
         "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
       ],
-      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "verification": "Local unit/component contract, docs/contract validators, typecheck və CI clean build. Provider sandbox faktı bu vahid üçün deyil.",
       "reviewer_role": "qa_redteam",
       "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
       "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
       "external_gates": [],
       "expected_result": "Plan catalog və same-owner order lines üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
-      "parent_acceptance_reference": "AT25,AT28 month/leap"
+      "parent_acceptance_reference": "AT25/AT28 catalog/order component; trial entitlement və calendar anchor/period behavior EVE-026.2/.3-də."
     },
     {
       "id": "EVE-026.2",

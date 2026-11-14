@@ -45,6 +45,8 @@ jobs:
         run: pnpm test:reservations
       - name: Task transition contract unit sınaqları
         run: pnpm test:operations
+      - name: Billing catalog və order-line unit sınaqları
+        run: pnpm test:billing
       - name: TypeScript yoxlaması
         run: pnpm typecheck
       - name: Production build
