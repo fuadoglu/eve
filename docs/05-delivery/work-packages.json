@@ -986,7 +986,7 @@
       "parent_issue": 19,
       "milestone": "M2",
       "title": "Qısa form/detail və server balance",
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "EVE-011.1"
       ],
