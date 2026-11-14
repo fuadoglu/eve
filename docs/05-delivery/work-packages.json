@@ -951,7 +951,7 @@
       "parent_issue": 19,
       "milestone": "M2",
       "title": "Rezervasiya create RPC və initial receipt",
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "EVE-009.3",
         "EVE-010.3"
