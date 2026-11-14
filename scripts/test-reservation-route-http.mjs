@@ -19,6 +19,7 @@ const ownerAccountId = randomUUID();
 const propertyId = randomUUID();
 let nextServer;
 let browser;
+let serverDiagnostics = "";
 
 try {
   const admin = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
@@ -61,7 +62,10 @@ try {
   delete childEnv.PGRST_JWT_SECRET;
   nextServer = spawn("node", ["node_modules/next/dist/bin/next", "start", "--port", "4178"], {
     env: childEnv,
-    stdio: "ignore",
+    stdio: ["ignore", "ignore", "pipe"],
+  });
+  nextServer.stderr.setEncoding("utf8").on("data", (chunk) => {
+    serverDiagnostics = `${serverDiagnostics}${chunk}`.slice(-8000);
   });
   await waitForServer(baseUrl);
 
@@ -104,7 +108,8 @@ try {
     await page.getByRole("heading", { name: "E2E test home" }).waitFor({ timeout: 10000 });
   } catch {
     const visibleText = (await page.locator("body").innerText()).replace(/\s+/g, " ").trim();
-    throw new Error(`authenticated property context was not rendered (auth_cookie_sent=${navigationCookieHeader.includes(cookieName)}): ${visibleText}`);
+    const safeDiagnostics = serverDiagnostics.split("\n").filter((line) => line.includes("reservation_property_context_load_failed")).join(" | ");
+    throw new Error(`authenticated property context was not rendered (auth_cookie_sent=${navigationCookieHeader.includes(cookieName)}; server=${safeDiagnostics || "no-safe-diagnostic"}): ${visibleText}`);
   }
   await page.getByLabel("Giriş tarixi").fill("2027-08-01");
   await page.getByLabel("Çıxış tarixi").fill("2027-08-04");
