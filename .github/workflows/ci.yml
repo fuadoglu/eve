@@ -253,14 +253,18 @@ jobs:
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261113001700_eve_manager_invites.sql
       - name: Email-match, expiry, replay və tenant isolation invite smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_manager_invite_smoke.sql
-      - name: 53 cədvəlin RLS və grant coverage smoke
-        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_rls_coverage_smoke.sql
-      - name: Data API RPC allowlist və grant smoke
-        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_api_surface_smoke.sql
       - name: Expired hold catch-up migration tətbiq et
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261113001800_eve_expired_hold_catchup.sql
       - name: Expired hold catch-up atomiklik və scope smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0063_expired_hold_catchup_smoke.sql
+      - name: Reservation create və initial receipt migration tətbiq et
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261113001900_eve_reservation_create.sql
+      - name: Rezervasiya create, receipt və idempotency DB smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0064_reservation_create_smoke.sql
+      - name: 53 cədvəlin RLS və grant coverage smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_rls_coverage_smoke.sql
+      - name: Data API RPC allowlist və grant smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_api_surface_smoke.sql
       - name: Paralel occupancy conflict DB sınağı
         env:
           EVE_TEST_DATABASE: '1'
@@ -315,6 +319,12 @@ jobs:
             < supabase/tests/0062_rent_read_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
             < supabase/tests/0063_expired_hold_catchup_smoke.sql
+          docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
+            < supabase/tests/0064_reservation_create_smoke.sql
+          docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
+            < supabase/tests/0062_rls_coverage_smoke.sql
+          docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
+            < supabase/tests/0062_api_surface_smoke.sql
       - name: Data API və Storage mənfi HTTP sınağı
         run: python3 scripts/test-local-supabase-http.py
       - name: Lokal sintetik stack-i sil

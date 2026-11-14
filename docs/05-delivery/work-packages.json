@@ -951,18 +951,21 @@
       "parent_issue": 19,
       "milestone": "M2",
       "title": "Rezervasiya create RPC və initial receipt",
-      "status": "backlog",
+      "status": "in_progress",
       "depends_on": [
         "EVE-009.3",
         "EVE-010.3"
       ],
       "role": "domain_engineer",
       "owned_path_candidates": [
-        "src/modules/reservations/",
-        "src/modules/properties/",
-        "app/(panel)/calendar/"
+        "supabase/migrations/20261113001900_eve_reservation_create.sql",
+        "supabase/tests/0064_reservation_create_smoke.sql",
+        "supabase/tests/0062_api_surface_smoke.sql",
+        "supabase/tests/0062_rls_coverage_smoke.sql",
+        "docs/03-engineering/openapi.json",
+        ".github/workflows/ci.yml"
       ],
-      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "ownership_rule": "İnteqrator migration, API grant allowlist və CI-ni koordinasiya edir; OpenAPI yalnız initial receipt üçün qeyri-realtor contact_id-nin rədd edilməsini dəqiq təsvir etmək üçün uyğunlaşdırılır.",
       "deliverable": "Rezervasiya create RPC və initial receipt üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
       "acceptance": [
         "Rezervasiya create RPC və initial receipt üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
