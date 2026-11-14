@@ -43,6 +43,8 @@ jobs:
         run: pnpm test:access
       - name: Reservation input/DTO unit sınaqları
         run: pnpm test:reservations
+      - name: Task transition contract unit sınaqları
+        run: pnpm test:operations
       - name: TypeScript yoxlaması
         run: pnpm typecheck
       - name: Production build
@@ -98,6 +100,7 @@ jobs:
           docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 <<'SQL'
           create role anon;
           create role authenticated;
+          create role service_role nologin bypassrls;
           create schema auth;
           create table auth.users (
             id uuid primary key,
@@ -263,7 +266,11 @@ jobs:
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261113001900_eve_reservation_create.sql
       - name: Rezervasiya create, receipt və idempotency DB smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0064_reservation_create_smoke.sql
-      - name: 53 cədvəlin RLS və grant coverage smoke
+      - name: Task keçid tarixçəsi migration
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261114002000_eve_task_transition_history.sql
+      - name: Task state, tenant, idempotency və media smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0065_task_transition_history_smoke.sql
+      - name: 55 cədvəlin RLS və grant coverage smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_rls_coverage_smoke.sql
       - name: Data API RPC allowlist və grant smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_api_surface_smoke.sql
@@ -323,6 +330,8 @@ jobs:
             < supabase/tests/0063_expired_hold_catchup_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
             < supabase/tests/0064_reservation_create_smoke.sql
+          docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
+            < supabase/tests/0065_task_transition_history_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
             < supabase/tests/0062_rls_coverage_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \

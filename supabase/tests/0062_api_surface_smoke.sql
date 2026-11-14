@@ -4,7 +4,8 @@ declare
   mismatch_count integer;
 begin
   if not has_schema_privilege('authenticated','api','USAGE')
-     or has_schema_privilege('anon','api','USAGE') then
+     or has_schema_privilege('anon','api','USAGE')
+     or not has_schema_privilege('service_role','api','USAGE') then
     raise exception 'api schema grant boundary changed';
   end if;
 
@@ -28,7 +29,8 @@ begin
       'api.apply_inventory_template(uuid,text,text)'::regprocedure,
       'api.create_manager_invite(uuid,text,uuid[],text,text)'::regprocedure,
       'api.accept_manager_invite(text)'::regprocedure,
-      'api.create_reservation(jsonb,text)'::regprocedure)
+      'api.create_reservation(jsonb,text)'::regprocedure,
+      'api.transition_task(uuid,integer,text,text,text,text,uuid[],text)'::regprocedure)
       or p.prokind <> 'f'
       or (p.oid = 'api.is_my_session_active()'::regprocedure and p.proowner <> 'app_session_reader'::regrole)
       or (p.oid = 'api.revoke_my_sessions()'::regprocedure and p.proowner <> 'app_executor'::regrole)
@@ -42,7 +44,8 @@ begin
                         'api.apply_inventory_template(uuid,text,text)'::regprocedure,
                         'api.create_manager_invite(uuid,text,uuid[],text,text)'::regprocedure,
                         'api.accept_manager_invite(text)'::regprocedure,
-                        'api.create_reservation(jsonb,text)'::regprocedure)
+                        'api.create_reservation(jsonb,text)'::regprocedure,
+      'api.transition_task(uuid,integer,text,text,text,text,uuid[],text)'::regprocedure)
           and p.provolatile <> 's')
       or (p.oid in ('api.revoke_my_sessions()'::regprocedure,
                     'api.create_property(text,text,text)'::regprocedure,
@@ -51,10 +54,13 @@ begin
                     'api.apply_inventory_template(uuid,text,text)'::regprocedure,
                     'api.create_manager_invite(uuid,text,uuid[],text,text)'::regprocedure,
                     'api.accept_manager_invite(text)'::regprocedure,
-                    'api.create_reservation(jsonb,text)'::regprocedure)
+                    'api.create_reservation(jsonb,text)'::regprocedure,
+      'api.transition_task(uuid,integer,text,text,text,text,uuid[],text)'::regprocedure)
           and p.provolatile <> 'v')
       or not (coalesce(p.proconfig, array[]::text[]) @> array['search_path=""']::text[])
       or has_function_privilege('anon',p.oid,'EXECUTE')
+      or has_function_privilege('service_role',p.oid,'EXECUTE') is distinct from
+        (p.oid='api.transition_task(uuid,integer,text,text,text,text,uuid[],text)'::regprocedure)
       or not has_function_privilege('authenticated',p.oid,'EXECUTE'));
   if mismatch_count <> 0 then
     raise exception 'unsafe or unexpected api function: %', mismatch_count;
@@ -63,7 +69,7 @@ begin
   select count(*) into mismatch_count
   from pg_proc p
   where p.pronamespace='api'::regnamespace;
-  if mismatch_count <> 17 then
+  if mismatch_count <> 18 then
     raise exception 'api RPC inventory changed: %', mismatch_count;
   end if;
 

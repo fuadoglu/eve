@@ -4755,6 +4755,410 @@
       }
     },
     {
+      "name": "task_transition_events",
+      "description": "Tapşırıq vəziyyətinin dəyişməz keçid tarixçəsi və idempotency nəticəsi",
+      "requirements": [
+        "R07",
+        "R08"
+      ],
+      "tenant_scope": "property",
+      "write_mode": "append_only",
+      "retention_class": "audit",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "gen_random_uuid()",
+          "description": "Daxili keçid identifikatoru",
+          "validation": []
+        },
+        {
+          "name": "owner_account_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "description": "Sahib tenant sərhədi",
+          "validation": []
+        },
+        {
+          "name": "property_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "description": "Ev sərhədi",
+          "validation": []
+        },
+        {
+          "name": "task_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "description": "Tapşırıq",
+          "validation": []
+        },
+        {
+          "name": "action",
+          "type": "varchar(20)",
+          "nullable": false,
+          "default": null,
+          "description": "İcra olunan state-machine əməliyyatı",
+          "validation": [
+            "action IN ('accept','report_done','confirm','request_rework','cancel')"
+          ]
+        },
+        {
+          "name": "from_state",
+          "type": "enum:task_state",
+          "nullable": false,
+          "default": null,
+          "description": "Əvvəlki tapşırıq vəziyyəti",
+          "validation": [
+            "enum:task_state"
+          ]
+        },
+        {
+          "name": "to_state",
+          "type": "enum:task_state",
+          "nullable": false,
+          "default": null,
+          "description": "Yeni tapşırıq vəziyyəti",
+          "validation": [
+            "enum:task_state"
+          ]
+        },
+        {
+          "name": "actor_user_id",
+          "type": "uuid",
+          "nullable": true,
+          "default": null,
+          "description": "Doğrulanmış hesab; scoped qonaq üçün boş",
+          "validation": []
+        },
+        {
+          "name": "access_link_id",
+          "type": "uuid",
+          "nullable": true,
+          "default": null,
+          "description": "Task-scoped link; hesab iddiası deyil",
+          "validation": []
+        },
+        {
+          "name": "claimed_name",
+          "type": "varchar(100)",
+          "nullable": true,
+          "default": null,
+          "description": "Yalnız link sahibi tərəfindən bildirilən ad",
+          "validation": [
+            "length(trim(claimed_name)) BETWEEN 1 AND 100"
+          ]
+        },
+        {
+          "name": "note",
+          "type": "varchar(2000)",
+          "nullable": true,
+          "default": null,
+          "description": "Tamamlama qeydi və ya rework səbəbi",
+          "validation": [
+            "char_length(note) <= 2000"
+          ]
+        },
+        {
+          "name": "idempotency_scope",
+          "type": "varchar(80)",
+          "nullable": false,
+          "default": null,
+          "description": "Təsdiqlənmiş actor/link scope",
+          "validation": []
+        },
+        {
+          "name": "idempotency_key",
+          "type": "varchar(128)",
+          "nullable": false,
+          "default": null,
+          "description": "Request replay key",
+          "validation": [
+            "idempotency_key ~ ^[A-Za-z0-9_-]{16,128}$"
+          ]
+        },
+        {
+          "name": "request_hash",
+          "type": "varchar(64)",
+          "nullable": false,
+          "default": null,
+          "description": "Canonical request SHA-256",
+          "validation": [
+            "request_hash ~ ^[0-9a-f]{64}$"
+          ]
+        },
+        {
+          "name": "expected_version",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "description": "Request-in optimist versiyası",
+          "validation": [
+            "expected_version >= 1"
+          ]
+        },
+        {
+          "name": "resulting_version",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "description": "Keçiddən sonrakı resurs versiyası",
+          "validation": [
+            "resulting_version = expected_version + 1"
+          ]
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "description": "Keçidin server vaxtı",
+          "validation": []
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique": [
+        {
+          "columns": [
+            "id",
+            "property_id",
+            "owner_account_id"
+          ],
+          "predicate": null
+        },
+        {
+          "columns": [
+            "idempotency_scope",
+            "idempotency_key"
+          ],
+          "predicate": null
+        }
+      ],
+      "foreign_keys": [
+        {
+          "columns": [
+            "task_id",
+            "property_id",
+            "owner_account_id"
+          ],
+          "references": {
+            "table": "tasks",
+            "columns": [
+              "id",
+              "property_id",
+              "owner_account_id"
+            ]
+          },
+          "on_delete": "RESTRICT",
+          "on_update": "NO ACTION",
+          "deferrable": false
+        },
+        {
+          "columns": [
+            "actor_user_id"
+          ],
+          "references": {
+            "table": "auth.users",
+            "columns": [
+              "id"
+            ]
+          },
+          "on_delete": "RESTRICT",
+          "on_update": "NO ACTION",
+          "deferrable": false
+        },
+        {
+          "columns": [
+            "access_link_id",
+            "property_id",
+            "owner_account_id"
+          ],
+          "references": {
+            "table": "access_links",
+            "columns": [
+              "id",
+              "property_id",
+              "owner_account_id"
+            ]
+          },
+          "on_delete": "RESTRICT",
+          "on_update": "NO ACTION",
+          "deferrable": false
+        }
+      ],
+      "checks": [
+        {
+          "name": "transition_shape",
+          "expression": "action and from_state/to_state obey task state-machine allowlist; exactly one actor reference; report/rework note constraints",
+          "enforcement": "CHECK"
+        },
+        {
+          "name": "append_only",
+          "expression": "UPDATE and DELETE always rejected",
+          "enforcement": "TRIGGER"
+        }
+      ],
+      "indexes": [
+        {
+          "columns": [
+            "idempotency_scope",
+            "idempotency_key"
+          ],
+          "method": "btree",
+          "predicate": null,
+          "unique": true
+        }
+      ],
+      "rls": {
+        "enabled": true,
+        "select": "internal security-definer command only; safe current-task history projection later",
+        "insert": "internal transition_task RPC only",
+        "update": "deny; immutable trigger",
+        "delete": "deny; legal retention process only"
+      }
+    },
+    {
+      "name": "task_transition_media",
+      "description": "Tapşırıq keçid hesabatına eyni property/owner daxilində private media association",
+      "requirements": [
+        "R07"
+      ],
+      "tenant_scope": "property",
+      "write_mode": "append_only",
+      "retention_class": "media",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "gen_random_uuid()",
+          "description": "Daxili association identifikatoru",
+          "validation": []
+        },
+        {
+          "name": "owner_account_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "description": "Sahib tenant sərhədi",
+          "validation": []
+        },
+        {
+          "name": "property_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "description": "Ev sərhədi",
+          "validation": []
+        },
+        {
+          "name": "transition_event_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "description": "Task keçidi",
+          "validation": []
+        },
+        {
+          "name": "media_asset_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "description": "Təsdiqlənmiş private_task media",
+          "validation": []
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "description": "Association vaxtı",
+          "validation": []
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique": [
+        {
+          "columns": [
+            "transition_event_id",
+            "media_asset_id"
+          ],
+          "predicate": null
+        }
+      ],
+      "foreign_keys": [
+        {
+          "columns": [
+            "transition_event_id",
+            "property_id",
+            "owner_account_id"
+          ],
+          "references": {
+            "table": "task_transition_events",
+            "columns": [
+              "id",
+              "property_id",
+              "owner_account_id"
+            ]
+          },
+          "on_delete": "RESTRICT",
+          "on_update": "NO ACTION",
+          "deferrable": false
+        },
+        {
+          "columns": [
+            "media_asset_id",
+            "property_id",
+            "owner_account_id"
+          ],
+          "references": {
+            "table": "media_assets",
+            "columns": [
+              "id",
+              "property_id",
+              "owner_account_id"
+            ]
+          },
+          "on_delete": "RESTRICT",
+          "on_update": "NO ACTION",
+          "deferrable": false
+        }
+      ],
+      "checks": [
+        {
+          "name": "validated_private_task_media",
+          "expression": "media classification=private_task, state=validated, deleted_at IS NULL, same property/owner",
+          "enforcement": "transition_task RPC"
+        }
+      ],
+      "indexes": [
+        {
+          "columns": [
+            "transition_event_id",
+            "media_asset_id"
+          ],
+          "method": "btree",
+          "predicate": null,
+          "unique": true
+        }
+      ],
+      "rls": {
+        "enabled": true,
+        "select": "internal security-definer command only; current scoped projection later",
+        "insert": "internal transition_task RPC only",
+        "update": "deny; immutable trigger",
+        "delete": "deny; retention process only"
+      }
+    },
+    {
       "name": "rooms",
       "description": "İnventar otaqları",
       "requirements": [
@@ -5604,7 +6008,8 @@
       "name": "inspection_snapshot_rooms",
       "description": "Yoxlama üçün dəyişməz otaq",
       "requirements": [
-        "R09"
+        "R09",
+        "R08"
       ],
       "tenant_scope": "property",
       "write_mode": "immutable",
@@ -5991,7 +6396,8 @@
       "name": "inspection_submissions",
       "description": "Tərəf üzrə draft və tamamlanmış cavab",
       "requirements": [
-        "R09"
+        "R09",
+        "R08"
       ],
       "tenant_scope": "property",
       "write_mode": "mutable",
@@ -6299,7 +6705,8 @@
       "name": "inspection_room_answers",
       "description": "Otağın açıq təsdiqi; əvvəlcədən yoxlanmış deyil",
       "requirements": [
-        "R09"
+        "R09",
+        "R08"
       ],
       "tenant_scope": "property",
       "write_mode": "mutable",
@@ -10575,7 +10982,7 @@
     "exposed_schema": "api",
     "authenticated_base_table_grants": false,
     "execution_role": "app_executor NOLOGIN NOBYPASSRLS; not table owner",
-    "functions": "allowlist SECURITY DEFINER owned by app_executor; fixed search_path; current_actor_id from verified JWT plus current property capability; public EXECUTE revoked",
+    "functions": "allowlist SECURITY DEFINER owned by app_executor; fixed search_path; current_actor_id from verified JWT plus current property capability; public EXECUTE revoked; `api.transition_task` has an explicit authenticated owner path and service-role-only scoped-token path; anon cannot call it, and the Next.js server never exposes service_role credentials.",
     "reference": "ACCESS-BOUNDARY.md"
   }
 }

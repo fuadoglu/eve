@@ -10,8 +10,8 @@ Maşın mənbəyi: [traceability.json](traceability.json). API/data/test dəyiş
 | R04 — Rezervasiya və təqvim | UI04, UI05, UI08 | 11 / 6 | EVE-010, EVE-011, EVE-012, EVE-013 | AT07, AT08, AT09, AT10 |
 | R05 — Kirayə pul uçotu | UI07, UI08 | 9 / 7 | EVE-011, EVE-014, EVE-015 | AT11, AT12, AT13 |
 | R06 — Xərclər | UI07, UI09 | 9 / 4 | EVE-016 | AT14 |
-| R07 — Tapşırıq və paylaşım | UI09, UI12 | 22 / 6 | EVE-017, EVE-018 | AT15, AT16 |
-| R08 — Hazırlıq və təmizlik | UI04, UI07, UI09 | 5 / 2 | EVE-012, EVE-013, EVE-018 | AT10, AT16 |
+| R07 — Tapşırıq və paylaşım | UI09, UI12 | 22 / 8 | EVE-017, EVE-018 | AT15, AT16 |
+| R08 — Hazırlıq və təmizlik | UI04, UI07, UI09 | 5 / 6 | EVE-012, EVE-013, EVE-017, EVE-018 | AT10, AT16 |
 | R09 — İnventar və təhvil | UI10, UI11 | 26 / 13 | EVE-019, EVE-020, EVE-021 | AT12, AT17, AT18, AT19 |
 | R10 — Çoxdilli QR təlimatı | UI13, UI15 | 19 / 5 | EVE-022, EVE-023 | AT20, AT21, AT28 |
 | R11 — Public təqdimat | UI14 | 11 / 4 | EVE-024, EVE-025 | AT08, AT22, AT23, AT24 |

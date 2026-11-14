@@ -1,4 +1,4 @@
--- EVE-006.2 catalog guard: all 53 private tables remain FORCE RLS.
+-- EVE-006.2 catalog guard: all 55 private tables remain FORCE RLS.
 -- Only the reviewed scoped RPC allowlists have executor grants; all other tables deny.
 do $$
 declare
@@ -8,7 +8,7 @@ begin
   select count(*) into table_count
   from pg_class c join pg_namespace n on n.oid=c.relnamespace
   where n.nspname='app_private' and c.relkind='r';
-  if table_count <> 53 then
+  if table_count <> 55 then
     raise exception 'private table inventory changed: %',table_count;
   end if;
 
@@ -24,14 +24,15 @@ begin
       or has_table_privilege('app_executor',c.oid,
         'DELETE,TRUNCATE,REFERENCES,TRIGGER')
       or has_table_privilege('app_executor',c.oid,'UPDATE') is distinct from
-        (c.relname in ('manager_invites','property_memberships','idempotency_keys'))
+        (c.relname in ('manager_invites','property_memberships','idempotency_keys','tasks','access_links'))
       or has_table_privilege('app_executor',c.oid,'INSERT') is distinct from
-        (c.relname in ('owner_accounts','properties','trial_claims','subscriptions','rooms','inventory_items','media_bindings','manager_invites','invite_properties','property_memberships','manager_invite_accept_context','reservations','reservation_placements','occupancy','rent_entries','realtor_accounts','outbox','audit_events','idempotency_keys'))
+        (c.relname in ('owner_accounts','properties','trial_claims','subscriptions','rooms','inventory_items','media_bindings','manager_invites','invite_properties','property_memberships','manager_invite_accept_context','reservations','reservation_placements','occupancy','rent_entries','realtor_accounts','outbox','audit_events','idempotency_keys','task_transition_events','task_transition_media'))
       or has_table_privilege('app_executor',c.oid,'SELECT') is distinct from
         (c.relname in ('profiles','owner_accounts','properties',
           'property_memberships','reservations','reservation_placements',
           'manual_blocks','contacts','contact_properties','rent_entries','subscriptions','rooms','inventory_items','media_assets','media_bindings','idempotency_keys',
-          'manager_invites','invite_properties')));
+          'manager_invites','invite_properties','tasks','access_links','inspection_submissions',
+          'inspection_snapshot_rooms','inspection_room_answers','task_transition_events','task_transition_media')));
   if bad_count <> 0 then
     raise exception 'private RLS/grant allowlist mismatch: % tables',bad_count;
   end if;
@@ -75,7 +76,16 @@ begin
     ('inventory_items','inventory_items_inventory_read'),
     ('media_assets','media_assets_inventory_read'),
     ('media_bindings','media_bindings_inventory_read'),
-    ('idempotency_keys','idempotency_keys_reservation_read')
+    ('idempotency_keys','idempotency_keys_reservation_read'),
+    ('tasks','tasks_transition_internal_read'),
+    ('access_links','access_links_task_transition_internal_read'),
+    ('subscriptions','subscriptions_task_transition_internal_read'),
+    ('inspection_submissions','inspection_submissions_task_transition_internal_read'),
+    ('inspection_snapshot_rooms','inspection_snapshot_rooms_task_transition_internal_read'),
+    ('inspection_room_answers','inspection_room_answers_task_transition_internal_read'),
+    ('media_assets','media_assets_task_transition_internal_read'),
+    ('task_transition_events','task_transition_events_internal_read'),
+    ('task_transition_media','task_transition_media_internal_read')
   ) as expected(table_name,policy_name)
   left join pg_class c on c.relname=expected.table_name
     and c.relnamespace='app_private'::regnamespace
@@ -88,7 +98,7 @@ begin
   select count(*) into table_count
   from pg_policy p join pg_class c on c.oid=p.polrelid
   where c.relnamespace='app_private'::regnamespace;
-  if table_count <> 51 then
+  if table_count <> 65 then
     raise exception 'unexpected private table policies: %',table_count;
   end if;
   if not exists (select 1 from pg_policy where polrelid='app_private.manager_invite_accept_context'::regclass
@@ -100,7 +110,7 @@ begin
       and polcmd='a' and polname in ('reservations_create','reservation_placements_create',
         'occupancy_reservation_create','rent_entries_reservation_create',
         'realtor_accounts_reservation_create','idempotency_keys_reservation_create',
-        'outbox_reservation_create','audit_events_reservation_create')) <> 8
+        'outbox_reservation_create','audit_events_reservation_create','task_transition_events_internal_insert','task_transition_media_internal_insert','outbox_task_transition_create')) <> 11
      or not exists (select 1 from pg_policy where polrelid='app_private.idempotency_keys'::regclass
        and polname='idempotency_keys_reservation_update' and polcmd='w'
        and polroles=array['app_executor'::regrole::oid]) then
@@ -146,6 +156,12 @@ begin
       and polroles=array['app_executor'::regrole::oid])
      or not exists (select 1 from pg_policy where polrelid='app_private.property_memberships'::regclass
       and polname='property_memberships_invite_reactivate' and polcmd='w'
+      and polroles=array['app_executor'::regrole::oid])
+     or not exists (select 1 from pg_policy where polrelid='app_private.tasks'::regclass
+      and polname='tasks_transition_internal_update' and polcmd='w'
+      and polroles=array['app_executor'::regrole::oid])
+     or not exists (select 1 from pg_policy where polrelid='app_private.access_links'::regclass
+      and polname='access_links_task_transition_internal_update' and polcmd='w'
       and polroles=array['app_executor'::regrole::oid]) then
     raise exception 'manager invite update policies missing';
   end if;
