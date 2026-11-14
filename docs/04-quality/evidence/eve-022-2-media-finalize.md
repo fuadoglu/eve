@@ -1,0 +1,41 @@
+# EVE-022.2 — media byte validation, finalize, and private proxy
+
+Status: **component acceptance passed; closes when PR #104 is merged**. This evidence closes only EVE-022.2 component scope; it does not close EVE-022, AT06/AT21/AT32 end-to-end acceptance, or any production gate.
+
+## Implemented in this increment
+
+- `src/modules/media/media-validation.ts` validates exact downloaded bytes against supported passive image, audio/video container, and PDF signatures; enforces the existing kind/size/duration limits; and computes SHA-256 from bytes. Client MIME and size declarations are compared with the actual object.
+- `src/modules/media/supabase-media-finalizer.ts` reads the pending object's server-only bucket/key metadata, downloads bytes from private Storage with a bounded stream (checks `Content-Length`, enforces the reservation while streaming, cancels on overflow), validates measured MIME/size/duration/hash, then calls DB finalize. The `POST /api/v1/media/{id}/finalize` route requires an active session, same-origin empty JSON, and an idempotency key; it returns success only after the DB acknowledges the transition. A same actor/key/media retry returns the previously acknowledged DTO before downloading bytes again.
+- Forward migration `20261114002200_eve_media_finalize.sql` adds an idempotent `app_private.finalize_media_upload` primitive and narrow service-role-only source/finalize `api` bridges. The private primitive and source location are unavailable to anon/authenticated roles. Finalized actual bytes may be below the reservation but may not exceed it, so finalize cannot increase quota usage beyond the amount admitted under EVE-022.1's property lock. Current membership and the existing `inventory.manage` capability boundary are checked before both first finalize and any authorized replay. D39 records this bridge boundary.
+- `supabase/tests/0222_media_finalize_smoke.sql` covers grants, authenticated denial of both bridges, source bucket/reservation mapping, over-reservation rejection, validated metadata, HTTP retry replay/key misuse, idempotent DB replay/mismatch, cross-owner denial, and denial after inventory membership revocation.
+- CI runs the byte-validation unit suite and, after the 022 migration, the PostgreSQL finalize smoke and catalog guards.
+- D40 now defines least-privilege read mapping by classification and binding. Forward migration `20261114002300_eve_media_read_proxy.sql` adds server-only source/link-session bridges, live membership/link/placement checks, validated-object checks, an inventory `inventory.read` policy, and a 10-successful-exchange-per-minute token-hash throttle. It does not expose Storage paths to browser roles or issue Storage signed-read URLs.
+- Authenticated and scoped media access/content routes sign five-minute proxy URLs. Each content GET validates the active session or resource-path-only `eve_scope` hash cookie, verifies its HMAC, re-resolves current DB authorization, and streams from private Storage with bounded size and restrictive response headers. `POST /api/v1/link-session` exchanges a valid link token hash for that cookie.
+- `supabase/tests/0222_media_access_smoke.sql` covers service-role-only bridges, owner/daily-manager capability boundaries, cross-owner and cross-classification denial, task link scope, expiry/revoke handling, membership revocation, and exchange throttling. Unit tests cover proxy signatures, cookie binding, per-GET source recheck, HTTP 410 mapping, and streamed bytes.
+
+## Verification observed
+
+- Node 24.22.2 / pnpm 12.18.0 `pnpm test:media`: **15/15 passed** (including media access proxy and byte validation).
+- Node 24.22.2 / pnpm 12.18.0 `pnpm typecheck`: **passed**.
+- Node 24.22.2 / pnpm 12.18.0 `pnpm build`: **passed**; finalize, authenticated/scoped media access/content, and link-session routes appear in Next.js output.
+- `node scripts/docs-check.mjs`: **passed**, 73 Markdown files.
+- `node scripts/verify-contracts.mjs`: **passed**, 118 operations, 56 tables, 256 field bindings, 90 acyclic packages, 16 trace rows, 36 scenarios.
+- `/tmp/eve0222-schema-venv/bin/python scripts/validate-schemas.py`: **passed**, 207 schemas; 12 positive and 20 negative examples.
+- `node scripts/test-prototype.mjs`: **passed**, 71 VM/fake-DOM assertions; not browser/device evidence.
+- `python3 scripts/verify-storage-config.py`: **passed**, API-only schema and seven private D33/D34 buckets align.
+- `git diff --check`: **passed**.
+- Independent read-only review of head `82e4897` confirmed the measured-size and authorization checks, then found the HTTP retry and unbounded-buffer issues now corrected here. It also confirmed private/scoped serving is still missing; the package remains open. Review is static and does not substitute for CI.
+- Initial draft PR CI `43584187911` exposed SQL smoke integration issues. The catalog SELECT list and cross-owner fixture were corrected; follow-up CI confirmed all checks pass.
+- Local PostgreSQL migration/smoke: **not run** because the Docker daemon is unavailable. GitHub Actions CI run `43584535175` at head `874318b` passed `docs`, PostgreSQL 17 `sql_schema` (migration, finalize/ACL smoke, RLS coverage and API allowlist), and fresh synthetic `supabase_local` (finalize smoke and Data API/Storage negative HTTP suite). This is synthetic CI evidence, not a hosted Eve or production result.
+- CI `43585116377` validated migration and finalize smoke but failed the shared API allowlist check on a missing closing SQL parenthesis. At head `439ae16`, CI `43585517232` passed all jobs. The latest head `92921ad` then added cancellation when `Content-Length` alone exceeds the reservation; independent static review confirmed that fix and its body-cancellation assertion. CI `43585747545` passed all jobs for `92921ad`: `docs`, PostgreSQL 17 `sql_schema` (including the API allowlist, finalize SQL, size ceiling, replay/source RPC, ACL/RLS), and fresh synthetic `supabase_local` (ordered migration chain, finalize smoke, Data API/Storage denial HTTP checks). This remains synthetic CI evidence, not hosted Eve or production proof. The classification mapping remains the existing D33/D34 contract, including `private_inventory` → `eve-private-inventory`; no new bucket decision was needed.
+- Independent read-only review of committed proxy head `aa59a78` found no concrete authorization or grant-scope blocker; it is static review only and the migration-owner transfer issues below required fresh synthetic Supabase execution to reveal.
+- First proxy CI run `43588572416` passed the migration but exposed a smoke-fixture privilege mistake: the `service_role` test block attempted to call `extensions.digest` without schema permission. The test now uses the precomputed SHA-256 of its synthetic token, avoiding any extension grant.
+- Follow-up CI `43588734409` passed docs and full PostgreSQL 17 `sql_schema`, including migration 023, access smoke, RLS catalog and API allowlist. Fresh synthetic `supabase_local` found that `supabase_admin` needs the repo-standard temporary `SET ROLE app_executor` and `CREATE` on `app_private` around function-owner transfers. These privileges are temporary and revoked at migration end.
+- CI `43588922821` passed `sql_schema` but fresh Supabase exposed the missing temporary `app_private CREATE` grant. Final CI `43589096440` passed all checks at `aa59a78`: docs/build/mobile, PostgreSQL 17 migration and authorization/RLS/API smoke, and fresh synthetic Supabase full migration chain plus Data API/Storage denial HTTP checks.
+
+## Remaining beyond this component
+
+- Independent read-only review of `aa59a78` found no concrete authorization or grant-scope blocker. No GitHub human review was requested or fabricated; branch protection requires zero approvals and `docs` is the only required check.
+- Local Docker is unavailable. SQL acceptance was exercised in GitHub PostgreSQL 17 and fresh synthetic Supabase; this is not hosted Eve evidence.
+- `/link-session` is implemented, but the user-facing `/s/{token}` landing/bootstrap integration belongs to EVE-017.3/EVE-021.1 and is not end-to-end evidence in this component.
+- Hosted Eve Storage/database application, production restore and full AT06/AT21/AT32 acceptance remain open. Do not label the product production-ready.

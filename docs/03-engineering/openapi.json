@@ -8314,7 +8314,7 @@
       "get": {
         "operationId": "getMediaAccess",
         "summary": "İcazəli media üçün qısaömürlü URL",
-        "description": "İcazəli media üçün qısaömürlü URL",
+        "description": "Media resource binding-in cari capability-si ilə yoxlanır. Eyni-origin proxy URL maksimum 5 dəqiqəlik imza daşıyır; hər content GET-də icazə yenidən yoxlanır. Storage signed read URL qaytarılmır.",
         "tags": [
           "media"
         ],
@@ -8380,7 +8380,7 @@
       "get": {
         "operationId": "getScopedMediaAccess",
         "summary": "Yalnız bu işə aid fayla müddətli giriş",
-        "description": "Direct storage signed URL deyil. proxy_url GET hər dəfə token/revoke/placement/state yoxlayır; artıq endirilmiş bytes geri alına bilməz.",
+        "description": "D34/D40 classification və binding scope-u yoxlanır. Direct storage signed URL deyil. proxy_url GET hər dəfə link scope/hash/expiry/revoke/current placement/state yoxlayır; artıq endirilmiş bytes geri alına bilməz.",
         "tags": [
           "s"
         ],
@@ -8523,7 +8523,7 @@
       "post": {
         "operationId": "exchangeScopedLink",
         "summary": "Keçid tokenini dar session cookie-sinə dəyiş",
-        "description": "Hesab login-i deyil. Raw token hash/expiry/revoke yoxlanır, yalnız həmin resource üçün eve_scope cookie-si verilir. Task qəbul/completion və inspection vəziyyəti dəyişmir. Browser /s/{token} landing-i bunu avtomatik çağırır; istifadəçiyə əlavə forma yoxdur. Rate limit və same-origin yoxlanır.",
+        "description": "Hesab login-i deyil. Raw token yalnız POST body-də qəbul edilir; hash/expiry/revoke/current placement yoxlanır, sonra token hash-i HttpOnly, Secure, SameSite=Strict eve_scope cookie-sinə yazılır. Task/inspection state dəyişmir. Same-origin yoxlanır. Server cookie-ni maksimum link expiry-dək saxlayır.",
         "tags": [
           "link-session"
         ],
@@ -8545,6 +8545,14 @@
                   "$ref": "#/components/schemas/LinkSessionResultEnvelope"
                 }
               }
+            },
+            "headers": {
+              "Set-Cookie": {
+                "description": "HttpOnly, Secure (HTTPS), SameSite=Strict; Path yalnız mübadilə edilən /api/v1/s/{token}/ resursuna bağlanır; Max-Age link expiry ilə məhdudlaşır. Cookie dəyəri yalnız token hash-dir; fərqli scoped linklər eyni brauzer sessiyasında ayrı path cookie-lərində qala bilər.",
+                "schema": {
+                  "type": "string"
+                }
+              }
             }
           },
           "400": {
@@ -8564,6 +8572,9 @@
           },
           "503": {
             "$ref": "#/components/responses/Error503"
+          },
+          "410": {
+            "$ref": "#/components/responses/Error410"
           }
         },
         "requestBody": {
@@ -8583,7 +8594,7 @@
       "get": {
         "operationId": "readScopedMediaContent",
         "summary": "Private faylı scope yenidən yoxlanmaqla oxu",
-        "description": "Hər GET scope/hash/expiry/revoke/current placement/state və media binding-i yoxlayır. no-store/no-referrer. Artıq endirilmiş fayl nüsxəsini ləğv etmək mümkün deyil.",
+        "description": "Hər GET signed proxy expiry/imza, eve_scope cookie-si ilə path token hash uyğunluğu, cari link scope/hash/expiry/revoke/current placement/state və media binding-i yoxlayır. Bytes no-store/no-referrer stream edilir; əvvəldən endirilmiş fayl geri alına bilməz.",
         "tags": [
           "s"
         ],
@@ -8615,11 +8626,31 @@
               "type": "string",
               "format": "uuid"
             }
+          },
+          {
+            "name": "exp",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "sig",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 43,
+              "maxLength": 43,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Yoxlanmış private media bytes; Content-Type faktiki validated MIME-dır",
+            "description": "Yoxlanmış private media bytes; Content-Type DB-də saxlanmış validated MIME-dır",
             "headers": {
               "Cache-Control": {
                 "schema": {
@@ -8635,7 +8666,43 @@
               }
             },
             "content": {
-              "application/octet-stream": {
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/webp": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "video/mp4": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "audio/webm": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "audio/mp4": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "application/pdf": {
                 "schema": {
                   "type": "string",
                   "format": "binary"
@@ -8675,6 +8742,148 @@
         "x-cache-policy": "no-store; Referrer-Policy: no-referrer",
         "x-placement-boundary": "Reservation-linked keçiddə link placement_id cari current_placement_id ilə uyğun, state icazəli olmalıdır. Move/cancel/no_show dərhal revoke edir; hər API/media fetch yenidən yoxlayır."
       }
+    },
+    "/media/{id}/content": {
+      "get": {
+        "operationId": "readAuthenticatedMediaContent",
+        "summary": "Private media-nı cari icazə ilə oxu",
+        "description": "Yalnız private classification və icazəli binding üçün private Storage bytes qaytarır. URL 5 dəqiqəlik server imzası daşıyır; hər GET cari sessiya, membership/capability, media state və binding-i yenidən yoxlayır. Public media safe projection-u ayrıca publishing endpoint-indədir.",
+        "tags": [
+          "media"
+        ],
+        "x-requirements": [
+          "R09",
+          "R10",
+          "R11",
+          "R13"
+        ],
+        "x-capability": "media.read",
+        "x-entitlement": "read_only",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "exp",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "sig",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 43,
+              "maxLength": 43,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Yalnız cari DB icazəsindən sonra server vasitəsilə stream edilmiş validated bytes",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-referrer"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "type": "string",
+                  "const": "nosniff"
+                }
+              }
+            },
+            "content": {
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/webp": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "video/mp4": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "audio/webm": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "audio/mp4": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "410": {
+            "$ref": "#/components/responses/Error410"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error429"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-authorization-invariant": "Session və hər media fetch-də classification→binding capability, validated/deleted state və cari membership yoxlanır; Storage path client-dən alınmır.",
+        "x-safe-read": true,
+        "x-cache-policy": "no-store; Referrer-Policy: no-referrer"
+      }
     }
   },
   "components": {
@@ -8689,7 +8898,7 @@
         "type": "apiKey",
         "in": "cookie",
         "name": "eve_scope",
-        "description": "POST /link-session-də valid bearer link hash-indən alınan resource-scoped cookie. API path token hash-i ilə uyğunluğu məcburidir; account login tələb olunmur. Anonymous fallback yoxdur."
+        "description": "POST /link-session-də valid bearer link hash-indən alınmış resource-path-only cookie. Cookie token hash-i path token hash-inə uyğun olmalıdır; API hər sorğuda DB scope/expiry/revoke/placement-i yenidən yoxlayır. Anonymous fallback yoxdur."
       }
     },
     "schemas": {

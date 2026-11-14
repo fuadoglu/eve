@@ -1,4 +1,4 @@
--- EVE-006.2 catalog guard: all 55 private tables remain FORCE RLS.
+-- EVE-006.2 catalog guard: all 56 private tables remain FORCE RLS.
 -- Only the reviewed scoped RPC allowlists have executor grants; all other tables deny.
 do $$
 declare
@@ -8,7 +8,7 @@ begin
   select count(*) into table_count
   from pg_class c join pg_namespace n on n.oid=c.relnamespace
   where n.nspname='app_private' and c.relkind='r';
-  if table_count <> 55 then
+  if table_count <> 56 then
     raise exception 'private table inventory changed: %',table_count;
   end if;
 
@@ -24,15 +24,16 @@ begin
       or has_table_privilege('app_executor',c.oid,
         'DELETE,TRUNCATE,REFERENCES,TRIGGER')
       or has_table_privilege('app_executor',c.oid,'UPDATE') is distinct from
-        (c.relname in ('manager_invites','property_memberships','idempotency_keys','tasks','access_links'))
+        (c.relname in ('manager_invites','property_memberships','idempotency_keys','tasks','access_links','media_assets','link_session_rate_limits'))
       or has_table_privilege('app_executor',c.oid,'INSERT') is distinct from
-        (c.relname in ('owner_accounts','properties','trial_claims','subscriptions','rooms','inventory_items','media_bindings','media_assets','manager_invites','invite_properties','property_memberships','manager_invite_accept_context','reservations','reservation_placements','occupancy','rent_entries','realtor_accounts','outbox','audit_events','idempotency_keys','task_transition_events','task_transition_media'))
+        (c.relname in ('owner_accounts','properties','trial_claims','subscriptions','rooms','inventory_items','media_bindings','media_assets','manager_invites','invite_properties','property_memberships','manager_invite_accept_context','reservations','reservation_placements','occupancy','rent_entries','realtor_accounts','outbox','audit_events','idempotency_keys','task_transition_events','task_transition_media','link_session_rate_limits'))
       or has_table_privilege('app_executor',c.oid,'SELECT') is distinct from
         (c.relname in ('profiles','owner_accounts','properties',
           'property_memberships','reservations','reservation_placements',
           'manual_blocks','contacts','contact_properties','rent_entries','subscriptions','rooms','inventory_items','media_assets','media_bindings','idempotency_keys',
           'manager_invites','invite_properties','tasks','access_links','inspection_submissions',
-          'inspection_snapshot_rooms','inspection_room_answers','task_transition_events','task_transition_media')));
+          'inspection_snapshot_rooms','inspection_room_answers','task_transition_events','task_transition_media',
+          'expenses','expense_allocations','inspection_answers','inspection_events','guides','guide_versions','link_session_rate_limits')));
   if bad_count <> 0 then
     raise exception 'private RLS/grant allowlist mismatch: % tables',bad_count;
   end if;
@@ -80,6 +81,7 @@ begin
     ('media_bindings','media_bindings_inventory_read'),
     ('idempotency_keys','idempotency_keys_reservation_read'),
     ('idempotency_keys','idempotency_keys_upload_read'),
+    ('idempotency_keys','idempotency_keys_finalize_read'),
     ('tasks','tasks_transition_internal_read'),
     ('access_links','access_links_task_transition_internal_read'),
     ('subscriptions','subscriptions_task_transition_internal_read'),
@@ -88,7 +90,22 @@ begin
     ('inspection_room_answers','inspection_room_answers_task_transition_internal_read'),
     ('media_assets','media_assets_task_transition_internal_read'),
     ('task_transition_events','task_transition_events_internal_read'),
-    ('task_transition_media','task_transition_media_internal_read')
+    ('task_transition_media','task_transition_media_internal_read'),
+    ('media_assets','media_assets_proxy_internal_read'),
+    ('media_bindings','media_bindings_proxy_internal_read'),
+    ('access_links','access_links_media_internal_read'),
+    ('tasks','tasks_media_internal_read'),
+    ('task_transition_events','task_transition_events_media_internal_read'),
+    ('task_transition_media','task_transition_media_proxy_internal_read'),
+    ('expenses','expenses_media_internal_read'),
+    ('expense_allocations','expense_allocations_media_internal_read'),
+    ('inspection_answers','inspection_answers_media_internal_read'),
+    ('inspection_submissions','inspection_submissions_media_internal_read'),
+    ('inspection_events','inspection_events_media_internal_read'),
+    ('reservations','reservations_media_internal_read'),
+    ('reservation_placements','reservation_placements_media_internal_read'),
+    ('guides','guides_media_internal_read'),
+    ('guide_versions','guide_versions_media_internal_read')
   ) as expected(table_name,policy_name)
   left join pg_class c on c.relname=expected.table_name
     and c.relnamespace='app_private'::regnamespace
@@ -101,8 +118,13 @@ begin
   select count(*) into table_count
   from pg_policy p join pg_class c on c.oid=p.polrelid
   where c.relnamespace='app_private'::regnamespace;
-  if table_count <> 71 then
+  if table_count <> 91 then
     raise exception 'unexpected private table policies: %',table_count;
+  end if;
+  if not exists (select 1 from pg_policy where polrelid='app_private.link_session_rate_limits'::regclass
+      and polname='link_session_rate_limits_internal' and polcmd='*'
+      and polroles=array['app_executor'::regrole::oid]) then
+    raise exception 'link session rate limit policy missing or mis-scoped';
   end if;
   if not exists (select 1 from pg_policy where polrelid='app_private.manager_invite_accept_context'::regclass
       and polname='manager_invite_accept_context_insert' and polcmd='a'
@@ -120,8 +142,16 @@ begin
        and polroles=array['app_executor'::regrole::oid])
      or not exists (select 1 from pg_policy where polrelid='app_private.idempotency_keys'::regclass
        and polname='idempotency_keys_upload_update' and polcmd='w'
+       and polroles=array['app_executor'::regrole::oid])
+     or not exists (select 1 from pg_policy where polrelid='app_private.idempotency_keys'::regclass
+       and polname='idempotency_keys_finalize_update' and polcmd='w'
        and polroles=array['app_executor'::regrole::oid]) then
     raise exception 'reservation write/idempotency policies missing or mis-scoped';
+  end if;
+  if not exists (select 1 from pg_policy where polrelid='app_private.idempotency_keys'::regclass
+      and polname='idempotency_keys_finalize_create' and polcmd='a'
+      and polroles=array['app_executor'::regrole::oid]) then
+    raise exception 'media finalize idempotency policy missing or mis-scoped';
   end if;
   if not exists (select 1 from pg_policy where polrelid='app_private.owner_accounts'::regclass
       and polname='owner_accounts_self_create' and polcmd='a'

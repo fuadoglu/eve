@@ -304,6 +304,7 @@
         "access_links",
         "contact_properties",
         "contacts",
+        "link_session_rate_limits",
         "media_assets",
         "media_bindings",
         "task_transition_events",
@@ -344,17 +345,16 @@
         "transitionTask"
       ],
       "tables": [
+        "inspection_room_answers",
+        "inspection_snapshot_rooms",
+        "inspection_submissions",
         "properties",
         "task_transition_events",
-        "tasks",
-        "inspection_submissions",
-        "inspection_snapshot_rooms",
-        "inspection_room_answers"
+        "tasks"
       ],
       "parent_tasks": [
         "EVE-012",
         "EVE-013",
-        "EVE-017",
         "EVE-018"
       ],
       "packages": [
@@ -364,7 +364,6 @@
         "EVE-013.1",
         "EVE-013.2",
         "EVE-013.3",
-        "EVE-017.1",
         "EVE-018.1",
         "EVE-018.2",
         "EVE-018.3"
@@ -402,6 +401,7 @@
         "getInventory",
         "getMediaAccess",
         "getScopedMediaAccess",
+        "readAuthenticatedMediaContent",
         "readScopedInspection",
         "readScopedMediaContent",
         "removeMedia",
@@ -468,6 +468,7 @@
         "getScopedMediaAccess",
         "listGuides",
         "publishGuideLocale",
+        "readAuthenticatedMediaContent",
         "readGuestGuide",
         "readPublicGuide",
         "readPublicGuideIndex",
@@ -515,6 +516,7 @@
         "getMediaAccess",
         "getPublicSettings",
         "quotePublicStay",
+        "readAuthenticatedMediaContent",
         "readPublicAvailability",
         "readPublicProperty",
         "removeMedia",
@@ -696,6 +698,7 @@
         "previewImport",
         "publishGuideLocale",
         "quotePublicStay",
+        "readAuthenticatedMediaContent",
         "readGuestGuide",
         "readPublicAvailability",
         "readPublicGuide",
@@ -738,7 +741,9 @@
         "updateRoom",
         "updateTask"
       ],
-      "tables": [],
+      "tables": [
+        "link_session_rate_limits"
+      ],
       "parent_tasks": [
         "EVE-002",
         "EVE-009",
