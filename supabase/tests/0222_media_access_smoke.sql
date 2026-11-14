@@ -54,7 +54,7 @@ insert into app_private.access_links(id,owner_account_id,property_id,token_hash,
 
 set local role service_role;
 set local request.jwt.claim.role='service_role';
-do $$ declare v jsonb; h text := encode(extensions.digest(convert_to(repeat('x',43),'UTF8'),'sha256'),'hex'); i integer; begin
+do $$ declare v jsonb; h text := 'cc0b1c2c66f3bb9fd1a081c626ba1bef62f6f96441a43be15268523776ac26a1'; i integer; begin
   v := api.get_media_actor_source_for_server('a0232000-0000-4000-8000-000000000012','a0232300-0000-4000-8000-000000000011');
   if v->>'classification'<>'private_inventory' or v->>'bucket'<>'eve-private-inventory' then
     raise exception 'inventory.read did not authorize validated inventory media';
@@ -106,7 +106,7 @@ update app_private.access_links set revoked_at=now()
 where id='a0232800-0000-4000-8000-000000000011';
 set local role service_role;
 set local request.jwt.claim.role='service_role';
-do $$ declare h text := encode(extensions.digest(convert_to(repeat('x',43),'UTF8'),'sha256'),'hex'); begin
+do $$ declare h text := 'cc0b1c2c66f3bb9fd1a081c626ba1bef62f6f96441a43be15268523776ac26a1'; begin
   begin
     perform api.get_media_scoped_source_for_server(h,'a0232300-0000-4000-8000-000000000012');
     raise exception 'revoked scoped link retained media access';
