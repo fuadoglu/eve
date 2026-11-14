@@ -62,7 +62,12 @@ try {
   await context.addCookies([{ name: cookieName, value: cookieValue, url: baseUrl, httpOnly: true, sameSite: "Lax" }]);
   const page = await context.newPage();
   await page.goto(`${baseUrl}/calendar`, { waitUntil: "networkidle" });
-  await page.getByRole("heading", { name: "E2E test home" }).waitFor();
+  try {
+    await page.getByRole("heading", { name: "E2E test home" }).waitFor({ timeout: 10000 });
+  } catch {
+    const visibleText = (await page.locator("body").innerText()).replace(/\s+/g, " ").trim();
+    throw new Error(`authenticated property context was not rendered: ${visibleText}`);
+  }
   await page.getByLabel("Giriş tarixi").fill("2027-08-01");
   await page.getByLabel("Çıxış tarixi").fill("2027-08-04");
   await page.getByLabel("Qonağın adı").fill("Synthetic guest");
