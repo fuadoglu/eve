@@ -17,6 +17,7 @@
     "test:access": "node --conditions=react-server --experimental-strip-types --test tests/unit/access/*.test.ts",
     "test:reservations": "node --conditions=react-server --experimental-strip-types --test tests/unit/reservations/*.test.ts",
     "test:operations": "node --conditions=react-server --experimental-strip-types --test tests/unit/operations/*.test.ts",
+    "test:billing": "node --conditions=react-server --experimental-strip-types --test tests/unit/billing/*.test.ts",
     "test:ui": "node scripts/test-mobile-shell.mjs"
   },
   "dependencies": {
