@@ -8193,7 +8193,7 @@
       ],
       "rls": {
         "enabled": true,
-        "select": "via binding capability or safe public classification; private assets raw public select denied",
+        "select": "D40 binding capability; validated, undeleted private asset through server proxy; public asset only via published safe projection",
         "insert": "media.write capability or scoped upload intent; private_inventory requires inventory.manage",
         "update": "media.write capability or scoped upload intent",
         "delete": "deny; retention_service_only"
@@ -10885,6 +10885,96 @@
         "insert": "owner/full scoped",
         "update": "owner/full scoped",
         "delete": "deny; retention_service_only"
+      }
+    },
+    {
+      "name": "link_session_rate_limits",
+      "description": "Yalnız mövcud scoped token hash-i üzrə session exchange throttle; raw token saxlanmır",
+      "requirements": [
+        "R07",
+        "R13"
+      ],
+      "tenant_scope": "server",
+      "write_mode": "controlled",
+      "retention_class": "ephemeral",
+      "columns": [
+        {
+          "name": "token_hash",
+          "type": "varchar(64)",
+          "nullable": false,
+          "default": null,
+          "description": "Access link-in SHA-256 hash-i",
+          "validation": [
+            "char_length(token_hash)=64",
+            "lowercase hex"
+          ]
+        },
+        {
+          "name": "window_started_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "description": "Bir dəqiqəlik throttle pəncərəsinin başlanğıcı",
+          "validation": []
+        },
+        {
+          "name": "attempts",
+          "type": "integer",
+          "nullable": false,
+          "default": null,
+          "description": "Pəncərədə uğurlu exchange cəhdlərinin sayı; maksimum 10",
+          "validation": [
+            "attempts>=1"
+          ]
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "statement_timestamp()",
+          "description": "Son exchange cəhdi",
+          "validation": []
+        }
+      ],
+      "primary_key": [
+        "token_hash"
+      ],
+      "unique": [],
+      "foreign_keys": [
+        {
+          "columns": [
+            "token_hash"
+          ],
+          "references": {
+            "table": "access_links",
+            "columns": [
+              "token_hash"
+            ]
+          },
+          "on_delete": "CASCADE",
+          "on_update": "NO ACTION",
+          "deferrable": false
+        }
+      ],
+      "checks": [
+        {
+          "name": "link_session_rate_limits_token_hash",
+          "expression": "token_hash ~ '^[0-9a-f]{64}$'",
+          "enforcement": "CHECK"
+        },
+        {
+          "name": "link_session_rate_limits_attempts",
+          "expression": "attempts>=1",
+          "enforcement": "CHECK"
+        }
+      ],
+      "indexes": [],
+      "rls": {
+        "enabled": true,
+        "select": "app_executor internal rate-limit function only",
+        "insert": "valid exchange RPC only",
+        "update": "valid exchange RPC only",
+        "delete": "deny; access-link lifecycle cascade only"
       }
     }
   ],

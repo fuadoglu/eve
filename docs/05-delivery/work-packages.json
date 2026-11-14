@@ -2035,9 +2035,10 @@
       "acceptance": [
         "MIME/finalize/private serving üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
         "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
-        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
+        "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb.",
+        "Private serving D40 matrisi ilə classification və binding capability-sini serverdə yoxlayır; hər GET-də validated/deleted state və cari membership/link/placement yenidən yoxlanır, signed Storage URL verilmir; token exchange, revoke, expiry və cross-target mənfi sınaqları var."
       ],
-      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "verification": "MIME byte-validation unit tests; `api` server bridge ACL və 0222 media finalize/access SQL smoke; authenticated/scoped proxy handler tests; CI `sql_schema` və synthetic `supabase_local`. Sənəd/kontrakt dəyişiklikləri: docs-check, verify-contracts, Python schema validator, storage config validator və prototype smoke. Hosted Storage behavior production proof sayılmır.",
       "reviewer_role": "qa_redteam",
       "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
       "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",

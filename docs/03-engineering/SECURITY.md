@@ -53,4 +53,4 @@ IDOR, owner/property dəyişmə, manager revoke, daily→full escalation, storag
 
 ## DB grant sərhədi
 
-[ACCESS-BOUNDARY](ACCESS-BOUNDARY.md) normativdir: base table authenticated/anon üçün açılmır; yalnız safe typed RPC. Private scoped media signed Storage URL deyil, hər request-də revoke/expiry/cari placement yoxlayan proxy-dən verilir. İstifadəçinin əvvəl yüklədiyi baytları geri almaq vədi yoxdur.
+[ACCESS-BOUNDARY](ACCESS-BOUNDARY.md) normativdir: base table authenticated/anon üçün açılmır; yalnız safe typed RPC. Private scoped media signed Storage URL deyil, hər request-də revoke/expiry/cari placement yoxlayan proxy-dən verilir. İstifadəçinin əvvəl yüklədiyi baytları geri almaq vədi yoxdur. Access URL-i 5 dəqiqəlik server HMAC imzası daşıyır, amma imzanın yoxlanması authorization-u əvəz etmir: hər content GET-də session/link scope, binding, media state və cari placement yenidən yoxlanır. Link-session cookie-də yalnız token hash saxlanır; raw token body-dən sonra cavab/DTO/log-a qaytarılmır.
