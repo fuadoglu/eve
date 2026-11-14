@@ -27,6 +27,11 @@ try {
   const userClient = createClient(supabaseUrl, publishableKey, { auth: { persistSession: false, autoRefreshToken: false } });
   const { data: signedIn, error: signInError } = await userClient.auth.signInWithPassword({ email, password });
   if (signInError || !signedIn.session) throw new Error("local_auth_fixture_sign_in_failed");
+  const { data: activeSession, error: activeSessionError } = await userClient.schema("api").rpc("is_my_session_active");
+  const { data: propertyContexts, error: propertyContextError } = await userClient.schema("api").rpc("list_reservable_property_contexts");
+  if (activeSessionError || activeSession !== true || propertyContextError || !Array.isArray(propertyContexts) || propertyContexts.length !== 0) {
+    throw new Error(`local_authenticated_context_preflight_failed:${activeSessionError?.code ?? propertyContextError?.code ?? String(activeSession)}:${Array.isArray(propertyContexts) ? propertyContexts.length : "invalid"}`);
+  }
 
   const fixtureSql = `
     insert into app_private.owner_accounts(id,owner_user_id) values ('${ownerAccountId}','${createdUser.user.id}');
@@ -41,6 +46,10 @@ try {
     stdio: ["pipe", "ignore", "pipe"],
   });
   if (fixture.status !== 0) throw new Error("local_reservation_fixture_database_insert_failed");
+  const { data: populatedContexts, error: populatedContextError } = await userClient.schema("api").rpc("list_reservable_property_contexts");
+  if (populatedContextError || !Array.isArray(populatedContexts) || !populatedContexts.some((property) => property.id === propertyId)) {
+    throw new Error(`local_property_context_preflight_failed:${populatedContextError?.code ?? "property_context_missing"}`);
+  }
 
   const childEnv = { ...process.env };
   delete childEnv.EVE_LOCAL_SERVICE_ROLE_KEY;
