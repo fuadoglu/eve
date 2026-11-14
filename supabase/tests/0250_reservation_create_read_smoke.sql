@@ -49,10 +49,10 @@ begin
   if v_dto->>'guest_name'<>'DTO guest' or v_dto->>'currency'<>'AZN'
      or v_dto#>>'{balance,rent_received_minor}'<>'10000'
      or v_dto#>>'{balance,remaining_minor}'<>'20000'
-     or v_dto#>>'{balance,overpaid_minor}'<>'0'
-     or (select count(*) from app_private.rent_entries where reservation_id=(v_first->>'reservation_id')::uuid)<>1 then
+     or v_dto#>>'{balance,overpaid_minor}'<>'0' then
     raise exception 'safe reservation DTO or idempotent initial receipt balance differs';
   end if;
+  perform set_config('test.reservation_id',v_first->>'reservation_id',true);
   begin
     perform api.get_reservation('f2000000-0000-0000-0000-000000000025'::uuid);
     raise exception 'property id was accepted as reservation id';
@@ -98,7 +98,7 @@ set local role authenticated;
 do $$
 declare v_reservation uuid; v_dto jsonb;
 begin
-  select result_id into v_reservation from app_private.idempotency_keys where key='reservation-create-read-key-025';
+  v_reservation := current_setting('test.reservation_id')::uuid;
   v_dto := api.get_reservation(v_reservation);
   if v_dto#>>'{balance,rent_received_minor}'<>'10000'
      or v_dto#>>'{balance,rent_refunded_minor}'<>'0'

@@ -31,7 +31,6 @@ jobs:
         with:
           version: 12.18.0
           run_install: false
-          cache: pnpm
       - name: Python versiyasını seç
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
