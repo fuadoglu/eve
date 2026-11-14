@@ -90,13 +90,21 @@ try {
   await context.addCookies(serializedCookies.map(({ name, value }) => ({
     name, value, url: baseUrl, httpOnly: true, sameSite: "Lax",
   })));
+  const installedCookieNames = (await context.cookies(baseUrl)).map((cookie) => cookie.name);
+  if (!installedCookieNames.includes(cookieName)) throw new Error("local_browser_auth_cookie_install_failed");
   const page = await context.newPage();
+  let navigationCookieHeader = "";
+  page.on("request", (request) => {
+    if (request.url() === `${baseUrl}/calendar`) {
+      void request.allHeaders().then((headers) => { navigationCookieHeader = headers.cookie ?? ""; });
+    }
+  });
   await page.goto(`${baseUrl}/calendar`, { waitUntil: "networkidle" });
   try {
     await page.getByRole("heading", { name: "E2E test home" }).waitFor({ timeout: 10000 });
   } catch {
     const visibleText = (await page.locator("body").innerText()).replace(/\s+/g, " ").trim();
-    throw new Error(`authenticated property context was not rendered: ${visibleText}`);
+    throw new Error(`authenticated property context was not rendered (auth_cookie_sent=${navigationCookieHeader.includes(cookieName)}): ${visibleText}`);
   }
   await page.getByLabel("Giriş tarixi").fill("2027-08-01");
   await page.getByLabel("Çıxış tarixi").fill("2027-08-04");
