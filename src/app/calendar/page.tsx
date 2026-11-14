@@ -9,7 +9,12 @@ export default async function CalendarPage() {
   let loadFailed = false;
   try { properties = await listReservableProperties(); }
   catch (error) {
-    console.error("reservation_property_context_load_failed", error instanceof ReservationApiError ? error.code : "UNEXPECTED");
+    const diagnostic = error instanceof ReservationApiError
+      ? error.code
+      : error instanceof Error
+        ? `${error.name}:${error.message.replace(/(Bearer\s+)[^\s]+|eyJ[a-zA-Z0-9_.-]+/g, "$1[redacted]").slice(0, 240)}`
+        : "UNEXPECTED";
+    console.error("reservation_property_context_load_failed", diagnostic);
     loadFailed = true; /* keep provider details out of the UI */
   }
   return <MobileShell><div className="page-heading"><p className="eyebrow">TARİXLƏR</p><h1>Təqvim və rezervasiya</h1><p>Rezervasiya serverdə təsdiqləndikdən sonra saxlanmış sayılır. Tarix seçimi təkbaşına rezervasiya yaratmır.</p></div>
