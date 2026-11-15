@@ -5,11 +5,13 @@ grant select on app_private.owner_accounts, app_private.property_memberships,
   app_private.reservation_placements to app_executor;
 -- Grant through the function owner after the session-revocation migration has
 -- transferred this SECURITY DEFINER function to app_session_reader.
+grant usage on schema api to app_session_reader;
 grant app_session_reader to current_user with set true, inherit false;
 set role app_session_reader;
 grant execute on function api.is_my_session_active() to app_executor;
 reset role;
 revoke app_session_reader from current_user;
+revoke usage on schema api from app_session_reader;
 grant create on schema api to app_executor;
 grant app_executor to current_user with set true, inherit false;
 
