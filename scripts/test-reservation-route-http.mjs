@@ -97,6 +97,12 @@ try {
   const installedCookieNames = (await context.cookies(baseUrl)).map((cookie) => cookie.name);
   if (!installedCookieNames.includes(cookieName)) throw new Error("local_browser_auth_cookie_install_failed");
   const page = await context.newPage();
+  await page.addInitScript(() => {
+    Object.defineProperty(window.navigator, "onLine", {
+      configurable: true,
+      get: () => window.__eveTestOnline !== false,
+    });
+  });
   let navigationCookieHeader = "";
   page.on("request", (request) => {
     if (request.url() === `${baseUrl}/calendar`) {
@@ -112,13 +118,15 @@ try {
     const safeDiagnostics = serverDiagnostics.split("\n").filter((line) => line.includes("reservation_property_context_load_failed")).join(" | ");
     throw new Error(`authenticated property context was not rendered (auth_cookie_sent=${navigationCookieHeader.includes(cookieName)}; server=${safeDiagnostics || "no-safe-diagnostic"}): ${visibleText}`);
   }
+  await page.getByRole("button", { name: "Təsdiqlə" }).click();
+  await page.locator(".reservation-field-error").first().waitFor({ timeout: 5000 });
   await page.getByLabel("Giriş tarixi").fill("2027-08-01");
   await page.getByLabel("Çıxış tarixi").fill("2027-08-04");
   await page.getByLabel("Qonağın adı").fill("Synthetic guest");
   await page.getByLabel("Ümumi qiymət (AZN)").fill("300,00");
   await page.locator(".reservation-more summary").click();
   await page.getByLabel("Alınan pul (AZN, istəyə bağlı)").fill("100,00");
-  await page.evaluate(() => Object.defineProperty(window.navigator, "onLine", { configurable: true, value: false }));
+  await page.evaluate(() => { window.__eveTestOnline = false; });
   await page.getByRole("button", { name: "Təsdiqlə" }).click();
   const offlineError = page.locator(".reservation-request-error");
   try { await offlineError.waitFor({ timeout: 5000 }); }
@@ -128,7 +136,7 @@ try {
   }
   assert.equal(await offlineError.innerText(), "Bağlantı yoxdur. Son dəyişiklik hələ saxlanılmayıb.");
   assert.equal(await page.getByRole("heading", { name: "Pul xülasəsi" }).count(), 0);
-  await page.evaluate(() => Object.defineProperty(window.navigator, "onLine", { configurable: true, value: true }));
+  await page.evaluate(() => { window.__eveTestOnline = true; });
   await page.getByLabel("Qonağın adı").fill("Synthetic guest");
   const createRequest = page.waitForRequest((request) => request.url().endsWith("/api/v1/reservations") && request.method() === "POST");
   const createResponse = page.waitForResponse((response) => response.url().endsWith("/api/v1/reservations") && response.request().method() === "POST");
