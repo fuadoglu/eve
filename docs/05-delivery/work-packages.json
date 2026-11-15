@@ -1022,7 +1022,7 @@
       "parent_issue": 19,
       "milestone": "M2",
       "title": "Rezervasiya create mobil inteqrasiyası, retry və validation",
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "EVE-011.2"
       ],
