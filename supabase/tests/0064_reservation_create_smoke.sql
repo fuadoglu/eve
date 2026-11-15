@@ -9,7 +9,12 @@ begin
      or not has_function_privilege('app_executor','api.is_my_session_active()','EXECUTE')
      or not has_function_privilege('app_executor','api.create_reservation(jsonb,text)','EXECUTE')
      or has_table_privilege('authenticated','app_private.reservations','INSERT') then
-    raise exception 'reservation RPC owner/grant boundary is unsafe';
+    raise exception 'reservation RPC owner/grant boundary is unsafe: owner=%, guard_exec=%, wrapper_exec=%, private_exec=%, auth_insert=%',
+      (select proowner::regrole from pg_proc where oid='api.create_reservation(jsonb,text)'::regprocedure),
+      has_function_privilege('app_executor','api.is_my_session_active()','EXECUTE'),
+      has_function_privilege('app_executor','api.create_reservation(jsonb,text)','EXECUTE'),
+      has_function_privilege('app_executor','app_private.create_reservation_unchecked(jsonb,text)','EXECUTE'),
+      has_table_privilege('authenticated','app_private.reservations','INSERT');
   end if;
 end $$;
 begin;
