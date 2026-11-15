@@ -152,8 +152,11 @@ try {
   await page.getByRole("button", { name: "Təsdiqlə" }).click();
   const capturedRequest = await createRequest;
   const firstResponse = await createResponse;
-  assert.equal(firstResponse.status(), 201);
   const firstEnvelope = await firstResponse.json();
+  if (firstResponse.status() !== 201) {
+    const errorCode = typeof firstEnvelope?.error?.code === "string" ? firstEnvelope.error.code : "unknown_error";
+    throw new Error(`reservation_create_http_failed:${firstResponse.status()}:${errorCode}`);
+  }
   await page.getByRole("heading", { name: "Pul xülasəsi" }).waitFor();
   const createdText = await page.locator(".reservation-card").innerText();
   assert.match(createdText, /Balans serverdən alınıb/);
