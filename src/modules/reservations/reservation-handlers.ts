@@ -40,6 +40,7 @@ function isSameOriginRequest(request: Request): boolean {
   }
   const fetchSite = request.headers.get("sec-fetch-site");
   if (fetchSite === "cross-site") return false;
+  if (request.headers.get("x-eve-same-origin") === "1") return true;
   if (fetchSite === "same-origin") return true;
   const referer = request.headers.get("referer");
   return referer !== null && sameOrigin(referer, request.url);

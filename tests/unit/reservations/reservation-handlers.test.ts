@@ -71,6 +71,20 @@ test("same-origin Fetch Metadata is accepted when browser omits Origin and Refer
   assert.equal(response.status, 201);
 });
 
+test("explicit Eve same-origin header is accepted when browser omits origin metadata", async () => {
+  const markerRequest = new Request("https://eve.test/api/v1/reservations", {
+    method: "POST",
+    headers: {
+      "X-Eve-Same-Origin": "1",
+      "Content-Type": "application/json",
+      "Idempotency-Key": "reservation-key-0001",
+    },
+    body: JSON.stringify(input),
+  });
+  const response = await handleReservationCreate(markerRequest, async () => reservationDto());
+  assert.equal(response.status, 201);
+});
+
 test("cross-site Referer without Origin is rejected before the reservation operation", async () => {
   let calls = 0;
   const crossSiteRequest = new Request("https://eve.test/api/v1/reservations", {
@@ -78,6 +92,7 @@ test("cross-site Referer without Origin is rejected before the reservation opera
     headers: {
       Referer: "https://attacker.test/form",
       "Sec-Fetch-Site": "cross-site",
+      "X-Eve-Same-Origin": "1",
       "Content-Type": "application/json",
       "Idempotency-Key": "reservation-key-0001",
     },

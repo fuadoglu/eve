@@ -17,7 +17,11 @@ export function ReservationCreatePanel({
     async createReservation(input, idempotencyKey) {
       const response = await fetch("/api/v1/reservations", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "Idempotency-Key": idempotencyKey },
+        headers: {
+          "Content-Type": "application/json",
+          "Idempotency-Key": idempotencyKey,
+          "X-Eve-Same-Origin": "1",
+        },
         credentials: "same-origin",
         cache: "no-store",
         body: JSON.stringify(input),
