@@ -30,8 +30,10 @@ function sameOrigin(origin: string, requestUrl: string): boolean {
   catch { return false; }
 }
 function isSameOriginRequest(request: Request): boolean {
-  const origin = request.headers.get("origin");
-  if (origin) return sameOrigin(origin, request.url);
+  if (request.headers.has("origin")) {
+    const origin = request.headers.get("origin");
+    return origin !== null && origin.trim().length > 0 && sameOrigin(origin, request.url);
+  }
   const referer = request.headers.get("referer");
   return request.headers.get("sec-fetch-site") !== "cross-site"
     && referer !== null && sameOrigin(referer, request.url);

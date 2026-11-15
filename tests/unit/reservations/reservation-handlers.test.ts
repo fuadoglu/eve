@@ -43,20 +43,43 @@ test("origin, JSON media type and idempotency key are checked before calling the
 });
 
 test("same-origin Referer is accepted when the browser omits Origin", async () => {
-  const response = await handleReservationCreate(request({
-    Origin: "",
-    Referer: "https://eve.test/calendar",
-    "Sec-Fetch-Site": "same-origin",
-  }), async () => reservationDto());
+  const noOriginRequest = new Request("https://eve.test/api/v1/reservations", {
+    method: "POST",
+    headers: {
+      Referer: "https://eve.test/calendar",
+      "Sec-Fetch-Site": "same-origin",
+      "Content-Type": "application/json",
+      "Idempotency-Key": "reservation-key-0001",
+    },
+    body: JSON.stringify(input),
+  });
+  const response = await handleReservationCreate(noOriginRequest, async () => reservationDto());
   assert.equal(response.status, 201);
 });
 
 test("cross-site Referer without Origin is rejected before the reservation operation", async () => {
   let calls = 0;
+  const crossSiteRequest = new Request("https://eve.test/api/v1/reservations", {
+    method: "POST",
+    headers: {
+      Referer: "https://attacker.test/form",
+      "Sec-Fetch-Site": "cross-site",
+      "Content-Type": "application/json",
+      "Idempotency-Key": "reservation-key-0001",
+    },
+    body: JSON.stringify(input),
+  });
+  const response = await handleReservationCreate(crossSiteRequest, async () => { calls++; return reservationDto(); });
+  assert.equal(response.status, 403);
+  assert.equal(calls, 0);
+});
+
+test("empty Origin is rejected even when Referer is same-origin", async () => {
+  let calls = 0;
   const response = await handleReservationCreate(request({
     Origin: "",
-    Referer: "https://attacker.test/form",
-    "Sec-Fetch-Site": "cross-site",
+    Referer: "https://eve.test/calendar",
+    "Sec-Fetch-Site": "same-origin",
   }), async () => { calls++; return reservationDto(); });
   assert.equal(response.status, 403);
   assert.equal(calls, 0);
