@@ -153,7 +153,9 @@ try {
   await page.getByRole("button", { name: "Təsdiqlə" }).click();
   const capturedRequest = await createRequest;
   const firstResponse = await createResponse;
-  const firstEnvelope = await firstResponse.json();
+  const firstResponseText = await firstResponse.text();
+  let firstEnvelope = null;
+  try { firstEnvelope = JSON.parse(firstResponseText); } catch { /* report a bounded response category below */ }
   if (firstResponse.status() !== 201) {
     const capturedHeaders = await capturedRequest.allHeaders();
     const errorCode = typeof firstEnvelope?.error?.code === "string" ? firstEnvelope.error.code : "unknown_error";
@@ -175,8 +177,10 @@ try {
       ? await userClient.schema("api").rpc("get_reservation", { p_reservation_id: directCreate.data.reservation_id })
       : null;
     const readFailure = directRead?.error ? sanitizeDatabaseFailure(directRead.error.message) : directRead ? "success" : "not_attempted";
-    throw new Error(`reservation_create_http_failed:${firstResponse.status()}:${errorCode}:${routeFailure}:origin=${requestOrigin}:referer=${requestReferer}:fetch_site=${fetchSite}:same_origin_marker=${sameOriginMarker}:request=${requestHost}:server=${originDiagnostics}:direct_create=${directFailure}:direct_read=${readFailure}`);
+    const bodyKind = firstResponseText.length === 0 ? "empty" : firstResponseText.startsWith("<!DOCTYPE") ? "html" : firstEnvelope ? "json" : "other";
+    throw new Error(`reservation_create_http_failed:${firstResponse.status()}:${firstResponse.headers().get("content-type") ?? "no_content_type"}:${bodyKind}:${errorCode}:${routeFailure}:origin=${requestOrigin}:referer=${requestReferer}:fetch_site=${fetchSite}:same_origin_marker=${sameOriginMarker}:request=${requestHost}:server=${originDiagnostics}:direct_create=${directFailure}:direct_read=${readFailure}`);
   }
+  if (!firstEnvelope || typeof firstEnvelope !== "object") throw new Error(`reservation_create_http_invalid_json:${firstResponse.status()}`);
   await page.getByRole("heading", { name: "Pul xülasəsi" }).waitFor();
   const createdText = await page.locator(".reservation-card").innerText();
   assert.match(createdText, /Balans serverdən alınıb/);
