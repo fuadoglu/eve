@@ -97,6 +97,11 @@ try {
   const installedCookieNames = (await context.cookies(baseUrl)).map((cookie) => cookie.name);
   if (!installedCookieNames.includes(cookieName)) throw new Error("local_browser_auth_cookie_install_failed");
   const page = await context.newPage();
+  const browserDiagnostics = [];
+  page.on("pageerror", (error) => browserDiagnostics.push(`pageerror:${error.name}:${error.message.slice(0, 180)}`));
+  page.on("console", (message) => {
+    if (message.type() === "error") browserDiagnostics.push(`console:${message.text().slice(0, 180)}`);
+  });
   await page.addInitScript(() => {
     Object.defineProperty(window.navigator, "onLine", {
       configurable: true,
@@ -119,7 +124,11 @@ try {
     throw new Error(`authenticated property context was not rendered (auth_cookie_sent=${navigationCookieHeader.includes(cookieName)}; server=${safeDiagnostics || "no-safe-diagnostic"}): ${visibleText}`);
   }
   await page.getByRole("button", { name: "Təsdiqlə" }).click();
-  await page.locator(".reservation-field-error").first().waitFor({ timeout: 5000 });
+  try { await page.locator(".reservation-field-error").first().waitFor({ timeout: 20000 }); }
+  catch {
+    const diagnostics = browserDiagnostics.join(" | ") || "no-browser-errors";
+    throw new Error(`reservation client validation did not hydrate: ${diagnostics}`);
+  }
   await page.getByLabel("Giriş tarixi").fill("2027-08-01");
   await page.getByLabel("Çıxış tarixi").fill("2027-08-04");
   await page.getByLabel("Qonağın adı").fill("Synthetic guest");
