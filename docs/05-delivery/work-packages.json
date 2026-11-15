@@ -1061,25 +1061,27 @@
       "parent_issue": 20,
       "milestone": "M2",
       "title": "Tarix/qiymət və eyni sahibdə move",
-      "status": "backlog",
+      "status": "in_progress",
       "depends_on": [
         "EVE-010.3",
         "EVE-011.3"
       ],
       "role": "domain_engineer",
       "owned_path_candidates": [
-        "src/modules/reservations/",
-        "src/modules/properties/",
-        "app/(panel)/calendar/"
+        "src/modules/reservations/reservation-change-contract.ts",
+        "tests/unit/reservations/reservation-change-contract.test.ts",
+        "docs/04-quality/evidence/eve-012-1-reservation-date-move-contract.md",
+        "docs/05-delivery/STATUS.md",
+        "docs/05-delivery/work-packages.json"
       ],
-      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "ownership_rule": "Task branch codex/eve-012-1-reservation-dates-move; owned paths are the date/price and move request validators, their unit tests, and package evidence/status. OpenAPI/Data Dictionary/state machine and lockfile are not changed; server authorization, overlap and transaction behavior remain outside this local contract slice.",
       "deliverable": "Tarix/qiymət və eyni sahibdə move üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
       "acceptance": [
         "Tarix/qiymət və eyni sahibdə move üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",
         "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
         "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
       ],
-      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "verification": "node --conditions=react-server --experimental-strip-types --test tests/unit/reservations/reservation-change-contract.test.ts; node node_modules/typescript/bin/tsc --noEmit; docs checks if docs change. Mock/local contract evidence does not prove server authorization, overlap or transactional writes.",
       "reviewer_role": "qa_redteam",
       "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
       "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
