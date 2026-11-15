@@ -47,13 +47,26 @@ test("same-origin Referer is accepted when the browser omits Origin", async () =
     method: "POST",
     headers: {
       Referer: "https://eve.test/calendar",
-      "Sec-Fetch-Site": "same-origin",
       "Content-Type": "application/json",
       "Idempotency-Key": "reservation-key-0001",
     },
     body: JSON.stringify(input),
   });
   const response = await handleReservationCreate(noOriginRequest, async () => reservationDto());
+  assert.equal(response.status, 201);
+});
+
+test("same-origin Fetch Metadata is accepted when browser omits Origin and Referer", async () => {
+  const sameOriginRequest = new Request("https://eve.test/api/v1/reservations", {
+    method: "POST",
+    headers: {
+      "Sec-Fetch-Site": "same-origin",
+      "Content-Type": "application/json",
+      "Idempotency-Key": "reservation-key-0001",
+    },
+    body: JSON.stringify(input),
+  });
+  const response = await handleReservationCreate(sameOriginRequest, async () => reservationDto());
   assert.equal(response.status, 201);
 });
 

@@ -7,7 +7,7 @@ Package scope was corrected before implementation because the former “AT07–1
 ## Implemented
 
 - Calendar reads only currently writable property contexts through the cookie-scoped authenticated Supabase client.
-- Reservation form submits to `POST /api/v1/reservations`; the route enforces same-origin JSON requests and an idempotency key. Browser POSTs that omit `Origin` are checked against a same-origin `Referer`, while cross-site fetch metadata is rejected.
+- Reservation form submits to `POST /api/v1/reservations`; the route enforces same-origin JSON requests and an idempotency key. Browser POSTs that omit `Origin` are checked against same-origin Fetch Metadata or a same-origin `Referer`, while cross-site fetch metadata is rejected.
 - The route requires an authenticated, active session and calls `api.create_reservation` and then the scoped safe DTO RPC using the user's session. It does not use the service role.
 - A success response is returned only after the server DTO passes the existing reservation envelope parser. The UI shows the detail/balance only after that acknowledgement.
 - Safe DTO balance projection accounts for receipt/refund/deposit entries and reversals. SQL smoke verifies retry and reversal cases.
@@ -17,7 +17,7 @@ Package scope was corrected before implementation because the former “AT07–1
 
 | Check | Result |
 |---|---|
-| Reservation unit tests | Passed, 16/16 via `node --conditions=react-server --experimental-strip-types --test tests/unit/reservations/*.test.ts`; includes absent-Origin Referer fallback, cross-site rejection, and empty-Origin rejection |
+| Reservation unit tests | Passed, 17/17 via `node --conditions=react-server --experimental-strip-types --test tests/unit/reservations/*.test.ts`; includes absent-Origin Referer/Fetch Metadata fallback, cross-site rejection, and empty-Origin rejection |
 | Browser integration script syntax | Passed via `node --check scripts/test-reservation-route-http.mjs`; the browser-to-PostgreSQL script itself is pending CI because local Docker is unavailable |
 | TypeScript | Passed via `node node_modules/typescript/bin/tsc --noEmit` |
 | Next production build | Passed via `node node_modules/next/dist/bin/next build` |

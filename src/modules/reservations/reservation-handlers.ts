@@ -34,9 +34,11 @@ function isSameOriginRequest(request: Request): boolean {
     const origin = request.headers.get("origin");
     return origin !== null && origin.trim().length > 0 && sameOrigin(origin, request.url);
   }
+  const fetchSite = request.headers.get("sec-fetch-site");
+  if (fetchSite === "cross-site") return false;
+  if (fetchSite === "same-origin") return true;
   const referer = request.headers.get("referer");
-  return request.headers.get("sec-fetch-site") !== "cross-site"
-    && referer !== null && sameOrigin(referer, request.url);
+  return referer !== null && sameOrigin(referer, request.url);
 }
 function isRecord(value: unknown): value is Record<string, unknown> { return typeof value === "object" && value !== null && !Array.isArray(value); }
 function publicMessage(code: string): string {

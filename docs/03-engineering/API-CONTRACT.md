@@ -19,7 +19,7 @@ Hər əməliyyatda x-requirements tələb ID-lərini, x-capability səlahiyyəti
 | Pul | Integer qəpik, AZN, 0…9007199254740991; pul hadisəsi >0 |
 | Vaxt | Timestamp ISO-8601 UTC; local_date Asia/Baku; gecələmə [check_in,check_out) |
 | Form validasiyası | Client rahatlıq üçündür; server və DB məcburidir |
-| Mutasiya | Same-origin/CSRF yoxlaması; route əvvəl Origin-i yoxlayır, browser onu göndərməyəndə eyni-origin Referer-i qəbul edir və `Sec-Fetch-Site: cross-site` sorğusunu rədd edir |
+| Mutasiya | Same-origin/CSRF yoxlaması; route Origin-i yoxlayır, olmadıqda `Sec-Fetch-Site: same-origin` və ya eyni-origin Referer-i qəbul edir; `Sec-Fetch-Site: cross-site` sorğusu rədd edilir |
 | İdempotentlik | Auth/provider istisna, bütün domain write-da Idempotency-Key; eyni key/fərqli payload 409 |
 | Versiya | Dəyişiklikdə expected_version; köhnə versiya 409, səssiz overwrite yoxdur |
 | Pagination | Cursor, limit default30/max100; əməliyyatda fərqli limit varsa schema əsasdır |
