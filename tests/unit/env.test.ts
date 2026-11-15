@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { validateAppBaseUrl, validateSupabasePublicConfig } from "../../src/lib/env/supabase-public.ts";
+import { getAppBaseUrl, validateAppBaseUrl, validateSupabasePublicConfig } from "../../src/lib/env/supabase-public.ts";
 import { getSupabasePublicConfig } from "../../src/lib/env/supabase-public.ts";
 import { getSupabaseSecretKey } from "../../src/lib/env/supabase-server.ts";
 
@@ -123,6 +123,18 @@ test("validates the canonical application origin used by auth redirects", () => 
     () => validateSupabasePublicConfig("http://127.0.0.1:54321", "sb_publishable_example", false),
     /must use HTTPS/,
   );
+});
+
+test("allows local APP_BASE_URL in production mode only for the explicit CI integration opt-in", () => {
+  withEnv({
+    APP_BASE_URL: "http://127.0.0.1:4178",
+    NODE_ENV: "production",
+    CI: "true",
+    EVE_LOCAL_TEST_ALLOW_HTTP: "1",
+  }, () => assert.deepEqual(getAppBaseUrl(), { url: "http://127.0.0.1:4178" }));
+  withEnv({ APP_BASE_URL: "http://127.0.0.1:4178", NODE_ENV: "production", CI: "true" }, () => {
+    assert.throws(() => getAppBaseUrl(), /must use HTTPS/);
+  });
 });
 
 test("requires the privileged key only when server code requests it", () => {

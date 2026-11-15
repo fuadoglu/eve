@@ -91,5 +91,7 @@ export function validateAppBaseUrl(
 }
 
 export function getAppBaseUrl(): AppBaseUrlConfig {
-  return validateAppBaseUrl(process.env.APP_BASE_URL, process.env.NODE_ENV !== "production");
+  const allowLocalHttp = process.env.NODE_ENV !== "production"
+    || (process.env.CI === "true" && process.env.EVE_LOCAL_TEST_ALLOW_HTTP === "1");
+  return validateAppBaseUrl(process.env.APP_BASE_URL, allowLocalHttp);
 }
