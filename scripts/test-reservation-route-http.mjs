@@ -164,6 +164,7 @@ try {
     const fetchSite = capturedHeaders["sec-fetch-site"] ?? "missing";
     const sameOriginMarker = capturedHeaders["x-eve-same-origin"] ?? "missing";
     const requestHost = new URL(capturedRequest.url()).origin;
+    const originDiagnostics = serverDiagnostics.split("\n").filter((line) => line.includes("reservation_origin_rejected")).join(" | ") || "no-server-origin-diagnostic";
     const directCreate = await userClient.schema("api").rpc("create_reservation", {
       p_input: capturedRequest.postDataJSON(),
       p_idempotency_key: capturedRequest.headers()["idempotency-key"],
@@ -173,7 +174,7 @@ try {
       ? await userClient.schema("api").rpc("get_reservation", { p_reservation_id: directCreate.data.reservation_id })
       : null;
     const readFailure = directRead?.error ? sanitizeDatabaseFailure(directRead.error.message) : directRead ? "success" : "not_attempted";
-    throw new Error(`reservation_create_http_failed:${firstResponse.status()}:${errorCode}:${routeFailure}:origin=${requestOrigin}:referer=${requestReferer}:fetch_site=${fetchSite}:same_origin_marker=${sameOriginMarker}:request=${requestHost}:direct_create=${directFailure}:direct_read=${readFailure}`);
+    throw new Error(`reservation_create_http_failed:${firstResponse.status()}:${errorCode}:${routeFailure}:origin=${requestOrigin}:referer=${requestReferer}:fetch_site=${fetchSite}:same_origin_marker=${sameOriginMarker}:request=${requestHost}:server=${originDiagnostics}:direct_create=${directFailure}:direct_read=${readFailure}`);
   }
   await page.getByRole("heading", { name: "Pul xülasəsi" }).waitFor();
   const createdText = await page.locator(".reservation-card").innerText();

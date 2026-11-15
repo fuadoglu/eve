@@ -3,7 +3,20 @@ import { parseReservationEnvelope } from "./reservation-contract.ts";
 export type ReservationCreateOperation = (input: unknown, idempotencyKey: string) => Promise<unknown>;
 
 export async function handleReservationCreate(request: Request, create: ReservationCreateOperation): Promise<Response> {
-  if (!isSameOriginRequest(request)) return errorResponse(403, "FORBIDDEN", "Sorğu bu mənbədən qəbul edilmir.");
+  if (!isSameOriginRequest(request)) {
+    if (process.env.CI === "true" && process.env.EVE_LOCAL_TEST_ALLOW_HTTP === "1") {
+      let requestOrigin = "invalid";
+      try { requestOrigin = new URL(request.url).origin; } catch { /* no URL diagnostics */ }
+      console.error("reservation_origin_rejected", JSON.stringify({
+        origin: request.headers.get("origin"), requestOrigin,
+        serialized: request.headers.has("origin") && isSerializedOrigin(request.headers.get("origin") ?? ""),
+        originMatches: request.headers.has("origin") && sameOrigin(request.headers.get("origin") ?? "", request.url),
+        fetchSite: request.headers.get("sec-fetch-site"),
+        marker: request.headers.get("x-eve-same-origin"),
+      }));
+    }
+    return errorResponse(403, "FORBIDDEN", "Sorğu bu mənbədən qəbul edilmir.");
+  }
   if (request.headers.get("content-type")?.split(";")[0]?.trim().toLowerCase() !== "application/json") {
     return errorResponse(400, "VALIDATION_ERROR", "Sorğunun formatı düzgün deyil.");
   }
