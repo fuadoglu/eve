@@ -104,8 +104,9 @@ try {
     }
   });
   await page.goto(`${baseUrl}/calendar`, { waitUntil: "networkidle" });
+  const propertyHeading = page.locator(".reservation-create-property").getByRole("heading", { name: "E2E test home" }).first();
   try {
-    await page.getByRole("heading", { name: "E2E test home" }).waitFor({ timeout: 10000 });
+    await propertyHeading.waitFor({ timeout: 10000 });
   } catch {
     const visibleText = (await page.locator("body").innerText()).replace(/\s+/g, " ").trim();
     const safeDiagnostics = serverDiagnostics.split("\n").filter((line) => line.includes("reservation_property_context_load_failed")).join(" | ");
