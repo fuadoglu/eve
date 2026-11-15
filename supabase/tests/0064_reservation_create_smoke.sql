@@ -15,6 +15,9 @@ insert into auth.users(id) values
  ('f0000000-0000-0000-0000-000000000011'),('f0000000-0000-0000-0000-000000000012'),
  ('f0000000-0000-0000-0000-000000000013'),('f0000000-0000-0000-0000-000000000014')
 on conflict (id) do nothing;
+insert into auth.sessions(id,user_id,created_at) values
+ ('f0100000-0000-0000-0000-000000000011','f0000000-0000-0000-0000-000000000011',clock_timestamp()),
+ ('f0100000-0000-0000-0000-000000000013','f0000000-0000-0000-0000-000000000013',clock_timestamp());
 insert into app_private.owner_accounts(id,owner_user_id) values
  ('f1000000-0000-0000-0000-000000000011','f0000000-0000-0000-0000-000000000011'),
  ('f1000000-0000-0000-0000-000000000012','f0000000-0000-0000-0000-000000000012');
@@ -35,6 +38,7 @@ insert into app_private.contacts(id,owner_account_id,name,phone,service_type) va
  ('f3000000-0000-0000-0000-000000000012','f1000000-0000-0000-0000-000000000012','B realtor','+994501234568','realtor');
 set local role authenticated;
 set local request.jwt.claim.sub='f0000000-0000-0000-0000-000000000011';
+set local request.jwt.claims='{"sub":"f0000000-0000-0000-0000-000000000011","session_id":"f0100000-0000-0000-0000-000000000011"}';
 do $$
 declare v_input jsonb; v_first jsonb; v_retry jsonb;
 begin
@@ -99,6 +103,7 @@ end $$;
 reset role;
 set local role authenticated;
 set local request.jwt.claim.sub='f0000000-0000-0000-0000-000000000013';
+set local request.jwt.claims='{"sub":"f0000000-0000-0000-0000-000000000013","session_id":"f0100000-0000-0000-0000-000000000013"}';
 do $$
 begin
   if api.create_reservation('{"property_id":"f2000000-0000-0000-0000-000000000011","guest_name":"Manager","check_in":"2027-08-01","check_out":"2027-08-02","total_minor":5000}'::jsonb,'reservation-create-manager-key-01')->>'reservation_id' is null then
@@ -149,6 +154,7 @@ rollback;
 begin;
 set local role authenticated;
 set local request.jwt.claim.sub='';
+set local request.jwt.claims='';
 do $$
 begin
   begin
