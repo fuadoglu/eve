@@ -168,6 +168,9 @@ try {
     const sameOriginMarker = capturedHeaders["x-eve-same-origin"] ?? "missing";
     const requestHost = new URL(capturedRequest.url()).origin;
     const originDiagnostics = serverDiagnostics.split("\n").filter((line) => line.includes("reservation_origin_rejected")).join(" | ") || "no-server-origin-diagnostic";
+    const serverErrors = serverDiagnostics.split("\n")
+      .filter((line) => /Error|Exception|APP_BASE_URL|reservation_origin_rejected/.test(line))
+      .slice(-8).join(" | ") || "no-server-error-diagnostic";
     const directCreate = await userClient.schema("api").rpc("create_reservation", {
       p_input: capturedRequest.postDataJSON(),
       p_idempotency_key: capturedRequest.headers()["idempotency-key"],
@@ -178,7 +181,7 @@ try {
       : null;
     const readFailure = directRead?.error ? sanitizeDatabaseFailure(directRead.error.message) : directRead ? "success" : "not_attempted";
     const bodyKind = firstResponseText.length === 0 ? "empty" : firstResponseText.startsWith("<!DOCTYPE") ? "html" : firstEnvelope ? "json" : "other";
-    throw new Error(`reservation_create_http_failed:${firstResponse.status()}:${firstResponse.headers()["content-type"] ?? "no_content_type"}:${bodyKind}:${errorCode}:${routeFailure}:origin=${requestOrigin}:referer=${requestReferer}:fetch_site=${fetchSite}:same_origin_marker=${sameOriginMarker}:request=${requestHost}:server=${originDiagnostics}:direct_create=${directFailure}:direct_read=${readFailure}`);
+    throw new Error(`reservation_create_http_failed:${firstResponse.status()}:${firstResponse.headers()["content-type"] ?? "no_content_type"}:${bodyKind}:${errorCode}:${routeFailure}:origin=${requestOrigin}:referer=${requestReferer}:fetch_site=${fetchSite}:same_origin_marker=${sameOriginMarker}:request=${requestHost}:server=${originDiagnostics}:server_errors=${serverErrors}:direct_create=${directFailure}:direct_read=${readFailure}`);
   }
   if (!firstEnvelope || typeof firstEnvelope !== "object") throw new Error(`reservation_create_http_invalid_json:${firstResponse.status()}`);
   await page.getByRole("heading", { name: "Pul xülasəsi" }).waitFor();
