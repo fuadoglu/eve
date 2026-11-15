@@ -118,7 +118,7 @@ try {
   await page.getByLabel("Ümumi qiymət (AZN)").fill("300,00");
   await page.locator(".reservation-more summary").click();
   await page.getByLabel("Alınan pul (AZN, istəyə bağlı)").fill("100,00");
-  await context.setOffline(true);
+  await page.evaluate(() => Object.defineProperty(window.navigator, "onLine", { configurable: true, value: false }));
   await page.getByRole("button", { name: "Təsdiqlə" }).click();
   const offlineError = page.locator(".reservation-request-error");
   try { await offlineError.waitFor({ timeout: 5000 }); }
@@ -128,7 +128,7 @@ try {
   }
   assert.equal(await offlineError.innerText(), "Bağlantı yoxdur. Son dəyişiklik hələ saxlanılmayıb.");
   assert.equal(await page.getByRole("heading", { name: "Pul xülasəsi" }).count(), 0);
-  await context.setOffline(false);
+  await page.evaluate(() => Object.defineProperty(window.navigator, "onLine", { configurable: true, value: true }));
   await page.getByLabel("Qonağın adı").fill("Synthetic guest");
   const createRequest = page.waitForRequest((request) => request.url().endsWith("/api/v1/reservations") && request.method() === "POST");
   const createResponse = page.waitForResponse((response) => response.url().endsWith("/api/v1/reservations") && response.request().method() === "POST");
