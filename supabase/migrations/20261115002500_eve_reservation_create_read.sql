@@ -3,7 +3,14 @@ grant select on app_private.owner_accounts, app_private.property_memberships,
   app_private.subscriptions, app_private.contacts, app_private.realtor_accounts,
   app_private.rent_entries, app_private.reservations, app_private.properties,
   app_private.reservation_placements to app_executor;
+-- Grant through the function owner. Supabase's migration role can transfer the
+-- narrowly scoped role for this statement, but its direct GRANT does not
+-- reliably update the owner-controlled ACL in the local stack.
+grant app_session_reader to current_user with set true, inherit false;
+set role app_session_reader;
 grant execute on function api.is_my_session_active() to app_executor;
+reset role;
+revoke app_session_reader from current_user;
 grant create on schema api to app_executor;
 grant app_executor to current_user with set true, inherit false;
 
@@ -156,7 +163,6 @@ $$;
 revoke all on function api.create_reservation(jsonb,text) from public, anon, authenticated;
 grant execute on function api.create_reservation(jsonb,text) to authenticated;
 reset role;
-grant execute on function api.is_my_session_active() to app_executor;
 revoke create on schema app_private from app_executor;
 
 revoke app_executor from current_user;
