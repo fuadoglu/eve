@@ -6,7 +6,7 @@ import { createClient } from "@supabase/supabase-js";
 import { chromium } from "playwright";
 import { createHmac, randomUUID } from "node:crypto";
 
-const baseUrl = "http://127.0.0.1:4178";
+const baseUrl = "http://localhost:4178";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 const serviceKey = process.env.EVE_LOCAL_SERVICE_ROLE_KEY || localServiceRoleJwt();

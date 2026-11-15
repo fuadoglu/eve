@@ -53,12 +53,23 @@ function isSameOriginRequest(request: Request): boolean {
     const origin = request.headers.get("origin");
     return origin !== null && isSerializedOrigin(origin) && sameOrigin(origin, canonicalOrigin);
   }
+  if (!requestHostMatchesCanonical(request, canonicalOrigin)) return false;
   const fetchSite = request.headers.get("sec-fetch-site");
   if (fetchSite === "cross-site") return false;
   if (request.headers.get("x-eve-same-origin") === "1") return true;
   if (fetchSite === "same-origin") return true;
   const referer = request.headers.get("referer");
   return referer !== null && sameOrigin(referer, canonicalOrigin);
+}
+function requestHostMatchesCanonical(request: Request, canonicalOrigin: string): boolean {
+  const host = request.headers.get("host");
+  if (!host) return false;
+  try {
+    const canonical = new URL(canonicalOrigin);
+    const requestHost = new URL(`${canonical.protocol}//${host}`);
+    return requestHost.host === canonical.host && !requestHost.username && !requestHost.password
+      && requestHost.pathname === "/" && !requestHost.search && !requestHost.hash;
+  } catch { return false; }
 }
 function isRecord(value: unknown): value is Record<string, unknown> { return typeof value === "object" && value !== null && !Array.isArray(value); }
 function publicMessage(code: string): string {

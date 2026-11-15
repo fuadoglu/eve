@@ -13,7 +13,7 @@ test.after(() => {
 function request(headers: Record<string, string> = {}, body: unknown = input): Request {
   return new Request("https://eve.test/api/v1/reservations", {
     method: "POST",
-    headers: { Origin: "https://eve.test", "Content-Type": "application/json", "Idempotency-Key": "reservation-key-0001", ...headers },
+    headers: { Host: "eve.test", Origin: "https://eve.test", "Content-Type": "application/json", "Idempotency-Key": "reservation-key-0001", ...headers },
     body: JSON.stringify(body),
   });
 }
@@ -54,6 +54,7 @@ test("same-origin Referer is accepted when the browser omits Origin", async () =
     method: "POST",
     headers: {
       Referer: "https://eve.test/calendar",
+      Host: "eve.test",
       "Content-Type": "application/json",
       "Idempotency-Key": "reservation-key-0001",
     },
@@ -68,6 +69,7 @@ test("same-origin Fetch Metadata is accepted when browser omits Origin and Refer
     method: "POST",
     headers: {
       "Sec-Fetch-Site": "same-origin",
+      Host: "eve.test",
       "Content-Type": "application/json",
       "Idempotency-Key": "reservation-key-0001",
     },
@@ -82,6 +84,7 @@ test("explicit Eve same-origin header is accepted when browser omits origin meta
     method: "POST",
     headers: {
       "X-Eve-Same-Origin": "1",
+      Host: "eve.test",
       "Content-Type": "application/json",
       "Idempotency-Key": "reservation-key-0001",
     },
@@ -99,6 +102,7 @@ test("cross-site Referer without Origin is rejected before the reservation opera
       Referer: "https://attacker.test/form",
       "Sec-Fetch-Site": "cross-site",
       "X-Eve-Same-Origin": "1",
+      Host: "eve.test",
       "Content-Type": "application/json",
       "Idempotency-Key": "reservation-key-0001",
     },
@@ -115,7 +119,26 @@ test("empty Origin is rejected even when Referer is same-origin", async () => {
     Origin: "",
     Referer: "https://eve.test/calendar",
     "Sec-Fetch-Site": "same-origin",
+      Host: "eve.test",
   }), async () => { calls++; return reservationDto(); });
+  assert.equal(response.status, 403);
+  assert.equal(calls, 0);
+});
+
+test("same-origin metadata cannot authorize a noncanonical Host alias", async () => {
+  const aliasRequest = new Request("https://eve.test/api/v1/reservations", {
+    method: "POST",
+    headers: {
+      Host: "alias.eve.test",
+      "Sec-Fetch-Site": "same-origin",
+      "X-Eve-Same-Origin": "1",
+      "Content-Type": "application/json",
+      "Idempotency-Key": "reservation-key-0001",
+    },
+    body: JSON.stringify(input),
+  });
+  let calls = 0;
+  const response = await handleReservationCreate(aliasRequest, async () => { calls++; return reservationDto(); });
   assert.equal(response.status, 403);
   assert.equal(calls, 0);
 });
