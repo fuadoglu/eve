@@ -10,6 +10,7 @@ begin
      or not has_function_privilege('authenticated','api.get_reservation(uuid)','EXECUTE')
      or has_table_privilege('authenticated','app_private.reservations','SELECT')
      or not has_function_privilege('app_executor','api.is_my_session_active()','EXECUTE')
+     or has_function_privilege('anon','api.is_my_session_active()','EXECUTE')
      or not has_function_privilege('app_executor','app_private.create_reservation_unchecked(jsonb,text)','EXECUTE')
      or has_function_privilege('authenticated','app_private.create_reservation_unchecked(jsonb,text)','EXECUTE') then
     raise exception 'reservation safe DTO RPC grants or ownership are unsafe';
