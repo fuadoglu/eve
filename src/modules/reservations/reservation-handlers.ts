@@ -49,11 +49,11 @@ function isSerializedOrigin(origin: string): boolean {
 }
 function isSameOriginRequest(request: Request): boolean {
   const canonicalOrigin = getAppBaseUrl().url;
+  if (!requestHostMatchesCanonical(request, canonicalOrigin)) return false;
   if (request.headers.has("origin")) {
     const origin = request.headers.get("origin");
     return origin !== null && isSerializedOrigin(origin) && sameOrigin(origin, canonicalOrigin);
   }
-  if (!requestHostMatchesCanonical(request, canonicalOrigin)) return false;
   const fetchSite = request.headers.get("sec-fetch-site");
   if (fetchSite === "cross-site") return false;
   if (request.headers.get("x-eve-same-origin") === "1") return true;

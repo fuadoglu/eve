@@ -143,6 +143,42 @@ test("same-origin metadata cannot authorize a noncanonical Host alias", async ()
   assert.equal(calls, 0);
 });
 
+test("canonical Origin cannot authorize a noncanonical destination Host", async () => {
+  const aliasRequest = new Request("https://eve.test/api/v1/reservations", {
+    method: "POST",
+    headers: {
+      Host: "alias.eve.test",
+      Origin: "https://eve.test",
+      "Content-Type": "application/json",
+      "Idempotency-Key": "reservation-key-0001",
+    },
+    body: JSON.stringify(input),
+  });
+  let calls = 0;
+  const response = await handleReservationCreate(aliasRequest, async () => { calls++; return reservationDto(); });
+  assert.equal(response.status, 403);
+  assert.equal(calls, 0);
+});
+
+test("missing or empty APP_BASE_URL fails before reservation creation", async () => {
+  const original = process.env.APP_BASE_URL;
+  let calls = 0;
+  try {
+    for (const value of [undefined, ""]) {
+      if (value === undefined) delete process.env.APP_BASE_URL;
+      else process.env.APP_BASE_URL = value;
+      await assert.rejects(
+        handleReservationCreate(request(), async () => { calls++; return reservationDto(); }),
+        /APP_BASE_URL/,
+      );
+    }
+    assert.equal(calls, 0);
+  } finally {
+    if (original === undefined) process.env.APP_BASE_URL = "https://eve.test";
+    else process.env.APP_BASE_URL = original;
+  }
+});
+
 test("successful create returns only a validated server DTO after the operation acknowledges", async () => {
   let receivedInput: unknown;
   let receivedKey = "";

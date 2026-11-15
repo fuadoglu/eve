@@ -17,7 +17,7 @@ Package scope was corrected before implementation because the former “AT07–1
 
 | Check | Result |
 |---|---|
-| Reservation unit tests | Passed, 19/19 via `node --conditions=react-server --experimental-strip-types --test tests/unit/reservations/*.test.ts`; includes absent-Origin Referer/Fetch Metadata/custom-header fallback, cross-site rejection, canonical Host enforcement, and empty-Origin rejection |
+| Reservation unit tests | Passed, 21/21 via `node --conditions=react-server --experimental-strip-types --test tests/unit/reservations/*.test.ts`; includes absent-Origin Referer/Fetch Metadata/custom-header fallback, cross-site rejection, canonical Host/Origin enforcement, empty-Origin rejection, and missing-config fail-closed behavior |
 | Browser integration script syntax | Passed via `node --check scripts/test-reservation-route-http.mjs`; the browser-to-PostgreSQL script itself is pending CI because local Docker is unavailable |
 | TypeScript | Passed via `node node_modules/typescript/bin/tsc --noEmit` |
 | Next production build | Passed via `node node_modules/next/dist/bin/next build` |
