@@ -135,6 +135,8 @@ alter function api.get_reservation(uuid) owner to app_executor;
 -- Keep the public create RPC name and contract, but route calls through a
 -- session-guarded wrapper. Authenticated callers cannot bypass revocation by
 -- invoking the former implementation directly through PostgREST.
+grant create on schema app_private to app_executor;
+set role app_executor;
 alter function api.create_reservation(jsonb,text) set schema app_private;
 alter function app_private.create_reservation(jsonb,text) rename to create_reservation_unchecked;
 revoke all on function app_private.create_reservation_unchecked(jsonb,text) from public, anon, authenticated;
@@ -153,7 +155,8 @@ end;
 $$;
 revoke all on function api.create_reservation(jsonb,text) from public, anon, authenticated;
 grant execute on function api.create_reservation(jsonb,text) to authenticated;
-alter function api.create_reservation(jsonb,text) owner to app_executor;
+reset role;
+revoke create on schema app_private from app_executor;
 
 revoke app_executor from current_user;
 revoke create on schema api from app_executor;

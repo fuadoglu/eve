@@ -112,8 +112,16 @@ begin
      or v_dto#>>'{balance,deposit_held_minor}'<>'5000' then
     raise exception 'reversals did not restore receipt or deposit balances';
   end if;
-  if api.revoke_my_sessions() is distinct from true or api.is_my_session_active() is distinct from false then
+  if api.revoke_my_sessions() is distinct from true then
     raise exception 'logout-all did not revoke the active test session';
+  end if;
+end $$;
+do $$
+declare v_reservation uuid;
+begin
+  v_reservation := current_setting('test.reservation_id')::uuid;
+  if api.is_my_session_active() is distinct from false then
+    raise exception 'revoked test session remained active';
   end if;
   begin
     perform 1 from api.list_reservable_property_contexts();
