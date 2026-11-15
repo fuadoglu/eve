@@ -3,6 +3,7 @@ grant select on app_private.owner_accounts, app_private.property_memberships,
   app_private.subscriptions, app_private.contacts, app_private.realtor_accounts,
   app_private.rent_entries, app_private.reservations, app_private.properties,
   app_private.reservation_placements to app_executor;
+grant execute on function api.is_my_session_active() to app_executor;
 grant create on schema api to app_executor;
 grant app_executor to current_user with set true, inherit false;
 
@@ -23,20 +24,26 @@ returns table (
   default_check_out text,
   default_custodian text
 )
-language sql stable security definer set search_path = ''
+language plpgsql stable security definer set search_path = ''
 as $$
-  select p.id, p.name::text, p.max_guests,
-         to_char(p.default_check_in, 'HH24:MI'), to_char(p.default_check_out, 'HH24:MI'),
-         case when exists (select 1 from app_private.owner_accounts oa
-           where oa.id=p.owner_account_id and oa.owner_user_id=app_private.current_actor_id())
-           then 'owner' else 'manager' end
-  from app_private.properties p
-  where p.archived_at is null
-    and app_private.can_write_reservation(p.id,p.owner_account_id)
-    and exists (select 1 from app_private.subscriptions s
-      where s.property_id=p.id and s.owner_account_id=p.owner_account_id
-        and s.state in ('trialing','active') and s.current_end>statement_timestamp())
-  order by p.name, p.id;
+begin
+  if not api.is_my_session_active() then
+    raise exception using errcode='28000', message='active_session_required';
+  end if;
+  return query
+    select p.id, p.name::text, p.max_guests,
+           to_char(p.default_check_in, 'HH24:MI'), to_char(p.default_check_out, 'HH24:MI'),
+           case when exists (select 1 from app_private.owner_accounts oa
+             where oa.id=p.owner_account_id and oa.owner_user_id=app_private.current_actor_id())
+             then 'owner' else 'manager' end
+    from app_private.properties p
+    where p.archived_at is null
+      and app_private.can_write_reservation(p.id,p.owner_account_id)
+      and exists (select 1 from app_private.subscriptions s
+        where s.property_id=p.id and s.owner_account_id=p.owner_account_id
+          and s.state in ('trialing','active') and s.current_end>statement_timestamp())
+    order by p.name, p.id;
+end;
 $$;
 revoke all on function api.list_reservable_property_contexts() from public, anon, authenticated;
 grant execute on function api.list_reservable_property_contexts() to authenticated;
@@ -49,8 +56,8 @@ as $$
 declare
   v_result jsonb;
 begin
-  if app_private.current_actor_id() is null then
-    raise exception using errcode='28000', message='authentication_required';
+  if not api.is_my_session_active() then
+    raise exception using errcode='28000', message='active_session_required';
   end if;
 
   select jsonb_strip_nulls(jsonb_build_object(
@@ -124,5 +131,29 @@ $$;
 revoke all on function api.get_reservation(uuid) from public, anon, authenticated;
 grant execute on function api.get_reservation(uuid) to authenticated;
 alter function api.get_reservation(uuid) owner to app_executor;
+
+-- Keep the public create RPC name and contract, but route calls through a
+-- session-guarded wrapper. Authenticated callers cannot bypass revocation by
+-- invoking the former implementation directly through PostgREST.
+alter function api.create_reservation(jsonb,text) set schema app_private;
+alter function app_private.create_reservation(jsonb,text) rename to create_reservation_unchecked;
+revoke all on function app_private.create_reservation_unchecked(jsonb,text) from public, anon, authenticated;
+grant execute on function app_private.create_reservation_unchecked(jsonb,text) to app_executor;
+
+create function api.create_reservation(p_input jsonb, p_idempotency_key text)
+returns jsonb
+language plpgsql volatile security definer set search_path = ''
+as $$
+begin
+  if not api.is_my_session_active() then
+    raise exception using errcode='28000', message='active_session_required';
+  end if;
+  return app_private.create_reservation_unchecked(p_input,p_idempotency_key);
+end;
+$$;
+revoke all on function api.create_reservation(jsonb,text) from public, anon, authenticated;
+grant execute on function api.create_reservation(jsonb,text) to authenticated;
+alter function api.create_reservation(jsonb,text) owner to app_executor;
+
 revoke app_executor from current_user;
 revoke create on schema api from app_executor;

@@ -8,13 +8,18 @@ begin
       from pg_proc p where p.oid='api.list_reservable_property_contexts()'::regprocedure)
      or has_function_privilege('anon','api.get_reservation(uuid)','EXECUTE')
      or not has_function_privilege('authenticated','api.get_reservation(uuid)','EXECUTE')
-     or has_table_privilege('authenticated','app_private.reservations','SELECT') then
+     or has_table_privilege('authenticated','app_private.reservations','SELECT')
+     or not has_function_privilege('app_executor','api.is_my_session_active()','EXECUTE')
+     or not has_function_privilege('app_executor','app_private.create_reservation_unchecked(jsonb,text)','EXECUTE')
+     or has_function_privilege('authenticated','app_private.create_reservation_unchecked(jsonb,text)','EXECUTE') then
     raise exception 'reservation safe DTO RPC grants or ownership are unsafe';
   end if;
 end $$;
 
 begin;
 insert into auth.users(id) values ('f0000000-0000-0000-0000-000000000025') on conflict (id) do nothing;
+insert into auth.sessions(id,user_id,created_at)
+values ('f0100000-0000-0000-0000-000000000025','f0000000-0000-0000-0000-000000000025',clock_timestamp());
 insert into app_private.owner_accounts(id,owner_user_id)
 values ('f1000000-0000-0000-0000-000000000025','f0000000-0000-0000-0000-000000000025');
 insert into app_private.properties(id,owner_account_id,name,area,max_guests,default_check_in,default_check_out)
@@ -23,6 +28,7 @@ insert into app_private.subscriptions(owner_account_id,property_id,state,current
 values ('f1000000-0000-0000-0000-000000000025','f2000000-0000-0000-0000-000000000025','trialing',now()+interval '7 days');
 set local role authenticated;
 set local request.jwt.claim.sub='f0000000-0000-0000-0000-000000000025';
+set local request.jwt.claims='{"sub":"f0000000-0000-0000-0000-000000000025","session_id":"f0100000-0000-0000-0000-000000000025"}';
 do $$
 declare
   v_first jsonb;
@@ -106,5 +112,25 @@ begin
      or v_dto#>>'{balance,deposit_held_minor}'<>'5000' then
     raise exception 'reversals did not restore receipt or deposit balances';
   end if;
+  if api.revoke_my_sessions() is distinct from true or api.is_my_session_active() is distinct from false then
+    raise exception 'logout-all did not revoke the active test session';
+  end if;
+  begin
+    perform 1 from api.list_reservable_property_contexts();
+    raise exception 'revoked session unexpectedly listed reservation property contexts';
+  exception when sqlstate '28000' then null;
+  end;
+  begin
+    perform api.get_reservation(v_reservation);
+    raise exception 'revoked session unexpectedly read reservation DTO';
+  exception when sqlstate '28000' then null;
+  end;
+  begin
+    perform api.create_reservation(
+      '{"property_id":"f2000000-0000-0000-0000-000000000025","guest_name":"Revoked guest","check_in":"2027-06-01","check_out":"2027-06-02","total_minor":10000}'::jsonb,
+      'revoked-reservation-key-025');
+    raise exception 'revoked session unexpectedly created a reservation';
+  exception when sqlstate '28000' then null;
+  end;
 end $$;
 rollback;
