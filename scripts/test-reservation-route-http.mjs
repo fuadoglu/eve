@@ -155,7 +155,16 @@ try {
   const firstEnvelope = await firstResponse.json();
   if (firstResponse.status() !== 201) {
     const errorCode = typeof firstEnvelope?.error?.code === "string" ? firstEnvelope.error.code : "unknown_error";
-    throw new Error(`reservation_create_http_failed:${firstResponse.status()}:${errorCode}`);
+    const directCreate = await userClient.schema("api").rpc("create_reservation", {
+      p_input: capturedRequest.postDataJSON(),
+      p_idempotency_key: capturedRequest.headers()["idempotency-key"],
+    });
+    const directFailure = directCreate.error ? sanitizeDatabaseFailure(directCreate.error.message) : "success";
+    const directRead = directCreate.data && typeof directCreate.data.reservation_id === "string"
+      ? await userClient.schema("api").rpc("get_reservation", { p_reservation_id: directCreate.data.reservation_id })
+      : null;
+    const readFailure = directRead?.error ? sanitizeDatabaseFailure(directRead.error.message) : directRead ? "success" : "not_attempted";
+    throw new Error(`reservation_create_http_failed:${firstResponse.status()}:${errorCode}:direct_create=${directFailure}:direct_read=${readFailure}`);
   }
   await page.getByRole("heading", { name: "Pul xülasəsi" }).waitFor();
   const createdText = await page.locator(".reservation-card").innerText();
@@ -225,4 +234,14 @@ function localServiceRoleJwt() {
   })}`;
   const signature = createHmac("sha256", key).update(signingInput).digest("base64url");
   return `${signingInput}.${signature}`;
+}
+
+function sanitizeDatabaseFailure(message) {
+  if (message.includes("active_entitlement_required")) return "active_entitlement_required";
+  if (message.includes("active_session_required")) return "active_session_required";
+  if (message.includes("receipt_owner_must_be_actor")) return "receipt_owner_must_be_actor";
+  if (message.includes("receipt_manager_must_be_actor")) return "receipt_manager_must_be_actor";
+  if (message.startsWith("permission denied for function")) return "permission_denied_for_function";
+  if (message.startsWith("permission denied for schema")) return "permission_denied_for_schema";
+  return "other_database_error";
 }
