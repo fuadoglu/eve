@@ -21,3 +21,7 @@ This package slice implements and tests runtime input parsing for the documented
 | Independent read-only contract/security review | No blocker; review verified input limits and the explicit server/DB boundary. Reviewer noted and the author corrected one test title that had called version-shape validation “stale” validation. |
 
 This is local code/test evidence only. No PostgreSQL or hosted backend operation was implemented or exercised; no auth, tenant ownership, capability, same-owner move, occupancy, concurrency, financial history, route, mobile UI or production acceptance is claimed.
+
+## Package closure
+
+EVE-012.1 is `done` for this documented local component/contract scope. PR #112 was squash-merged as `72a0c15a2da07bad4412b75d46b4b2d6104f7aec`; independent read-only review found no blocker. PR CI [#43686648247](https://github.com/fuadoglu/eve/actions/runs/43686648247) and merged-main CI [#43686821689](https://github.com/fuadoglu/eve/actions/runs/43686821689) passed `docs`, PostgreSQL 17 `sql_schema`, and fresh synthetic `supabase_local`. Parent #20 and full AT10 remain open; this package closure does not assert backend transition integration or production readiness.

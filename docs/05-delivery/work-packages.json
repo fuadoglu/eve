@@ -1061,7 +1061,7 @@
       "parent_issue": 20,
       "milestone": "M2",
       "title": "Tarix/qiymət və eyni sahibdə move",
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "EVE-010.3",
         "EVE-011.3"
