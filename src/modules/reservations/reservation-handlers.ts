@@ -3,8 +3,7 @@ import { parseReservationEnvelope } from "./reservation-contract.ts";
 export type ReservationCreateOperation = (input: unknown, idempotencyKey: string) => Promise<unknown>;
 
 export async function handleReservationCreate(request: Request, create: ReservationCreateOperation): Promise<Response> {
-  const origin = request.headers.get("origin");
-  if (!origin || !sameOrigin(origin, request.url)) return errorResponse(403, "FORBIDDEN", "Sorğu bu mənbədən qəbul edilmir.");
+  if (!isSameOriginRequest(request)) return errorResponse(403, "FORBIDDEN", "Sorğu bu mənbədən qəbul edilmir.");
   if (request.headers.get("content-type")?.split(";")[0]?.trim().toLowerCase() !== "application/json") {
     return errorResponse(400, "VALIDATION_ERROR", "Sorğunun formatı düzgün deyil.");
   }
@@ -29,6 +28,13 @@ export async function handleReservationCreate(request: Request, create: Reservat
 function sameOrigin(origin: string, requestUrl: string): boolean {
   try { return new URL(origin).origin === new URL(requestUrl).origin; }
   catch { return false; }
+}
+function isSameOriginRequest(request: Request): boolean {
+  const origin = request.headers.get("origin");
+  if (origin) return sameOrigin(origin, request.url);
+  const referer = request.headers.get("referer");
+  return request.headers.get("sec-fetch-site") !== "cross-site"
+    && referer !== null && sameOrigin(referer, request.url);
 }
 function isRecord(value: unknown): value is Record<string, unknown> { return typeof value === "object" && value !== null && !Array.isArray(value); }
 function publicMessage(code: string): string {

@@ -42,6 +42,26 @@ test("origin, JSON media type and idempotency key are checked before calling the
   assert.equal(calls, 0);
 });
 
+test("same-origin Referer is accepted when the browser omits Origin", async () => {
+  const response = await handleReservationCreate(request({
+    Origin: "",
+    Referer: "https://eve.test/calendar",
+    "Sec-Fetch-Site": "same-origin",
+  }), async () => reservationDto());
+  assert.equal(response.status, 201);
+});
+
+test("cross-site Referer without Origin is rejected before the reservation operation", async () => {
+  let calls = 0;
+  const response = await handleReservationCreate(request({
+    Origin: "",
+    Referer: "https://attacker.test/form",
+    "Sec-Fetch-Site": "cross-site",
+  }), async () => { calls++; return reservationDto(); });
+  assert.equal(response.status, 403);
+  assert.equal(calls, 0);
+});
+
 test("successful create returns only a validated server DTO after the operation acknowledges", async () => {
   let receivedInput: unknown;
   let receivedKey = "";
