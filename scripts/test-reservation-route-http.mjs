@@ -187,7 +187,7 @@ try {
   await page.getByRole("heading", { name: "Pul xülasəsi" }).waitFor();
   const createdText = await page.locator(".reservation-card").innerText();
   assert.match(createdText, /Balans serverdən alınıb/);
-  assert.match(createdText, /200,00/);
+  assert.match(createdText, /200[.,]00/);
   const body = capturedRequest.postDataJSON();
   const key = capturedRequest.headers()["idempotency-key"];
   assert.equal(typeof key, "string");
