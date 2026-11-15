@@ -178,7 +178,7 @@ try {
       : null;
     const readFailure = directRead?.error ? sanitizeDatabaseFailure(directRead.error.message) : directRead ? "success" : "not_attempted";
     const bodyKind = firstResponseText.length === 0 ? "empty" : firstResponseText.startsWith("<!DOCTYPE") ? "html" : firstEnvelope ? "json" : "other";
-    throw new Error(`reservation_create_http_failed:${firstResponse.status()}:${firstResponse.headers().get("content-type") ?? "no_content_type"}:${bodyKind}:${errorCode}:${routeFailure}:origin=${requestOrigin}:referer=${requestReferer}:fetch_site=${fetchSite}:same_origin_marker=${sameOriginMarker}:request=${requestHost}:server=${originDiagnostics}:direct_create=${directFailure}:direct_read=${readFailure}`);
+    throw new Error(`reservation_create_http_failed:${firstResponse.status()}:${firstResponse.headers()["content-type"] ?? "no_content_type"}:${bodyKind}:${errorCode}:${routeFailure}:origin=${requestOrigin}:referer=${requestReferer}:fetch_site=${fetchSite}:same_origin_marker=${sameOriginMarker}:request=${requestHost}:server=${originDiagnostics}:direct_create=${directFailure}:direct_read=${readFailure}`);
   }
   if (!firstEnvelope || typeof firstEnvelope !== "object") throw new Error(`reservation_create_http_invalid_json:${firstResponse.status()}`);
   await page.getByRole("heading", { name: "Pul xülasəsi" }).waitFor();
