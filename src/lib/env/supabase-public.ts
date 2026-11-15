@@ -56,10 +56,12 @@ export function validateSupabasePublicConfig(
 }
 
 export function getSupabasePublicConfig(): SupabasePublicConfig {
+  const allowLocalHttp = process.env.NODE_ENV !== "production"
+    || (process.env.CI === "true" && process.env.EVE_LOCAL_TEST_ALLOW_HTTP === "1");
   return validateSupabasePublicConfig(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
-    process.env.NODE_ENV !== "production",
+    allowLocalHttp,
   );
 }
 

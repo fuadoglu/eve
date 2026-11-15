@@ -387,13 +387,14 @@ jobs:
           export NEXT_PUBLIC_SUPABASE_URL="$API_URL"
           export NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="${PUBLISHABLE_KEY:-$ANON_KEY}"
           pnpm install --frozen-lockfile
+          pnpm build
           pnpm exec playwright install --with-deps chromium
       - name: Cookie-scoped browser-to-PostgreSQL reservation E2E
         run: |
           eval "$(npx -y supabase@3.1.0 status -o env)"
           export NEXT_PUBLIC_SUPABASE_URL="$API_URL"
           export NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="${PUBLISHABLE_KEY:-$ANON_KEY}"
-          node scripts/test-reservation-route-http.mjs
+          EVE_LOCAL_TEST_ALLOW_HTTP=1 node scripts/test-reservation-route-http.mjs
       - name: Lokal sintetik stack-i sil
         if: always()
         run: npx -y supabase@3.1.0 stop --project-id eve --no-backup

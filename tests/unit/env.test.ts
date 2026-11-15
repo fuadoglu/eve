@@ -1,7 +1,23 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { validateAppBaseUrl, validateSupabasePublicConfig } from "../../src/lib/env/supabase-public.ts";
+import { getSupabasePublicConfig } from "../../src/lib/env/supabase-public.ts";
 import { getSupabaseSecretKey } from "../../src/lib/env/supabase-server.ts";
+
+function withEnv<T>(values: Record<string, string | undefined>, run: () => T): T {
+  const previous = Object.fromEntries(Object.keys(values).map((key) => [key, process.env[key]]));
+  for (const [key, value] of Object.entries(values)) {
+    if (value === undefined) delete process.env[key];
+    else process.env[key] = value;
+  }
+  try { return run(); }
+  finally {
+    for (const [key, value] of Object.entries(previous)) {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
+  }
+}
 
 function withSecretKey<T>(value: string | undefined, run: () => T): T {
   const previous = process.env.SUPABASE_SECRET_KEY;
@@ -43,6 +59,23 @@ test("accepts HTTP only for a local Supabase project", () => {
     ).url,
     "http://127.0.0.1:54321",
   );
+});
+
+test("permits local HTTP in a production server only for the explicit CI integration-test opt-in", () => {
+  const config = {
+    NODE_ENV: "production",
+    NEXT_PUBLIC_SUPABASE_URL: "http://127.0.0.1:54321",
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_example",
+  };
+  withEnv({ ...config, CI: "true", EVE_LOCAL_TEST_ALLOW_HTTP: "1" }, () => {
+    assert.equal(getSupabasePublicConfig().url, "http://127.0.0.1:54321");
+  });
+  withEnv({ ...config, CI: "true", EVE_LOCAL_TEST_ALLOW_HTTP: undefined }, () => {
+    assert.throws(() => getSupabasePublicConfig(), /must use HTTPS/);
+  });
+  withEnv({ ...config, CI: undefined, EVE_LOCAL_TEST_ALLOW_HTTP: "1" }, () => {
+    assert.throws(() => getSupabasePublicConfig(), /must use HTTPS/);
+  });
 });
 
 test("rejects a missing public key", () => {
