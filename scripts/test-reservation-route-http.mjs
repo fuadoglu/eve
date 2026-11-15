@@ -60,6 +60,7 @@ try {
   delete childEnv.SUPABASE_SECRET_KEY;
   delete childEnv.JWT_SECRET;
   delete childEnv.PGRST_JWT_SECRET;
+  childEnv.APP_BASE_URL = baseUrl;
   nextServer = spawn("node", ["node_modules/next/dist/bin/next", "start", "--port", "4178"], {
     env: childEnv,
     stdio: ["ignore", "ignore", "pipe"],

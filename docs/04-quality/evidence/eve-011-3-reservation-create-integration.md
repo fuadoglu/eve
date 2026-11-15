@@ -7,7 +7,7 @@ Package scope was corrected before implementation because the former “AT07–1
 ## Implemented
 
 - Calendar reads only currently writable property contexts through the cookie-scoped authenticated Supabase client.
-- Reservation form submits to `POST /api/v1/reservations`; the route enforces same-origin JSON requests and an idempotency key. Browser POSTs that omit `Origin` use same-origin Fetch Metadata, a same-origin `Referer`, or the form's custom `X-Eve-Same-Origin` header; cross-site fetch metadata is rejected.
+- Reservation form submits to `POST /api/v1/reservations`; the route enforces same-origin JSON requests against canonical `APP_BASE_URL` and an idempotency key. Browser POSTs that omit `Origin` use same-origin Fetch Metadata, a same-origin `Referer`, or the form's custom `X-Eve-Same-Origin` header; cross-site fetch metadata is rejected.
 - The route requires an authenticated, active session and calls `api.create_reservation` and then the scoped safe DTO RPC using the user's session. It does not use the service role.
 - A success response is returned only after the server DTO passes the existing reservation envelope parser. The UI shows the detail/balance only after that acknowledgement.
 - Safe DTO balance projection accounts for receipt/refund/deposit entries and reversals. SQL smoke verifies retry and reversal cases.

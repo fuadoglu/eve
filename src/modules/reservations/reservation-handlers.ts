@@ -1,4 +1,5 @@
 import { parseReservationEnvelope } from "./reservation-contract.ts";
+import { getAppBaseUrl } from "../../lib/env/supabase-public.ts";
 
 export type ReservationCreateOperation = (input: unknown, idempotencyKey: string) => Promise<unknown>;
 
@@ -47,16 +48,17 @@ function isSerializedOrigin(origin: string): boolean {
   catch { return false; }
 }
 function isSameOriginRequest(request: Request): boolean {
+  const canonicalOrigin = getAppBaseUrl().url;
   if (request.headers.has("origin")) {
     const origin = request.headers.get("origin");
-    return origin !== null && isSerializedOrigin(origin) && sameOrigin(origin, request.url);
+    return origin !== null && isSerializedOrigin(origin) && sameOrigin(origin, canonicalOrigin);
   }
   const fetchSite = request.headers.get("sec-fetch-site");
   if (fetchSite === "cross-site") return false;
   if (request.headers.get("x-eve-same-origin") === "1") return true;
   if (fetchSite === "same-origin") return true;
   const referer = request.headers.get("referer");
-  return referer !== null && sameOrigin(referer, request.url);
+  return referer !== null && sameOrigin(referer, canonicalOrigin);
 }
 function isRecord(value: unknown): value is Record<string, unknown> { return typeof value === "object" && value !== null && !Array.isArray(value); }
 function publicMessage(code: string): string {

@@ -3,6 +3,12 @@ import assert from "node:assert/strict";
 import { handleReservationCreate } from "../../../src/modules/reservations/reservation-handlers.ts";
 
 const input = { property_id: "f2000000-0000-4000-8000-000000000001", guest_name: "A Guest" };
+const originalAppBaseUrl = process.env.APP_BASE_URL;
+process.env.APP_BASE_URL = "https://eve.test";
+test.after(() => {
+  if (originalAppBaseUrl === undefined) delete process.env.APP_BASE_URL;
+  else process.env.APP_BASE_URL = originalAppBaseUrl;
+});
 
 function request(headers: Record<string, string> = {}, body: unknown = input): Request {
   return new Request("https://eve.test/api/v1/reservations", {
