@@ -37,6 +37,7 @@ test("origin, JSON media type and idempotency key are checked before calling the
   let calls = 0;
   const create = async () => { calls++; return reservationDto(); };
   assert.equal((await handleReservationCreate(request({ Origin: "https://attacker.test" }), create)).status, 403);
+  assert.equal((await handleReservationCreate(request({ Origin: "https://eve.test/api" }), create)).status, 403);
   assert.equal((await handleReservationCreate(request({ "Idempotency-Key": "short" }), create)).status, 400);
   assert.equal((await handleReservationCreate(request({ "Content-Type": "text/plain" }), create)).status, 400);
   assert.equal(calls, 0);

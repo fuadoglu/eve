@@ -29,10 +29,14 @@ function sameOrigin(origin: string, requestUrl: string): boolean {
   try { return new URL(origin).origin === new URL(requestUrl).origin; }
   catch { return false; }
 }
+function isSerializedOrigin(origin: string): boolean {
+  try { return new URL(origin).origin === origin; }
+  catch { return false; }
+}
 function isSameOriginRequest(request: Request): boolean {
   if (request.headers.has("origin")) {
     const origin = request.headers.get("origin");
-    return origin !== null && origin.trim().length > 0 && sameOrigin(origin, request.url);
+    return origin !== null && isSerializedOrigin(origin) && sameOrigin(origin, request.url);
   }
   const fetchSite = request.headers.get("sec-fetch-site");
   if (fetchSite === "cross-site") return false;
