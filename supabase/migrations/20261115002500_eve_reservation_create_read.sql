@@ -156,6 +156,7 @@ $$;
 revoke all on function api.create_reservation(jsonb,text) from public, anon, authenticated;
 grant execute on function api.create_reservation(jsonb,text) to authenticated;
 reset role;
+grant execute on function api.is_my_session_active() to app_executor;
 revoke create on schema app_private from app_executor;
 
 revoke app_executor from current_user;

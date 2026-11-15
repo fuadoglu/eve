@@ -6,6 +6,8 @@ begin
       from pg_proc p where p.oid='api.create_reservation(jsonb,text)'::regprocedure)
      or has_function_privilege('anon','api.create_reservation(jsonb,text)','EXECUTE')
      or not has_function_privilege('authenticated','api.create_reservation(jsonb,text)','EXECUTE')
+     or not has_function_privilege('app_executor','api.is_my_session_active()','EXECUTE')
+     or not has_function_privilege('app_executor','api.create_reservation(jsonb,text)','EXECUTE')
      or has_table_privilege('authenticated','app_private.reservations','INSERT') then
     raise exception 'reservation RPC owner/grant boundary is unsafe';
   end if;
