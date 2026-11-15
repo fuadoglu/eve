@@ -120,7 +120,13 @@ try {
   await page.getByLabel("Alınan pul (AZN, istəyə bağlı)").fill("100,00");
   await context.setOffline(true);
   await page.getByRole("button", { name: "Təsdiqlə" }).click();
-  await page.getByRole("alert").getByText("Bağlantı yoxdur. Son dəyişiklik hələ saxlanılmayıb.").waitFor();
+  const offlineError = page.locator(".reservation-request-error");
+  try { await offlineError.waitFor({ timeout: 5000 }); }
+  catch {
+    const visibleText = (await page.locator("body").innerText()).replace(/\s+/g, " ").trim();
+    throw new Error(`offline submission feedback missing: ${visibleText}`);
+  }
+  assert.equal(await offlineError.innerText(), "Bağlantı yoxdur. Son dəyişiklik hələ saxlanılmayıb.");
   assert.equal(await page.getByRole("heading", { name: "Pul xülasəsi" }).count(), 0);
   await context.setOffline(false);
   await page.getByLabel("Qonağın adı").fill("Synthetic guest");
