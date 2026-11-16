@@ -2,6 +2,8 @@
 
 Tarix: 2026-11-14 (Asia/Baku). Mərhələ: **M1–M6 component implementation və CI inteqrasiyası davam edir**. Release gate-lər açıqdır; tətbiq production-ready deyil.
 
+2026-11-16 EVE-012.3 `in_progress`: migration reservation placement tarixçəsində `effective_to` üçün yalnız birdəfəlik bağlanmanı saxlayır; digər snapshot/identity dəyişikliklərini və silinməni rədd edir. İlk PR CI smoke-u trusted `app_executor` üçün səhv birbaşa SELECT fərziyyəsinə görə uğursuz oldu; test authenticated manager-in private DB cədvəlinə birbaşa çıxış sərhədinə düzəldildi. Düzəlişdən sonra PR CI [#43817148464](https://github.com/fuadoglu/eve/actions/runs/43817148464) `docs`, PostgreSQL 17 `sql_schema` və fresh synthetic Supabase `supabase_local` job-larının hamısını keçdi. Bu, synthetic CI sübutudur; hosted Eve bazası dəyişməyib. Real move RPC, stale-version, occupancy/task/maliyyə atomikliyi, tamamlanmış taskın saxlanması və guest-private link ləğvi açıqdır; buna görə AT10 və package tamamlanmayıb. Sayğac 42/90 (46.7%) olaraq qalır. [EVE-012.3 cari sübut qeydi](../04-quality/evidence/eve-012-3-placement-history.md).
+
 ## Tamamlanmış sənəd müqaviləsi
 
 R01–R16 tələb xəritəsi, 118 OpenAPI əməliyyatı, 56 data cədvəli, 5 state machine, 256 birbaşa/alias field binding və 36 qəbul ssenarisi yoxlanır. EVE-001 PR #43–#46 və EVE-004 PR #47–#49 main-a merge edilib. `node scripts/docs-check.mjs`, `node scripts/verify-contracts.mjs`, Python OpenAPI/JSON Schema validatoru və prototip smoke main-da keçib. Bu yoxlamalar işləyən API/DB və ya məhsul qəbul sınağı deyil.
