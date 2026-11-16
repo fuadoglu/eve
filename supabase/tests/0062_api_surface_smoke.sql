@@ -30,6 +30,7 @@ begin
       'api.create_manager_invite(uuid,text,uuid[],text,text)'::regprocedure,
       'api.accept_manager_invite(text)'::regprocedure,
       'api.create_reservation(jsonb,text)'::regprocedure,
+      'api.move_reservation(uuid,jsonb,text)'::regprocedure,
       'api.list_reservable_property_contexts()'::regprocedure,
       'api.get_reservation(uuid)'::regprocedure,
       'api.transition_task(uuid,integer,text,text,text,text,uuid[],text)'::regprocedure,
@@ -53,6 +54,7 @@ begin
                         'api.create_manager_invite(uuid,text,uuid[],text,text)'::regprocedure,
                         'api.accept_manager_invite(text)'::regprocedure,
                         'api.create_reservation(jsonb,text)'::regprocedure,
+                        'api.move_reservation(uuid,jsonb,text)'::regprocedure,
       'api.transition_task(uuid,integer,text,text,text,text,uuid[],text)'::regprocedure,
       'api.finalize_media_upload_for_server(uuid,uuid,text,bigint,integer,text,text)'::regprocedure,
       'api.get_media_finalize_source_for_server(uuid,uuid,text)'::regprocedure,
@@ -68,6 +70,7 @@ begin
                     'api.create_manager_invite(uuid,text,uuid[],text,text)'::regprocedure,
                     'api.accept_manager_invite(text)'::regprocedure,
                     'api.create_reservation(jsonb,text)'::regprocedure,
+                    'api.move_reservation(uuid,jsonb,text)'::regprocedure,
       'api.transition_task(uuid,integer,text,text,text,text,uuid[],text)'::regprocedure,
       'api.finalize_media_upload_for_server(uuid,uuid,text,bigint,integer,text,text)'::regprocedure,
       'api.get_media_finalize_source_for_server(uuid,uuid,text)'::regprocedure,
@@ -99,7 +102,7 @@ begin
   select count(*) into mismatch_count
   from pg_proc p
   where p.pronamespace='api'::regnamespace;
-  if mismatch_count <> 26 then
+  if mismatch_count <> 27 then
     raise exception 'api RPC inventory changed: %', mismatch_count;
   end if;
 
