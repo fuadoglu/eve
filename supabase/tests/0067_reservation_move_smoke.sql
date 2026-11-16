@@ -64,7 +64,7 @@ insert into app_private.tasks(
    now()+interval '2 days','accepted',true,4),
   ('f7500000-0000-0000-0000-000000000002','f7100000-0000-0000-0000-000000000001',
    'f7200000-0000-0000-0000-000000000001','f7300000-0000-0000-0000-000000000001',
-   'f7400000-0000-0000-0000-000000000001','cleaning','Completed cleaning',
+   'f7400000-0000-0000-0000-000000000001','other','Completed task',
    now()-interval '2 hours','completed',false,7);
 update app_private.tasks set confirmed_at=now(),confirmed_by='f7000000-0000-0000-0000-000000000001'
 where id='f7500000-0000-0000-0000-000000000002';
@@ -213,7 +213,7 @@ begin
        and state='open' and due_at>now() and required_for_readiness and assignee_contact_id is null
        and description is null and inspection_event_id is null)
      or not exists(select 1 from app_private.tasks where id='f7500000-0000-0000-0000-000000000002'
-       and state='completed' and version=7) then
+       and kind='other' and state='completed' and version=7) then
     raise exception 'source/target cleaning tasks or completed task preservation is incorrect';
   end if;
   if (select count(*) from app_private.access_links where token_hash=repeat('a',64) and revoked_at is not null)<>1

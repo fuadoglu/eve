@@ -79,6 +79,8 @@ create policy idempotency_keys_move_update on app_private.idempotency_keys
   using (actor_scope=(select app_private.current_actor_id())::text||':moveReservation')
   with check (actor_scope=(select app_private.current_actor_id())::text||':moveReservation');
 
+grant create on schema api to app_executor;
+
 create function api.move_reservation(
   p_reservation_id uuid,
   p_input jsonb,
@@ -379,3 +381,4 @@ grant execute on function api.move_reservation(uuid,jsonb,text) to authenticated
 grant app_executor to current_user with set true, inherit false;
 alter function api.move_reservation(uuid,jsonb,text) owner to app_executor;
 revoke app_executor from current_user;
+revoke create on schema api from app_executor;
