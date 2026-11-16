@@ -16828,7 +16828,7 @@
           },
           "reason": {
             "type": "string",
-            "maxLength": 2000
+            "maxLength": 1000
           }
         },
         "required": [
