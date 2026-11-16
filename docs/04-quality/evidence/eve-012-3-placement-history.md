@@ -2,7 +2,7 @@
 
 ## Scope and status
 
-Status: `in_progress`. Draft PR #122 contains initial implementation commit `cf11992`; placement-history, same-owner move, date/price patch, lifecycle transition RPCs, and authenticated HTTP routes are in the proposed package increment. The package is not closed: the current smoke is synthetic PostgreSQL 16, PR CI is queued, and merged-main CI plus closure evidence are pending.
+Status: `in_progress`. Draft PR #122 contains implementation commit `cf11992` and allowlist fix `85cae2b`; placement-history, same-owner move, date/price patch, lifecycle transition RPCs, and authenticated HTTP routes are in the proposed package increment. PR CI run #43964485492 passed all three jobs. The package is not closed: SQL local evidence is synthetic PostgreSQL 16, full-scope PR review is pending, and merged-main CI plus closure evidence remain required.
 
 Normative references: `docs/03-engineering/DATA-MODEL.md` §§4–5, `docs/04-quality/ACCEPTANCE.md` AT10, and `docs/05-delivery/work-packages.json` EVE-012.3.
 
@@ -36,13 +36,14 @@ Normative references: `docs/03-engineering/DATA-MODEL.md` §§4–5, `docs/04-qu
 - Local Next.js production build and preview — `next build` passed; `next start` served `/calendar` with HTTP 200. Initial no-config preview showed the expected connection state. A follow-up used the `eve-hosted-migration-check` publishable key and a synthetic Auth user/session; Auth verification worked, but calendar RPCs returned `PGRST106 Invalid schema: api` because the hosted project does not expose the repo's API schema. The broader hosted configuration status and evidence are in `eve-hosted-migration-check-2026-11-14.md`.
 - Initial PR CI run [#43816716512](https://github.com/fuadoglu/eve/actions/runs/43816716512) failed in the placement smoke: the first version incorrectly assumed the trusted internal `app_executor` role could not select historical rows. Existing media-proxy policy intentionally grants that role row access; it is not granted to `authenticated`. The smoke was corrected to assert that authenticated clients have no direct private-table access.
 - Corrected PR CI run [#43817148464](https://github.com/fuadoglu/eve/actions/runs/43817148464) — passed all three jobs: `docs`, PostgreSQL 17 `sql_schema` including migration and smoke, and fresh synthetic `supabase_local` including the smoke and full local HTTP/browser checks.
-- Initial PR #122 CI run [#43963622666](https://github.com/fuadoglu/eve/actions/runs/43963622666) failed because the RLS/grant catalog guard and API RPC allowlist did not include migration 028's exact grants, policies, and two functions. The migration's unused `audit_events SELECT` grant was removed; `0062_rls_coverage_smoke.sql` and `0062_api_surface_smoke.sql` now explicitly allowlist the scoped additions. Fresh local PostgreSQL 16 smokes pass after these corrections; new PR-head CI is pending.
+- Initial PR #122 CI run [#43963622666](https://github.com/fuadoglu/eve/actions/runs/43963622666) failed because the RLS/grant catalog guard and API RPC allowlist did not include migration 028's exact grants, policies, and two functions. The migration's unused `audit_events SELECT` grant was removed; `0062_rls_coverage_smoke.sql` and `0062_api_surface_smoke.sql` now explicitly allowlist the scoped additions.
+- Corrected PR #122 head `85cae2b871bfc477cfe12f1021578da631e89178` passed [CI run #43964485492](https://github.com/fuadoglu/eve/actions/runs/43964485492): `docs`, PostgreSQL 17 `sql_schema` (including migration 028, smoke 0068, RLS/grant and API surface guards), and fresh synthetic `supabase_local` (including HTTP/browser-to-PostgreSQL E2E). These are CI synthetic results, not hosted/staging/production database proof.
 - The previous move-only independent review is historical evidence for that increment. A fresh read-only review of the new SQL identified settlement visibility and commission-balance issues; implementation and regression cases were updated. Follow-up and final full-scope read-only reviews confirmed those fixes and found no remaining static blocker in the requested RLS, commission, refunds, lifecycle, and no-show paths. Reviewer did not execute tests; the integrator reran the corrected PostgreSQL 16 smoke successfully. PostgreSQL 17 CI remains required.
 - No new migration has been applied to the hosted migration-check project, staging, or production. The local synthetic database alone does not establish hosted migration history or release readiness.
 
 ## Explicitly open
 
-- Run the PostgreSQL 17 `sql_schema` and fresh Supabase CI jobs on the final PR head; resolve any failures, merge PR #122 under repository rules, then record merged-main CI.
+- Complete full-scope independent PR review, merge PR #122 under repository rules, then record merged-main CI.
 - EVE-012.3 acceptance, parent #20, and package ledger closure remain open until PR/review/CI/main-branch evidence is complete.
 
 This package is not production-ready evidence and does not claim any hosted database or production change.
