@@ -2,7 +2,7 @@
 
 ## Scope and status
 
-Status: `in_progress`. Merged placement-history and same-owner move increments are now joined by an in-progress date/price patch, lifecycle transition RPCs, and authenticated HTTP routes. The package is not closed: the current smoke is synthetic PostgreSQL 16, the new migration has not yet passed PostgreSQL 17 CI, and PR, merged-main CI, and closure evidence are still pending.
+Status: `in_progress`. Draft PR #122 contains initial implementation commit `cf11992`; placement-history, same-owner move, date/price patch, lifecycle transition RPCs, and authenticated HTTP routes are in the proposed package increment. The package is not closed: the current smoke is synthetic PostgreSQL 16, PR CI is queued, and merged-main CI plus closure evidence are pending.
 
 Normative references: `docs/03-engineering/DATA-MODEL.md` §§4–5, `docs/04-quality/ACCEPTANCE.md` AT10, and `docs/05-delivery/work-packages.json` EVE-012.3.
 
@@ -41,7 +41,7 @@ Normative references: `docs/03-engineering/DATA-MODEL.md` §§4–5, `docs/04-qu
 
 ## Explicitly open
 
-- Run the PostgreSQL 17 `sql_schema` and fresh Supabase CI jobs on the final PR head; resolve any failures, then record merged-main CI.
+- Run the PostgreSQL 17 `sql_schema` and fresh Supabase CI jobs on the final PR head; resolve any failures, merge PR #122 under repository rules, then record merged-main CI.
 - EVE-012.3 acceptance, parent #20, and package ledger closure remain open until PR/review/CI/main-branch evidence is complete.
 
 This package is not production-ready evidence and does not claim any hosted database or production change.
