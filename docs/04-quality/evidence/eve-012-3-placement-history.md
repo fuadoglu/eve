@@ -9,7 +9,7 @@ Normative references: `docs/03-engineering/DATA-MODEL.md` §§4–5, `docs/04-qu
 ## Implementation under review
 
 - Migration `20261116002600_eve_reservation_placement_history_guard.sql` rejects placement deletion, mutation of snapshot/identity columns, invalid closure, and a second closure. The only permitted placement update is the one-way `effective_to: NULL → timestamp` transition strictly after `effective_from`.
-- `0066_reservation_placement_history_smoke.sql` covers positive and negative cases for the guard and verifies source-only versus target manager visibility around a synthetic current-placement pointer update. It also checks source-only executor access to the old placement.
+- `0066_reservation_placement_history_smoke.sql` covers positive and negative cases for the guard and verifies source-only versus target manager visibility around a synthetic current-placement pointer update. It verifies the authenticated client cannot access the private placement table directly.
 - CI runs the migration and smoke in the PostgreSQL 17 schema job; the fresh local Supabase job runs the smoke after migration application.
 
 ## Evidence
@@ -19,7 +19,8 @@ Normative references: `docs/03-engineering/DATA-MODEL.md` §§4–5, `docs/04-qu
 - `/tmp/eve0222-schema-venv/bin/python scripts/validate-schemas.py` — passed (207 schemas, 12 positive and 20 negative examples).
 - `node scripts/test-prototype.mjs` — passed (71 assertions; VM/fake-DOM scope only).
 - `git diff --check` — passed.
-- Local SQL execution — not run: Docker daemon is unavailable and no local PostgreSQL server answers on `localhost:5432`. The required database result is pending PostgreSQL 17 and fresh synthetic Supabase CI.
+- Initial PostgreSQL 17 and fresh synthetic Supabase CI — failed: the first smoke incorrectly assumed the trusted internal `app_executor` role could not select historical rows. Existing media-proxy policy intentionally grants that internal executor row access; this role is not granted to `authenticated`. The smoke has been corrected to assert that the authenticated client has no direct private-table access. Corrected SQL has not yet rerun.
+- Local SQL execution — not run: Docker daemon is unavailable and no local PostgreSQL server answers on `localhost:5432`. Corrected database result is pending PostgreSQL 17 and fresh synthetic Supabase CI.
 - Independent read-only review — no defect found in the trigger logic or CI ordering for this slice. Review confirmed that this synthetic pointer update does not meet AT10 move/side-effect acceptance; EVE-012.3 remains `in_progress` and is not counted done.
 
 ## Explicitly open

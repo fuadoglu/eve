@@ -98,13 +98,15 @@ rollback to savepoint target_after_move;
 release savepoint target_after_move;
 
 savepoint history_scope;
-set local role app_executor;
+set local role authenticated;
 set local request.jwt.claim.sub='f6000000-0000-0000-0000-000000000002';
 do $$ begin
-  if (select count(*) from app_private.reservation_placements
-      where id='f6400000-0000-0000-0000-000000000001') <> 0 then
-    raise exception 'source-only executor saw historical placement';
-  end if;
+  begin
+    perform 1 from app_private.reservation_placements
+      where id='f6400000-0000-0000-0000-000000000001';
+    raise exception 'authenticated client unexpectedly read private placement table';
+  exception when insufficient_privilege then null;
+  end;
 end $$;
 rollback to savepoint history_scope;
 release savepoint history_scope;
