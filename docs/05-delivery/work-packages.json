@@ -1140,6 +1140,7 @@
         "supabase/migrations/20261116002700_eve_reservation_move.sql",
         "supabase/tests/0067_reservation_move_smoke.sql",
         "supabase/tests/0062_api_surface_smoke.sql",
+        "supabase/tests/0062_rls_coverage_smoke.sql",
         ".github/workflows/ci.yml",
         "src/app/api/v1/reservations/[id]/move/route.ts",
         "src/modules/reservations/reservation-move-handlers.ts",

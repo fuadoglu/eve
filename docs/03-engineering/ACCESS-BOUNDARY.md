@@ -16,6 +16,8 @@ Mixed-sensitivity base cədvəllər üçün alternativlər siyahısı yox, bir k
 
 Domain cədvəllərdə ENABLE/FORCE RLS. RLS policy-ləri `app_executor` və Data API-nin yoxlanmış JWT-sindən `request.jwt.claim.sub`/`request.jwt.claims` oxuyan `app_private.current_actor_id()` üzrə cari membership yoxlayır. Hosted Supabase custom role-a `auth` sxemi USAGE vermədiyi üçün executor `auth.uid()` çağırmır; helper eyni doğrulanmış request actor-unu qaytarır. SQL funksiyasının owner-i login olmayan, table owner olmayan executor-dur; SECURITY DEFINER + sabit search_path + schema-qualified adlar. User-dən actor/owner/role parametrinə etibar edilmir. Public execute grant default-u revoke edilir, yalnız explicit funksiyalara qaytarılır. Birbaşa DB bağlantısında request JWT setting-inə user giriş verilmir; real Data API davranışı ayrıca sandbox testidir.
 
+Rezervasiyanın eyni sahib daxilində evini dəyişən `api.move_reservation` RPC-si üçün executor-un reservation/placement/occupancy update və occupancy read, task və attribution insert, idempotency SELECT/INSERT/UPDATE hüquqları ayrıca RLS policy-lərlə məhdudlaşır. Function owner təyinatı zamanı `api` schema CREATE hüququ müvəqqəti verilir və migration daxilində geri alınır; user funksiyasının execute hüququ yalnız authenticated rolundadır.
+
 Bu arxitekturada security-invoker view ilə base SELECT grant-ını birlikdə təsadüfən açmaq yoxdur. Frontend serverə eyni session-la müraciət edir; PostgREST RPC birbaşa çağırılsa da eyni capability, column, state və entitlement qaydaları funksiyada tətbiq olunur.
 
 ## Sütun və əməliyyat sərhədi

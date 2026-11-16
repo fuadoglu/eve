@@ -1,6 +1,6 @@
 -- EVE-012.3: same-owner reservation move with immutable placement history.
 -- The command keeps the same half-open date interval and never moves ledger rows.
-grant select on app_private.rent_entries, app_private.idempotency_keys,
+grant select on app_private.occupancy, app_private.rent_entries, app_private.idempotency_keys,
   app_private.reservation_attribution_transfers to app_executor;
 grant update on app_private.reservations, app_private.reservation_placements,
   app_private.occupancy to app_executor;
