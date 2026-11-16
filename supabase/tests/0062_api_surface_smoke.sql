@@ -39,7 +39,8 @@ begin
       'api.get_media_actor_source_for_server(uuid,uuid)'::regprocedure,
       'api.get_media_scoped_source_for_server(text,uuid)'::regprocedure,
       'api.exchange_scoped_link_for_server(text)'::regprocedure,
-      'api.apply_verified_billing_order_for_server(uuid)'::regprocedure)
+      'api.apply_verified_billing_order_for_server(uuid)'::regprocedure,
+      'api.get_today(date,uuid)'::regprocedure)
       or p.prokind <> 'f'
       or (p.oid = 'api.is_my_session_active()'::regprocedure and p.proowner <> 'app_session_reader'::regrole)
       or (p.oid = 'api.revoke_my_sessions()'::regprocedure and p.proowner <> 'app_executor'::regrole)
@@ -60,7 +61,8 @@ begin
       'api.get_media_finalize_source_for_server(uuid,uuid,text)'::regprocedure,
       'api.get_media_actor_source_for_server(uuid,uuid)'::regprocedure,
       'api.exchange_scoped_link_for_server(text)'::regprocedure,
-      'api.apply_verified_billing_order_for_server(uuid)'::regprocedure)
+      'api.apply_verified_billing_order_for_server(uuid)'::regprocedure,
+      'api.get_today(date,uuid)'::regprocedure)
           and p.provolatile <> 's')
       or (p.oid in ('api.revoke_my_sessions()'::regprocedure,
                     'api.create_property(text,text,text)'::regprocedure,
@@ -102,7 +104,7 @@ begin
   select count(*) into mismatch_count
   from pg_proc p
   where p.pronamespace='api'::regnamespace;
-  if mismatch_count <> 27 then
+  if mismatch_count <> 28 then
     raise exception 'api RPC inventory changed: %', mismatch_count;
   end if;
 

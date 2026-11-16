@@ -1176,7 +1176,7 @@
       "parent_issue": 21,
       "milestone": "M2",
       "title": "Bu gün projection və prioritet sıra",
-      "status": "backlog",
+      "status": "in_progress",
       "depends_on": [
         "EVE-009.3",
         "EVE-011.3",
@@ -1184,11 +1184,23 @@
       ],
       "role": "domain_engineer",
       "owned_path_candidates": [
-        "src/modules/reservations/",
-        "src/modules/properties/",
-        "app/(panel)/calendar/"
+        "src/modules/today/",
+        "src/app/api/v1/today/",
+        "src/app/today/",
+        "src/app/globals.css",
+        "supabase/migrations/20261116002800_eve_today_projection.sql",
+        "supabase/tests/0068_today_projection_smoke.sql",
+        "supabase/tests/0062_api_surface_smoke.sql",
+        "supabase/tests/0062_rls_coverage_smoke.sql",
+        ".github/workflows/ci.yml",
+        "tests/unit/today/",
+        "package.json",
+        "docs/01-product/DECISIONS.md",
+        "docs/04-quality/evidence/eve-013-1-today-projection.md",
+        "docs/05-delivery/STATUS.md",
+        "docs/05-delivery/work-packages.json"
       ],
-      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "ownership_rule": "İnteqrator migration 028, API adapter/route və UI-ni bu paketin konkret faylları kimi koordinasiya edir. Mövcud OpenAPI getToday müqaviləsi dəyişmir; schema migration/CI wiring inteqrator ownership-indədir, lockfile dəyişmir. Migration yalnız fresh test CI və müstəqil review-dan sonra canonical hosted test layihəsinə tətbiq oluna bilər; production tətbiqi scope xaricidir.",
       "deliverable": "Bu gün projection və prioritet sıra üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
       "acceptance": [
         "Bu gün projection və prioritet sıra üçün nəzərdə tutulan konkret artefakt mövcuddur; aid müqavilə/constraint şəffaf yazılıb və müsbət nümunə doğrudur.",

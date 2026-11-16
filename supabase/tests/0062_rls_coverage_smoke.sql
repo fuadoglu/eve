@@ -147,8 +147,10 @@ begin
     ('idempotency_keys','idempotency_keys_upload_read'),
     ('idempotency_keys','idempotency_keys_finalize_read'),
     ('tasks','tasks_transition_internal_read'),
+    ('tasks','tasks_today_projection_read'),
     ('access_links','access_links_task_transition_internal_read'),
     ('subscriptions','subscriptions_task_transition_internal_read'),
+    ('subscriptions','subscriptions_today_projection_read'),
     ('inspection_submissions','inspection_submissions_task_transition_internal_read'),
     ('inspection_snapshot_rooms','inspection_snapshot_rooms_task_transition_internal_read'),
     ('inspection_room_answers','inspection_room_answers_task_transition_internal_read'),
@@ -195,7 +197,7 @@ begin
   select count(*) into table_count
   from pg_policy p join pg_class c on c.oid=p.polrelid
   where c.relnamespace='app_private'::regnamespace;
-  if table_count <> 112 then
+  if table_count <> 114 then
     raise exception 'unexpected private table policies: %',table_count;
   end if;
   if not exists (select 1 from pg_policy where polrelid='app_private.link_session_rate_limits'::regclass
