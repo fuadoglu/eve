@@ -10661,6 +10661,7 @@
           "action"
         ],
         "x-invariants": [
+          "financial_decision yalnız cancel/no_show üçün qəbul edilir; server ledger hadisələri varsa mode seçimini məcburi yoxlayır",
           "cancel/no_show zamanı DB-də rent/deposit/commission hadisəsi varsa financial_decision məcburidir; omission 422",
           "mode=keep_as_is heç bir maliyyə əməliyyatı yazmır və açıq istifadəçi təsdiqidir",
           "mode=adjust üçün receipt-linked refund/deposit return və ya commission_keep_minor tələb olunur; bounds serverdə yoxlanır",
@@ -10668,6 +10669,30 @@
           "release_remaining_days yalnız completed rezervasiyada actual early checkout-dan sonra icazəlidir; new_check_out və new_total_minor tələb olunur"
         ],
         "allOf": [
+          {
+            "if": {
+              "properties": {
+                "action": {
+                  "enum": [
+                    "confirm",
+                    "check_in",
+                    "check_out",
+                    "release_remaining_days"
+                  ]
+                }
+              },
+              "required": [
+                "action"
+              ]
+            },
+            "then": {
+              "not": {
+                "required": [
+                  "financial_decision"
+                ]
+              }
+            }
+          },
           {
             "if": {
               "properties": {
