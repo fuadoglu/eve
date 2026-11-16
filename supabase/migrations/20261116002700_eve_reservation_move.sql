@@ -332,7 +332,7 @@ begin
       note,idempotency_scope,idempotency_key,request_hash,expected_version,
       resulting_version,created_at
     ) values(v_source_owner,v_source_property,v_source_task.id,'cancel',v_source_task.state,
-      'cancelled',v_actor,'reservation_moved',v_actor::text||':cancel',v_task_key,
+      'cancelled',v_actor,'reservation_moved','user:'||v_actor::text||':cancel',v_task_key,
       v_task_hash,v_source_task.version,v_source_task.version+1,v_now);
     update app_private.tasks set state='cancelled',version=version+1,updated_at=v_now
       where id=v_source_task.id and version=v_source_task.version;
