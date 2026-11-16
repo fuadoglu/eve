@@ -11,7 +11,7 @@ grant select on app_private.properties, app_private.reservations,
   app_private.realtor_settlements, app_private.tasks,
   app_private.task_transition_events, app_private.access_links,
   app_private.inspection_days, app_private.inspection_events,
-  app_private.audit_events to app_executor;
+  app_private.realtor_settlements to app_executor;
 grant insert on app_private.reservation_placements, app_private.occupancy,
   app_private.task_transition_events, app_private.inspection_days,
   app_private.inspection_events, app_private.outbox,
