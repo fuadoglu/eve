@@ -123,7 +123,7 @@ begin
      or (select count(*) from jsonb_array_elements(v_projection->'cards') c where c->>'kind'='departure')<>1
      or (select count(*) from jsonb_array_elements(v_projection->'cards') c where c->>'kind'='task')<>2
      or (select count(*) from jsonb_array_elements(v_projection->'cards') c where c->>'kind'='subscription')<>1
-     or (select amount_minor::bigint from jsonb_array_elements(v_projection->'cards') c
+     or (select (c->>'amount_minor')::bigint from jsonb_array_elements(v_projection->'cards') c
          where c->>'kind'='rent_due')<>20000 then
     raise exception 'arrival, overdue task, subscription or rent balance projection failed: %',v_projection;
   end if;
