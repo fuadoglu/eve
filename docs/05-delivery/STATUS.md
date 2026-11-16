@@ -99,3 +99,6 @@ Yeni, boş Supabase `eve-hosted-migration-check` layihəsinə repo migration-lar
 
 
 2026-11-15 EVE-012.1 closed for its documented local component/contract scope: PR #112 squash-merged as `72a0c15a2da07bad4412b75d46b4b2d6104f7aec`; independent contract/security review found no blocker. PR CI #43686648247 and merged-main CI #43686821689 passed docs, PostgreSQL 17 `sql_schema`, and fresh synthetic `supabase_local`. This package adds date/price patch and move input validation only; route/DB transition writes, authorization, overlap, stale-version handling, financial/task effects, and full AT10 remain open. Parent issue #20 stays open. Ledger: 41/90 (45.6%). [EVE-012.1 evidence](../04-quality/evidence/eve-012-1-reservation-date-move-contract.md).
+
+
+2026-11-16 EVE-012.2 implementation in progress: added request parsing for cancel/no-show/check-in/check-out and constrained OpenAPI so `financial_decision` is accepted only for cancel/no-show, matching API-CONTRACT. Targeted tests 4/4, TypeScript, docs/contracts/schema/prototype checks passed. Independent read-only contract/security review found no blocker. This local contract slice does not implement transition routes or DB writes/effects; EVE-012.2, parent #20 and AT10 remain open. Ledger remains 41/90 (45.6%). [EVE-012.2 evidence](../04-quality/evidence/eve-012-2-state-transition-contract.md).
