@@ -19,9 +19,10 @@ Normative references: `docs/03-engineering/DATA-MODEL.md` §§4–5, `docs/04-qu
 - `/tmp/eve0222-schema-venv/bin/python scripts/validate-schemas.py` — passed (207 schemas, 12 positive and 20 negative examples).
 - `node scripts/test-prototype.mjs` — passed (71 assertions; VM/fake-DOM scope only).
 - `git diff --check` — passed.
-- Initial PostgreSQL 17 and fresh synthetic Supabase CI — failed: the first smoke incorrectly assumed the trusted internal `app_executor` role could not select historical rows. Existing media-proxy policy intentionally grants that internal executor row access; this role is not granted to `authenticated`. The smoke has been corrected to assert that the authenticated client has no direct private-table access. Corrected SQL has not yet rerun.
-- Local SQL execution — not run: Docker daemon is unavailable and no local PostgreSQL server answers on `localhost:5432`. Corrected database result is pending PostgreSQL 17 and fresh synthetic Supabase CI.
-- Independent read-only review — no defect found in the trigger logic or CI ordering for this slice. Review confirmed that this synthetic pointer update does not meet AT10 move/side-effect acceptance; EVE-012.3 remains `in_progress` and is not counted done.
+- Initial PR CI run [#43816716512](https://github.com/fuadoglu/eve/actions/runs/43816716512) failed in the placement smoke: the first version incorrectly assumed the trusted internal `app_executor` role could not select historical rows. Existing media-proxy policy intentionally grants that role row access; it is not granted to `authenticated`. The smoke was corrected to assert that authenticated clients have no direct private-table access.
+- Corrected PR CI run [#43817148464](https://github.com/fuadoglu/eve/actions/runs/43817148464) — passed all three jobs: `docs`, PostgreSQL 17 `sql_schema` including migration and smoke, and fresh synthetic `supabase_local` including the smoke and full local HTTP/browser checks.
+- Local SQL execution — not run: Docker daemon is unavailable and no local PostgreSQL server answers on `localhost:5432`; all database evidence above is CI synthetic. No hosted Eve database or production was changed.
+- Independent read-only review — no defect found in the trigger logic or corrected permission boundary assertion. Review confirmed that this synthetic pointer update does not meet AT10 move/side-effect acceptance; EVE-012.3 remains `in_progress` and is not counted done.
 
 ## Explicitly open
 
