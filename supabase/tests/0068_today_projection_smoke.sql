@@ -44,23 +44,23 @@ begin
     'f8300000-0000-4000-8000-000000000001','f8500000-0000-0000-0000-000000000005',
     'Synthetic moved guest',v_today+1,v_today+2,'15:00','12:00',30000);
   insert into app_private.reservation_placements(
-    id,owner_account_id,property_id,reservation_id,placement_no,check_in_snapshot,check_out_snapshot,effective_from,created_by
+    id,owner_account_id,property_id,reservation_id,placement_no,check_in_snapshot,check_out_snapshot,effective_from,effective_to,created_by
   ) values
    ('f8500000-0000-0000-0000-000000000001','f8200000-0000-0000-0000-000000000001',
     'f8300000-0000-4000-8000-000000000001','f8400000-0000-0000-0000-000000000001',1,
-    v_today,v_today+1,now()-interval '1 day','f8000000-0000-0000-0000-000000000001'),
+    v_today,v_today+1,now()-interval '1 day',null,'f8000000-0000-0000-0000-000000000001'),
    ('f8500000-0000-0000-0000-000000000002','f8200000-0000-0000-0000-000000000002',
     'f8300000-0000-4000-8000-000000000002','f8400000-0000-0000-0000-000000000002',1,
-    v_today,v_today+1,now()-interval '1 day','f8000000-0000-0000-0000-000000000002'),
+    v_today,v_today+1,now()-interval '1 day',null,'f8000000-0000-0000-0000-000000000002'),
    ('f8500000-0000-0000-0000-000000000003','f8200000-0000-0000-0000-000000000001',
     'f8300000-0000-4000-8000-000000000001','f8400000-0000-0000-0000-000000000003',1,
-    v_today-1,v_today,now()-interval '2 days','f8000000-0000-0000-0000-000000000001'),
+    v_today-1,v_today,now()-interval '2 days',null,'f8000000-0000-0000-0000-000000000001'),
    ('f8500000-0000-0000-0000-000000000004','f8200000-0000-0000-0000-000000000001',
     'f8300000-0000-4000-8000-000000000001','f8400000-0000-0000-0000-000000000004',1,
-    v_today,v_today+1,now()-interval '1 day','f8000000-0000-0000-0000-000000000001',now()-interval '1 hour'),
+    v_today,v_today+1,now()-interval '1 day',now()-interval '1 hour','f8000000-0000-0000-0000-000000000001'),
    ('f8500000-0000-0000-0000-000000000005','f8200000-0000-0000-0000-000000000001',
     'f8300000-0000-4000-8000-000000000001','f8400000-0000-0000-0000-000000000004',2,
-    v_today+1,v_today+2,now(),'f8000000-0000-0000-0000-000000000001');
+    v_today+1,v_today+2,now(),null,'f8000000-0000-0000-0000-000000000001');
   insert into app_private.occupancy(owner_account_id,property_id,placement_id,date_range) values
    ('f8200000-0000-0000-0000-000000000001','f8300000-0000-4000-8000-000000000001',
     'f8500000-0000-0000-0000-000000000001',daterange(v_today,v_today+1,'[)')),
