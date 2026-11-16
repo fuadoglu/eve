@@ -2,6 +2,8 @@
 
 Tarix: 2026-11-14 (Asia/Baku). Mərhələ: **M1–M6 component implementation və CI inteqrasiyası davam edir**. Release gate-lər açıqdır; tətbiq production-ready deyil.
 
+2026-11-16 EVE-012.3 `in_progress`: yeni migration reservation placement tarixçəsində `effective_to` üçün yalnız birdəfəlik bağlanmanı saxlayır, digər snapshot/identity dəyişikliklərini və silinməni rədd edir. PostgreSQL smoke-u synthetic pointer dəyişikliyindən əvvəl/sonra source/target manager oxu icazəsini, source-only historical placement rəddini, dəyişdirilməzlik və mənfi close ssenarilərini yoxlayır. CI-ийн PostgreSQL 17 schema job və fresh synthetic Supabase job-a smoke qoşuldu; SQL hələ yerli və ya hosted mühitdə icra edilməyib, GitHub CI sübutu gözlənilir. Bu, DATA-MODEL.md-dəki real atomic move deyil və AT10-un tam qəbulunu ödəmir: move RPC, stale-version, occupancy/task/maliyyə atomikliyi, tamamlanmış taskın saxlanması və guest-private link ləğvi açıqdır. Paket sayğacı dəyişməyib: 42/90 (46.7%). [EVE-012.3 cari sübut qeydi](../04-quality/evidence/eve-012-3-placement-history.md).
+
 ## Tamamlanmış sənəd müqaviləsi
 
 R01–R16 tələb xəritəsi, 118 OpenAPI əməliyyatı, 56 data cədvəli, 5 state machine, 256 birbaşa/alias field binding və 36 qəbul ssenarisi yoxlanır. EVE-001 PR #43–#46 və EVE-004 PR #47–#49 main-a merge edilib. `node scripts/docs-check.mjs`, `node scripts/verify-contracts.mjs`, Python OpenAPI/JSON Schema validatoru və prototip smoke main-da keçib. Bu yoxlamalar işləyən API/DB və ya məhsul qəbul sınağı deyil.

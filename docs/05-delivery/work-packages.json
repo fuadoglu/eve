@@ -1129,17 +1129,20 @@
       "parent_issue": 20,
       "milestone": "M2",
       "title": "Placement tarixçə və permission regressiyası",
-      "status": "backlog",
+      "status": "in_progress",
       "depends_on": [
         "EVE-012.2"
       ],
       "role": "qa_redteam",
       "owned_path_candidates": [
-        "src/modules/reservations/",
-        "src/modules/properties/",
-        "app/(panel)/calendar/"
+        "supabase/migrations/20261116002600_eve_reservation_placement_history_guard.sql",
+        "supabase/tests/0066_reservation_placement_history_smoke.sql",
+        ".github/workflows/ci.yml",
+        "docs/04-quality/evidence/eve-012-3-placement-history.md",
+        "docs/05-delivery/STATUS.md",
+        "docs/05-delivery/work-packages.json"
       ],
-      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "ownership_rule": "İnteqratorun branch-i codex/eve-012-3-placement-history-regression; owned paths placement immutability migration, role-switched SQL regression smoke, CI wiring və faktiki sübut/status qeydidir. Full move RPC və AT10 transition effects ayrıca açıqdır; schema/API/lockfile ortaq yazılmır.",
       "deliverable": "Placement tarixçə və permission regressiyası üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
       "acceptance": [
         "AT10 transition matrix",
