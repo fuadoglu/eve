@@ -2,7 +2,7 @@
 
 ## Scope and status
 
-Status: `in_progress`. The merged placement-history guard is extended by an in-progress same-owner move RPC and authenticated HTTP route. EVE-012.3 is not closed: the move command covers the property-move slice only; date changes, early departure, remaining-day release and the complete AT10 transition matrix are still open.
+Status: `in_progress`. Merged placement-history and same-owner move increments are now joined by an in-progress date/price patch, lifecycle transition RPCs, and authenticated HTTP routes. The package is not closed: the current smoke is synthetic PostgreSQL 16, the new migration has not yet passed PostgreSQL 17 CI, and PR, merged-main CI, and closure evidence are still pending.
 
 Normative references: `docs/03-engineering/DATA-MODEL.md` §§4–5, `docs/04-quality/ACCEPTANCE.md` AT10, and `docs/05-delivery/work-packages.json` EVE-012.3.
 
@@ -15,27 +15,33 @@ Normative references: `docs/03-engineering/DATA-MODEL.md` §§4–5, `docs/04-qu
 - Decision D41 records the privacy-minimal cleaning-task copy behavior: only due time and readiness requirement transfer; title is generic, and description, assignee, media and private links do not.
 - `0067_reservation_move_smoke.sql` is synthetic PostgreSQL role-switched coverage for unauthorized source-only/cross-owner moves, stale version, target occupancy conflict and rollback, successful owner move, same-key replay/payload conflict, balances, task event/history, link revocation, audit/outbox and post-move source/target visibility.
 - CI runs the migration and smoke in the PostgreSQL 17 schema job; the fresh local Supabase job runs the smoke after migration application.
+- `20261117002800_eve_reservation_at10_transitions.sql` adds the transactional date/price patch and confirm/cancel/no-show/check-in/check-out/release-remaining-days commands. It preserves placement history, occupancy, future cleaning task schedule, actual stay timestamps, guest-link revocation, task transition history, audit/outbox, receipt-linked refund/deposit return, and idempotency. Refund entries remain attached to their original property and placement. RLS exposes historical realtor settlements only to finance readers of the source or current reservation property; commission reduction cannot go below immutable owner-to-realtor/offset settlements.
+- The PATCH and transition routes use the current cookie session, recheck application-session revocation, validate same-origin/idempotency and request shape, verify the internal RPC acknowledgement, then read and return the server reservation DTO. The existing OpenAPI paths are used; no alternate contract was introduced.
+- `0068_reservation_at10_transition_smoke.sql` covers date/price patch, stale key/version, overlap rollback, same-owner move in the same AT10 path, source-only privacy, occupancy/placement/link/task effects, check-in/out, early release, explicit financial choice, daily-manager denial, historical receipt refund after move, settled-commission protection, zero commission keep with refund when no realtor account exists, and no-show occupancy/link/future-task effects with transition history.
+- `.github/workflows/ci.yml` now applies the transition migration and runs the 0068 smoke in PostgreSQL 17 `sql_schema`, and executes the smoke against the fresh synthetic Supabase stack.
 
 ## Evidence
 
-- `node scripts/docs-check.mjs` — passed (79 Markdown files).
+- `node scripts/docs-check.mjs` — passed (81 Markdown files).
 - `node scripts/verify-contracts.mjs` — passed (118 operations, 56 tables, 256 field bindings, 90 acyclic packages, 36 scenarios).
-- `/tmp/eve0222-schema-venv/bin/python scripts/validate-schemas.py` — passed (207 schemas, 12 positive and 20 negative examples).
+- `.venv-docs/bin/python scripts/validate-schemas.py` — passed (207 schemas, 12 positive and 20 negative examples).
 - `node scripts/test-prototype.mjs` — passed (71 assertions; VM/fake-DOM scope only).
-- `git diff --check` — passed.
-- `node --conditions=react-server --experimental-strip-types --test tests/unit/reservations/*.test.ts` — passed (33/33), including move route validation, server acknowledgement and safe error behavior.
-- `node node_modules/typescript/bin/tsc --noEmit` — passed.
+- `git diff --check` — passed at the last check; rerun before commit.
+- `node --conditions=react-server --experimental-strip-types --test tests/unit/reservations/*.test.ts` — passed (37/37), including patch/transition route validation, server acknowledgement and safe error behavior.
+- `node_modules/.bin/tsc --noEmit` — passed.
+- `node_modules/.bin/next build` — passed; includes `/api/v1/reservations/[id]` PATCH and `/api/v1/reservations/[id]/transition` POST. Local Node is v24.5.0, below the declared 24.22.2 engine floor; CI is the authoritative supported-runtime check.
+- Full repository migrations applied to a freshly recreated isolated local PostgreSQL 16.13 database with synthetic auth/storage stubs; `0068_reservation_at10_transition_smoke.sql` passed, including no-show transition history, and rolled back its fixtures. This is local synthetic component evidence, not PostgreSQL 17 CI, hosted Supabase, staging, or production proof. Docker is unavailable locally.
+- `.github/workflows/ci.yml` YAML parse — passed; `scripts/verify-storage-config.py` — passed.
 - PostgreSQL 17 PR CI runs [#43820047081](https://github.com/fuadoglu/eve/actions/runs/43820047081), [#43820385039](https://github.com/fuadoglu/eve/actions/runs/43820385039), and [#43821152667](https://github.com/fuadoglu/eve/actions/runs/43821152667) iteratively exposed and helped correct the task fixture unique index, temporary function-owner schema grant, runtime UUID format, strict API allowlist, task transition idempotency scope, and private-table grant/policy allowlists. The final PR head `e60466524e5e86b1a63f9a23c24a8515d0728af1` passed all three CI jobs in run [#43821706633](https://github.com/fuadoglu/eve/actions/runs/43821706633): docs, PostgreSQL 17 `sql_schema` (including the move transaction and RLS/grant coverage smoke), and fresh synthetic Supabase `supabase_local`. Independent static review found no remaining definite SQL/smoke blocker; date changes and early-departure behavior remain outside this increment. Docker is unavailable locally, so the DB execution evidence is CI synthetic, not a hosted Eve database.
 - Local Next.js production build and preview — `next build` passed; `next start` served `/calendar` with HTTP 200. Initial no-config preview showed the expected connection state. A follow-up used the `eve-hosted-migration-check` publishable key and a synthetic Auth user/session; Auth verification worked, but calendar RPCs returned `PGRST106 Invalid schema: api` because the hosted project does not expose the repo's API schema. The broader hosted configuration status and evidence are in `eve-hosted-migration-check-2026-11-14.md`.
 - Initial PR CI run [#43816716512](https://github.com/fuadoglu/eve/actions/runs/43816716512) failed in the placement smoke: the first version incorrectly assumed the trusted internal `app_executor` role could not select historical rows. Existing media-proxy policy intentionally grants that role row access; it is not granted to `authenticated`. The smoke was corrected to assert that authenticated clients have no direct private-table access.
 - Corrected PR CI run [#43817148464](https://github.com/fuadoglu/eve/actions/runs/43817148464) — passed all three jobs: `docs`, PostgreSQL 17 `sql_schema` including migration and smoke, and fresh synthetic `supabase_local` including the smoke and full local HTTP/browser checks.
-- Local SQL execution — not run: Docker daemon is unavailable and no local PostgreSQL server answers on `localhost:5432`; database evidence above is CI synthetic. Only a synthetic Auth identity was added to the hosted migration-test project; no reservation/property data, staging, or production database was changed.
-- Independent read-only review — no defect found in the trigger logic or corrected permission boundary assertion. Review confirmed that this synthetic pointer update does not meet AT10 move/side-effect acceptance; EVE-012.3 remains `in_progress` and is not counted done.
+- The previous move-only independent review is historical evidence for that increment. A fresh read-only review of the new SQL identified settlement visibility and commission-balance issues; implementation and regression cases were updated. Follow-up and final full-scope read-only reviews confirmed those fixes and found no remaining static blocker in the requested RLS, commission, refunds, lifecycle, and no-show paths. Reviewer did not execute tests; the integrator reran the corrected PostgreSQL 16 smoke successfully. PostgreSQL 17 CI remains required.
+- No new migration has been applied to the hosted migration-check project, staging, or production. The local synthetic database alone does not establish hosted migration history or release readiness.
 
 ## Explicitly open
 
-- Verify the move migration and smoke in PostgreSQL 17 CI, complete independent review, merge the scoped increment, then record merged-main CI evidence.
-- Add and prove the remaining documented AT10 date-change and early-departure / remaining-day-release behavior in the proper package scope.
-- EVE-012.3 acceptance, parent #20 and package ledger closure remain open until all owned criteria and review evidence are complete.
+- Run the PostgreSQL 17 `sql_schema` and fresh Supabase CI jobs on the final PR head; resolve any failures, then record merged-main CI.
+- EVE-012.3 acceptance, parent #20, and package ledger closure remain open until PR/review/CI/main-branch evidence is complete.
 
 This package is not production-ready evidence and does not claim any hosted database or production change.
