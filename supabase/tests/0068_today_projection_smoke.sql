@@ -171,11 +171,9 @@ begin
 end $$;
 reset role;
 
-set local role anon;
 do $$ begin
-  if has_function_privilege(current_user,'api.get_today(date,uuid)','EXECUTE') then
+  if has_function_privilege('anon','api.get_today(date,uuid)','EXECUTE') then
     raise exception 'anon role can execute Today RPC';
   end if;
 end $$;
-reset role;
 rollback;
