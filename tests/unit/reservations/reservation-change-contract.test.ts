@@ -66,6 +66,6 @@ test("move parser rejects invalid target, unsafe price, zero without confirmatio
     { ...valid, new_total_minor: 9007199254740992 },
     { ...valid, new_total_minor: 0 },
     { ...valid, force: true },
-    { ...valid, reason: "x".repeat(2001) },
+    { ...valid, reason: "x".repeat(1001) },
   ]) assert.throws(() => parseReservationMoveInput(value));
 });

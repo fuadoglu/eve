@@ -50,7 +50,7 @@ export function parseReservationMoveInput(value: unknown): ReservationMoveInput 
       || !isUuid(value.to_property_id)
       || !isMinorAmount(value.new_total_minor)
       || ("free_stay" in value && typeof value.free_stay !== "boolean")
-      || ("reason" in value && (typeof value.reason !== "string" || value.reason.length > 2000))) {
+      || ("reason" in value && (typeof value.reason !== "string" || value.reason.length > 1000))) {
     throw new TypeError("invalid_reservation_move_input");
   }
   if (value.new_total_minor === 0 && value.free_stay !== true) {

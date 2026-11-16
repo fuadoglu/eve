@@ -29,6 +29,24 @@ export async function createReservation(input: unknown, idempotencyKey: string):
   return callRpc(client, "get_reservation", { p_reservation_id: created.reservation_id });
 }
 
+export async function moveReservation(
+  reservationId: string,
+  input: unknown,
+  idempotencyKey: string,
+): Promise<unknown> {
+  const client = await getApiClient();
+  await requireActiveActor(client);
+  const moved = await callRpc(client, "move_reservation", {
+    p_reservation_id: reservationId,
+    p_input: input,
+    p_idempotency_key: idempotencyKey,
+  });
+  if (!isRecord(moved) || moved.reservation_id !== reservationId || !isUuid(moved.placement_id)) {
+    throw new ReservationApiError("PROVIDER_UNAVAILABLE");
+  }
+  return callRpc(client, "get_reservation", { p_reservation_id: reservationId });
+}
+
 export async function listReservableProperties(): Promise<Array<ReservationPropertyContext & { default_custodian: "owner" | "manager" }>> {
   const client = await getApiClient();
   await requireActiveActor(client);

@@ -24,16 +24,16 @@ begin
       or has_table_privilege('app_executor',c.oid,
         'DELETE,TRUNCATE,REFERENCES,TRIGGER')
       or has_table_privilege('app_executor',c.oid,'UPDATE') is distinct from
-        (c.relname in ('manager_invites','property_memberships','idempotency_keys','tasks','access_links','media_assets','link_session_rate_limits'))
+        (c.relname in ('manager_invites','property_memberships','idempotency_keys','tasks','access_links','media_assets','link_session_rate_limits','reservations','reservation_placements','occupancy'))
       or has_table_privilege('app_executor',c.oid,'INSERT') is distinct from
-        (c.relname in ('owner_accounts','properties','trial_claims','subscriptions','rooms','inventory_items','media_bindings','media_assets','manager_invites','invite_properties','property_memberships','manager_invite_accept_context','reservations','reservation_placements','occupancy','rent_entries','realtor_accounts','outbox','audit_events','idempotency_keys','task_transition_events','task_transition_media','link_session_rate_limits'))
+        (c.relname in ('owner_accounts','properties','trial_claims','subscriptions','rooms','inventory_items','media_bindings','media_assets','manager_invites','invite_properties','property_memberships','manager_invite_accept_context','reservations','reservation_placements','occupancy','rent_entries','realtor_accounts','outbox','audit_events','idempotency_keys','task_transition_events','task_transition_media','link_session_rate_limits','tasks','reservation_attribution_transfers'))
       or has_table_privilege('app_executor',c.oid,'SELECT') is distinct from
-        (c.relname in ('profiles','owner_accounts','properties',
+        (c.relname in ('profiles','owner_accounts','properties','occupancy',
           'property_memberships','reservations','reservation_placements',
           'manual_blocks','contacts','contact_properties','rent_entries','subscriptions','rooms','inventory_items','media_assets','media_bindings','idempotency_keys',
           'manager_invites','invite_properties','tasks','access_links','inspection_submissions',
           'inspection_snapshot_rooms','inspection_room_answers','task_transition_events','task_transition_media',
-          'expenses','expense_allocations','inspection_answers','inspection_events','guides','guide_versions','link_session_rate_limits','realtor_accounts')));
+          'expenses','expense_allocations','inspection_answers','inspection_events','guides','guide_versions','link_session_rate_limits','realtor_accounts','reservation_attribution_transfers')));
   if bad_count <> 0 then
     raise exception 'private RLS/grant allowlist mismatch: % tables',bad_count;
   end if;
@@ -121,6 +121,8 @@ begin
     ('property_memberships','property_memberships_self_or_owner_read'),
     ('reservations','reservations_current_property_read'),
     ('reservation_placements','reservation_placements_current_read'),
+    ('occupancy','occupancy_move_internal_read'),
+    ('reservation_attribution_transfers','reservation_attribution_move_read'),
     ('realtor_accounts','realtor_accounts_current_reservation_read'),
     ('manual_blocks','manual_blocks_property_read'),
     ('contacts','contacts_linked_or_owner_read'),
@@ -193,7 +195,7 @@ begin
   select count(*) into table_count
   from pg_policy p join pg_class c on c.oid=p.polrelid
   where c.relnamespace='app_private'::regnamespace;
-  if table_count <> 102 then
+  if table_count <> 112 then
     raise exception 'unexpected private table policies: %',table_count;
   end if;
   if not exists (select 1 from pg_policy where polrelid='app_private.link_session_rate_limits'::regclass
@@ -209,9 +211,9 @@ begin
   if (select count(*) from pg_policy where polroles=array['app_executor'::regrole::oid]
       and polcmd='a' and polname in ('reservations_create','reservation_placements_create',
         'occupancy_reservation_create','rent_entries_reservation_create',
-        'media_assets_upload_create','idempotency_keys_upload_create',
+        'media_assets_upload_create','idempotency_keys_upload_create','tasks_move_insert','reservation_attribution_move_insert','idempotency_keys_move_create',
         'realtor_accounts_reservation_create','idempotency_keys_reservation_create',
-        'outbox_reservation_create','audit_events_reservation_create','task_transition_events_internal_insert','task_transition_media_internal_insert','outbox_task_transition_create')) <> 13
+        'outbox_reservation_create','audit_events_reservation_create','task_transition_events_internal_insert','task_transition_media_internal_insert','outbox_task_transition_create')) <> 16
      or not exists (select 1 from pg_policy where polrelid='app_private.idempotency_keys'::regclass
        and polname='idempotency_keys_reservation_update' and polcmd='w'
        and polroles=array['app_executor'::regrole::oid])
@@ -220,6 +222,9 @@ begin
        and polroles=array['app_executor'::regrole::oid])
      or not exists (select 1 from pg_policy where polrelid='app_private.idempotency_keys'::regclass
        and polname='idempotency_keys_finalize_update' and polcmd='w'
+       and polroles=array['app_executor'::regrole::oid])
+     or not exists (select 1 from pg_policy where polrelid='app_private.idempotency_keys'::regclass
+       and polname='idempotency_keys_move_update' and polcmd='w'
        and polroles=array['app_executor'::regrole::oid]) then
     raise exception 'reservation write/idempotency policies missing or mis-scoped';
   end if;
@@ -274,6 +279,15 @@ begin
       and polroles=array['app_executor'::regrole::oid])
      or not exists (select 1 from pg_policy where polrelid='app_private.access_links'::regclass
       and polname='access_links_task_transition_internal_update' and polcmd='w'
+      and polroles=array['app_executor'::regrole::oid])
+     or not exists (select 1 from pg_policy where polrelid='app_private.reservations'::regclass
+      and polname='reservations_move_update' and polcmd='w'
+      and polroles=array['app_executor'::regrole::oid])
+     or not exists (select 1 from pg_policy where polrelid='app_private.reservation_placements'::regclass
+      and polname='reservation_placements_move_update' and polcmd='w'
+      and polroles=array['app_executor'::regrole::oid])
+     or not exists (select 1 from pg_policy where polrelid='app_private.occupancy'::regclass
+      and polname='occupancy_move_update' and polcmd='w'
       and polroles=array['app_executor'::regrole::oid])
      or not exists (select 1 from pg_policy where polrelid='app_private.billing_orders'::regclass
       and polname='billing_orders_apply_update' and polcmd='w'

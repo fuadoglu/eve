@@ -47,7 +47,7 @@ function isSerializedOrigin(origin: string): boolean {
   try { return new URL(origin).origin === origin; }
   catch { return false; }
 }
-function isSameOriginRequest(request: Request): boolean {
+export function isSameOriginRequest(request: Request): boolean {
   const canonicalOrigin = getAppBaseUrl().url;
   if (!requestHostMatchesCanonical(request, canonicalOrigin)) return false;
   if (request.headers.has("origin")) {

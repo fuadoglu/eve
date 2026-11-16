@@ -35,3 +35,13 @@ Commands run from an isolated temporary Supabase CLI workspace containing the ma
 4. `supabase migration list --linked --password [stored secret]` — all 21 local/remote versions matched; exit 0.
 
 The password placeholder above is explanatory only; no credential is stored in this repository.
+
+## Follow-up — local Auth account and Data API connection, 2026-11-16
+
+- The account still exposes `eve-hosted-migration-check` as `ACTIVE_HEALTHY`; it remains a hosted migration test project, not staging or production.
+- A synthetic Supabase Auth user (`codex-eve-smoke-…@example.com`) was created with email confirmed. Supabase's admin create-user endpoint returned HTTP 200. No email was sent, no SMTP setting was changed, and no real person's data was used. A one-time magic link was generated through the admin API and verified directly with the publishable key to test the local SSR cookie path.
+- The local Next.js app was started against this project's URL and publishable key without writing credentials to the repository. `/calendar` returned HTTP 200, and Supabase Auth produced a session for the synthetic user.
+- The reservation context RPC could not run: PostgREST returned HTTP 406 `PGRST106 Invalid schema: api` for `api.is_my_session_active` and `api.list_reservable_property_contexts`. This is a hosted Data API configuration mismatch; migration history alone does not expose the `api` schema.
+- The project dashboard API setting was not changed in this check. The Mac was locked when the dashboard was needed, and the local config contains unrelated Auth/Storage differences; the broad `supabase config push` was not run. Next step is a narrow test-project Data API configuration update exposing only the documented `api` schema, then repeat the authenticated local request and negative RPC/grant checks.
+
+This follow-up proves a real Supabase Auth record and Auth session for a synthetic test identity, but not an end-to-end reservation flow, Data API/RLS acceptance, SMTP delivery, or production readiness.
