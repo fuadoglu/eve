@@ -1095,7 +1095,7 @@
       "parent_issue": 20,
       "milestone": "M2",
       "title": "Giriş/çıxış/ləğv/no-show transitions",
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "EVE-012.1"
       ],
