@@ -16,6 +16,7 @@ begin
       'api.has_property_capability(uuid,text)'::regprocedure,
       'api.read_current_reservation(uuid)'::regprocedure,
       'api.list_visible_property_summaries(uuid,integer)'::regprocedure,
+      'api.list_calendar_property_options(uuid,integer)'::regprocedure,
       'api.list_current_reservation_summaries(uuid,text,uuid,integer)'::regprocedure,
       'api.list_current_manual_blocks(uuid,date,date,uuid,integer)'::regprocedure,
       'api.list_property_contact_summaries(uuid,uuid,integer)'::regprocedure,
@@ -42,7 +43,8 @@ begin
       'api.get_media_scoped_source_for_server(text,uuid)'::regprocedure,
       'api.exchange_scoped_link_for_server(text)'::regprocedure,
       'api.apply_verified_billing_order_for_server(uuid)'::regprocedure,
-      'api.get_today(date,uuid)'::regprocedure)
+      'api.get_today(date,uuid)'::regprocedure,
+      'api.get_calendar(date,date,uuid[])'::regprocedure)
       or p.prokind <> 'f'
       or (p.oid = 'api.is_my_session_active()'::regprocedure and p.proowner <> 'app_session_reader'::regrole)
       or (p.oid = 'api.revoke_my_sessions()'::regprocedure and p.proowner <> 'app_executor'::regrole)
@@ -109,7 +111,7 @@ begin
   select count(*) into mismatch_count
   from pg_proc p
   where p.pronamespace='api'::regnamespace;
-  if mismatch_count <> 30 then
+  if mismatch_count <> 32 then
     raise exception 'api RPC inventory changed: %', mismatch_count;
   end if;
 
