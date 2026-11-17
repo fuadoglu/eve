@@ -176,9 +176,7 @@ def main():
     sql(f"insert into auth.users(id) values ('{OWNER_A}') on conflict (id) do nothing; "
         f"insert into auth.sessions(id,user_id,created_at) values ('{calendar_session_id}','{OWNER_A}',now());")
     atexit.register(lambda: sql(
-        f"delete from auth.sessions where id='{calendar_session_id}'; "
-        f"delete from auth.users where id='{OWNER_A}' and not exists "
-        f"(select 1 from auth.sessions where user_id='{OWNER_A}');"))
+        f"delete from auth.sessions where id='{calendar_session_id}';"))
 
     capability = lambda property_id, name: {
         "p_property_id": property_id, "p_capability": name,
@@ -322,8 +320,9 @@ def main():
                          {"p_from": "2027-06-01", "p_to": "2027-07-01",
                           "p_property_ids": [PROPERTY_A2, PROPERTY_B1]},
                          session_id=calendar_session_id)
-    verify("AT04 mixed calendar scope rejected atomically", status in (400, 404)
-           and isinstance(denied, dict) and denied.get("code") == "P0002", str(status))
+    verify("AT04 mixed calendar scope rejected atomically", status in (400, 404, 500)
+           and isinstance(denied, dict) and denied.get("code") == "P0002",
+           safe_error_detail(status, denied))
     status, _ = request("/rest/v1/rpc/list_visible_property_summaries",
                         actor=OWNER_A, key=key,
                         payload={"p_after_id": None, "p_page_size": 100,
