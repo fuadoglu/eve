@@ -10652,6 +10652,11 @@
             "maximum": 9007199254740991,
             "description": "AZN qəpik. IEEE-754 safe integer sərhədi; hesablamalar serverdə integer ilə."
           },
+          "free_stay": {
+            "type": "boolean",
+            "const": true,
+            "description": "new_total_minor=0 olduqda qalan gecələrin ödənişsiz buraxılması üçün açıq təsdiq."
+          },
           "financial_decision": {
             "$ref": "#/components/schemas/TransitionFinancialDecision"
           }
@@ -10666,7 +10671,8 @@
           "mode=keep_as_is heç bir maliyyə əməliyyatı yazmır və açıq istifadəçi təsdiqidir",
           "mode=adjust üçün receipt-linked refund/deposit return və ya commission_keep_minor tələb olunur; bounds serverdə yoxlanır",
           "commission_keep_minor və reversal/deposit allocation yalnız owner/full finance.manage",
-          "release_remaining_days yalnız completed rezervasiyada actual early checkout-dan sonra icazəlidir; new_check_out və new_total_minor tələb olunur"
+          "release_remaining_days yalnız completed rezervasiyada actual early checkout-dan sonra icazəlidir; new_check_out və new_total_minor tələb olunur",
+            "release_remaining_days üçün new_total_minor=0 olduqda free_stay=true açıq təsdiqi tələb olunur; free_stay yalnız bu halda verilə bilər"
         ],
         "allOf": [
           {
@@ -10709,6 +10715,79 @@
                 "new_check_out",
                 "new_total_minor"
               ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "action": {
+                  "const": "release_remaining_days"
+                },
+                "new_total_minor": {
+                  "const": 0
+                }
+              },
+              "required": [
+                "action",
+                "new_total_minor"
+              ]
+            },
+            "then": {
+              "required": [
+                "free_stay"
+              ],
+              "properties": {
+                "free_stay": {
+                  "const": true
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "action": {
+                  "not": {
+                    "const": "release_remaining_days"
+                  }
+                }
+              },
+              "required": [
+                "action"
+              ]
+            },
+            "then": {
+              "not": {
+                "required": [
+                  "free_stay"
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "free_stay": {
+                  "const": true
+                }
+              },
+              "required": [
+                "free_stay"
+              ]
+            },
+            "then": {
+              "required": [
+                "action",
+                "new_total_minor"
+              ],
+              "properties": {
+                "action": {
+                  "const": "release_remaining_days"
+                },
+                "new_total_minor": {
+                  "const": 0
+                }
+              }
             }
           }
         ]
@@ -17364,6 +17443,59 @@
         "check_in": "yesterday",
         "check_out": "tomorrow",
         "total_minor": -1
+      }
+    },
+    {
+      "schema": "ReservationTransition",
+      "valid": true,
+      "value": {
+        "expected_version": 1,
+        "action": "release_remaining_days",
+        "new_check_out": "2026-11-12",
+        "new_total_minor": 5000
+      }
+    },
+    {
+      "schema": "ReservationTransition",
+      "valid": false,
+      "value": {
+        "expected_version": 1,
+        "action": "release_remaining_days",
+        "new_check_out": "2026-11-12",
+        "new_total_minor": 0
+      }
+    },
+    {
+      "schema": "ReservationTransition",
+      "valid": true,
+      "value": {
+        "expected_version": 1,
+        "action": "release_remaining_days",
+        "new_check_out": "2026-11-12",
+        "new_total_minor": 0,
+        "free_stay": true
+      }
+    },
+    {
+      "schema": "ReservationTransition",
+      "valid": false,
+      "value": {
+        "expected_version": 1,
+        "action": "release_remaining_days",
+        "new_check_out": "2026-11-12",
+        "new_total_minor": 5000,
+        "free_stay": true
+      }
+    },
+    {
+      "schema": "ReservationTransition",
+      "valid": false,
+      "value": {
+        "expected_version": 1,
+        "action": "release_remaining_days",
+        "new_check_out": "2026-11-12",
+        "new_total_minor": 5000,
+        "free_stay": false
       }
     },
     {
