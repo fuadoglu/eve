@@ -218,16 +218,13 @@ try {
   assert.equal(conflictResponse.status(), 409);
 
   await page.goto(`${baseUrl}/calendar`, { waitUntil: "networkidle" });
-  try { await page.getByRole("group", { name: /təqvimi/i }).waitFor({ timeout: 15000 }); }
-  catch {
-    const visibleText = (await page.locator("body").innerText()).replace(/\s+/g, " ").trim();
-    throw new Error(`calendar did not reach the named calendar group: ${visibleText.slice(0, 500)}`);
-  }
+  await page.getByRole("button", { name: "Növbəti ay" }).waitFor();
   const calendarLoad = page.waitForResponse((response) =>
     response.url().startsWith(`${baseUrl}/api/v1/calendar?`) && response.request().method() === "GET");
   await page.getByRole("button", { name: "Növbəti ay" }).click();
   const calendarResponse = await calendarLoad;
   assert.equal(calendarResponse.status(), 200);
+  await page.getByRole("group", { name: /təqvimi/i }).waitFor();
   const calendarBody = await calendarResponse.json();
   assert.equal(calendarBody.data.reservations.some((reservation) => reservation.id === firstEnvelope.data.id), true);
   await page.getByRole("button", { name: "Agenda" }).click();
