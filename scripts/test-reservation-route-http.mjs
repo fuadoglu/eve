@@ -232,7 +232,7 @@ try {
   const agendaAudit = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
   assert.deepEqual(agendaAudit.violations.map((violation) => violation.id), [],
     `populated calendar agenda axe violations: ${agendaAudit.violations.map((violation) => `${violation.id}:${violation.nodes.length}`).join(",")}`);
-  await page.getByRole("button", { name: "Ay" }).click();
+  await page.getByRole("button", { name: "Ay", exact: true }).click();
   const markedDay = page.getByRole("button", { name: /1 qeyd/ }).first();
   await markedDay.waitFor();
   const markedDayName = await markedDay.getAttribute("aria-label");
