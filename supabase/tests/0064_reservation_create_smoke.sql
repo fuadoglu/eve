@@ -40,7 +40,7 @@ set local role authenticated;
 set local request.jwt.claim.sub='f0000000-0000-0000-0000-000000000011';
 set local request.jwt.claims='{"sub":"f0000000-0000-0000-0000-000000000011","session_id":"f0100000-0000-0000-0000-000000000011"}';
 do $$
-declare v_input jsonb; v_first jsonb; v_retry jsonb;
+declare v_input jsonb; v_first jsonb; v_retry jsonb; v_rounding jsonb;
 begin
   v_input := '{"property_id":"f2000000-0000-0000-0000-000000000011","guest_name":"A Guest","guest_count":2,"check_in":"2027-05-01","check_out":"2027-05-04","total_minor":30000,"capacity_override_confirmed":true,"initial_receipt":{"amount_minor":10000,"kind":"rent_receipt","custodian":"owner"},"commission":{"contact_id":"f3000000-0000-0000-0000-000000000011","kind":"percentage","percentage_basis_points":1000}}'::jsonb;
   v_first := api.create_reservation(v_input,'reservation-create-owner-key-01');
@@ -51,6 +51,10 @@ begin
      or v_first::text like '%A Guest%' then
     raise exception 'create acknowledgement or idempotent retry mismatch: % / %',v_first,v_retry;
   end if;
+  v_rounding := api.create_reservation(
+    '{"property_id":"f2000000-0000-0000-0000-000000000011","guest_name":"Commission rounding guest","guest_count":1,"check_in":"2027-09-01","check_out":"2027-09-02","total_minor":1,"initial_receipt":{"amount_minor":5000,"kind":"deposit_receipt","custodian":"owner"},"commission":{"contact_id":"f3000000-0000-0000-0000-000000000011","kind":"percentage","percentage_basis_points":5000}}'::jsonb,
+    'reservation-create-commission-rounding-key');
+  if v_rounding->>'reservation_id' is null then raise exception 'commission rounding reservation was not created'; end if;
   begin
     perform api.create_reservation(v_input||'{"total_minor":30001}'::jsonb,'reservation-create-owner-key-01');
     raise exception 'same idempotency key accepted a different payload';
@@ -113,12 +117,12 @@ end $$;
 reset role;
 do $$
 begin
-  if (select count(*) from app_private.reservations where owner_account_id='f1000000-0000-0000-0000-000000000011')<>3
-     or (select count(*) from app_private.reservation_placements where owner_account_id='f1000000-0000-0000-0000-000000000011')<>3
-     or (select count(*) from app_private.occupancy where owner_account_id='f1000000-0000-0000-0000-000000000011' and active)<>3
-     or (select count(*) from app_private.rent_entries where owner_account_id='f1000000-0000-0000-0000-000000000011')<>2
-     or (select count(*) from app_private.realtor_accounts where owner_account_id='f1000000-0000-0000-0000-000000000011')<>1
-     or (select count(*) from app_private.outbox where owner_account_id='f1000000-0000-0000-0000-000000000011' and event_kind='reservation.created')<>3 then
+  if (select count(*) from app_private.reservations where owner_account_id='f1000000-0000-0000-0000-000000000011')<>4
+     or (select count(*) from app_private.reservation_placements where owner_account_id='f1000000-0000-0000-0000-000000000011')<>4
+     or (select count(*) from app_private.occupancy where owner_account_id='f1000000-0000-0000-0000-000000000011' and active)<>4
+     or (select count(*) from app_private.rent_entries where owner_account_id='f1000000-0000-0000-0000-000000000011')<>3
+     or (select count(*) from app_private.realtor_accounts where owner_account_id='f1000000-0000-0000-0000-000000000011')<>2
+     or (select count(*) from app_private.outbox where owner_account_id='f1000000-0000-0000-0000-000000000011' and event_kind='reservation.created')<>4 then
     raise exception 'reservation/placement/occupancy/receipt/commission/outbox atomicity mismatch';
   end if;
   if not exists (select 1 from app_private.reservations where guest_name='A Guest' and check_in_time='15:00' and check_out_time='11:00') then
@@ -136,6 +140,15 @@ begin
   end if;
   if not exists (select 1 from app_private.realtor_accounts where basis_minor=30000 and percentage_basis_points=1000 and earned_minor=3000) then
     raise exception 'commission basis or half-up result mismatch';
+  end if;
+  if not exists (select 1 from app_private.realtor_accounts a
+      join app_private.reservations r on r.id=a.reservation_id
+      where r.guest_name='Commission rounding guest' and r.total_minor=1
+        and a.basis_minor=1 and a.percentage_basis_points=5000 and a.earned_minor=1)
+     or not exists (select 1 from app_private.rent_entries e
+      where e.reservation_id=(select id from app_private.reservations where guest_name='Commission rounding guest')
+        and e.kind='deposit_receipt' and e.amount_minor=5000) then
+    raise exception 'EVE-015.1 percentage commission must round 0.5 qəpik half-up from rent basis and exclude deposit amount';
   end if;
   if not exists (select 1 from app_private.idempotency_keys where key='reservation-create-owner-key-01' and response_status=201 and expires_at-created_at=interval '24 hours') then
     raise exception 'idempotency status or 24 hour expiry mismatch';
