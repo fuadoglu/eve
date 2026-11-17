@@ -1,0 +1,77 @@
+import "server-only";
+
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
+import { getSupabasePublicConfig } from "@/lib/env/supabase-public.ts";
+import { parseTodayProjection, type TodayProjection } from "./today-contract.ts";
+
+type ApiClient = {
+  auth: { getUser(): Promise<{ data: { user: { id: string } | null }; error: { status?: number; name?: string } | null }> };
+  schema(name: "api"): {
+    rpc(name: string, args: Record<string, unknown>): Promise<{ data: unknown; error: { code?: string } | null }>;
+  };
+};
+
+export class TodayApiError extends Error {
+  constructor(readonly code: string) { super(code); }
+}
+
+export async function getToday(input: { localDate: string | null; ownerAccountId: string | null }): Promise<TodayProjection> {
+  const client = await getApiClient();
+  await requireActiveActor(client);
+  const result = await callRpc(client, "get_today", {
+    p_local_date: input.localDate,
+    p_owner_account_id: input.ownerAccountId,
+  });
+  try { return parseTodayProjection(result); }
+  catch { throw new TodayApiError("PROVIDER_UNAVAILABLE"); }
+}
+
+async function getApiClient(): Promise<ApiClient> {
+  const { url, publishableKey } = getSupabasePublicConfig();
+  const cookieStore = await cookies();
+  const secureCookies = process.env.NODE_ENV === "production";
+  return createServerClient(url, publishableKey, {
+    auth: { flowType: "pkce", detectSessionInUrl: false, persistSession: true, autoRefreshToken: false },
+    cookieOptions: { path: "/", sameSite: "lax", secure: secureCookies, httpOnly: true },
+    cookies: {
+      getAll: () => cookieStore.getAll(),
+      setAll: (items) => {
+        for (const { name, value, options } of items) {
+          cookieStore.set(name, value, { ...options, path: "/", sameSite: "lax", secure: secureCookies, httpOnly: true });
+        }
+      },
+    },
+  }) as unknown as ApiClient;
+}
+
+async function requireActiveActor(client: ApiClient): Promise<void> {
+  let result;
+  try { result = await client.auth.getUser(); }
+  catch { throw new TodayApiError("PROVIDER_UNAVAILABLE"); }
+  if (result.error) {
+    if ([401, 403].includes(result.error.status ?? 0) || result.error.name === "AuthSessionMissingError") {
+      throw new TodayApiError("UNAUTHENTICATED");
+    }
+    throw new TodayApiError("PROVIDER_UNAVAILABLE");
+  }
+  if (!result.data.user) throw new TodayApiError("UNAUTHENTICATED");
+
+  const active = await callRpc(client, "is_my_session_active", {});
+  if (active !== true) throw new TodayApiError("UNAUTHENTICATED");
+}
+
+async function callRpc(client: ApiClient, name: string, args: Record<string, unknown>): Promise<unknown> {
+  let result;
+  try { result = await client.schema("api").rpc(name, args); }
+  catch { throw new TodayApiError("PROVIDER_UNAVAILABLE"); }
+  if (result.error) {
+    const code = result.error.code;
+    throw new TodayApiError(code === "28000" ? "UNAUTHENTICATED"
+      : code === "42501" ? "FORBIDDEN"
+        : code === "P0002" ? "NOT_FOUND"
+          : code === "22023" ? "VALIDATION_ERROR"
+            : "PROVIDER_UNAVAILABLE");
+  }
+  return result.data;
+}

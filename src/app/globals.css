@@ -119,3 +119,41 @@ h1 { font-size: clamp(30px, 8vw, 38px); line-height: 1.15; margin: 0 0 var(--spa
 .task-share-whatsapp, .task-share-copy { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: var(--space-3) var(--space-4); border: 1px solid var(--teal); border-radius: var(--radius); background: var(--teal); color: white; font: inherit; font-weight: 700; text-align: center; text-decoration: none; cursor: pointer; }
 .task-share-copy { background: var(--surface); color: var(--teal); }
 @media (min-width: 480px) { .task-share-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.today-date-row, .today-section-heading, .today-card-topline { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.today-date-row { margin: calc(-1 * var(--space-3)) 0 var(--space-4); color: var(--muted); font-size: 14px; font-weight: 650; }
+.today-timezone { font-size: 12px; font-weight: 500; }
+.today-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-2); margin-bottom: var(--space-6); }
+.today-metric { display: grid; align-content: start; gap: var(--space-1); min-height: 82px; padding: var(--space-3); border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+.today-metric strong { overflow-wrap: anywhere; font-size: clamp(18px, 5vw, 23px); line-height: 1.2; }
+.today-metric span { color: var(--muted); font-size: 12px; line-height: 1.25; }
+.today-section-heading { margin: 0 0 var(--space-3); }
+.today-section-heading h2 { margin: 0; font-size: 20px; }
+.today-refresh { min-height: 44px; padding: var(--space-2) var(--space-3); border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--teal); font: inherit; font-weight: 700; cursor: pointer; }
+.today-card-list { display: grid; gap: var(--space-3); }
+.today-card { display: flex; align-items: flex-start; gap: var(--space-3); min-width: 0; padding: var(--space-4); border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+.today-card-icon, .today-empty-mark, .today-error-mark { display: grid; flex: 0 0 44px; place-items: center; width: 44px; height: 44px; border-radius: var(--radius); background: #ccfbf1; color: var(--teal); }
+.today-card-task .today-card-icon { background: #fef3c7; color: #713f12; }
+.today-card-rent_due .today-card-icon, .today-card-expense_due .today-card-icon { background: #dbeafe; color: #1d4ed8; }
+.today-card-body { flex: 1; min-width: 0; }
+.today-card-topline { min-height: 22px; color: var(--muted); font-size: 12px; }
+.today-card-kind { font-weight: 750; }
+.today-card-topline time { font-variant-numeric: tabular-nums; font-weight: 700; }
+.today-card h3 { margin: var(--space-1) 0; font-size: 16px; line-height: 1.35; overflow-wrap: anywhere; }
+.today-card p { margin: 0; color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
+.today-card .today-owner { margin-top: 2px; }
+.today-next-action { margin-top: var(--space-2) !important; color: var(--teal) !important; font-weight: 700; }
+.today-amount { align-self: center; flex: 0 0 auto; font-size: 14px; text-align: right; }
+.today-loading, .today-error, .today-empty { display: grid; gap: var(--space-3); padding: var(--space-5); border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+.today-status { margin: 0; color: var(--muted); font-weight: 650; }
+.today-skeleton { height: 80px; border-radius: var(--radius); background: linear-gradient(90deg, #eef2f7, #f8fafc, #eef2f7); background-size: 200% 100%; animation: today-shimmer 1.4s ease-in-out infinite; }
+.today-skeleton-short { width: 72%; }
+@keyframes today-shimmer { to { background-position: -200% 0; } }
+.today-error-mark { background: #fef2f2; color: var(--danger); }
+.today-error h2, .today-empty h2 { margin: 0; font-size: 19px; line-height: 1.3; }
+.today-error p, .today-empty p { margin: 0; color: var(--muted); }
+.today-error-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-1); }
+.today-primary-action, .today-secondary-action { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: var(--space-2) var(--space-4); border: 1px solid var(--teal); border-radius: 10px; background: var(--teal); color: white; font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; }
+.today-secondary-action { background: var(--surface); color: var(--teal); }
+.today-empty-mark { margin-bottom: var(--space-1); }
+@media (max-width: 360px) { .today-metrics { gap: 6px; } .today-metric { padding: var(--space-2); } .today-card { gap: var(--space-2); padding: var(--space-3); } .today-amount { font-size: 12px; } }
+@media (prefers-reduced-motion: reduce) { .today-skeleton { animation: none; } }
