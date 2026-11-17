@@ -1363,7 +1363,7 @@
       "parent_issue": 22,
       "milestone": "M3",
       "title": "Refund/rounding/idempotency sınağı",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-014.2"
       ],
