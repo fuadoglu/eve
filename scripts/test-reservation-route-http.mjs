@@ -281,8 +281,10 @@ try {
   assert.match(await uncertainMessage.innerText(), /qeyri-müəyyəndir/);
   assert.equal(await page.getByText("Pul qeydi saxlanıldı. Bu, bank köçürməsi deyil.", { exact: true }).count(), 0);
   assert.equal(await page.getByLabel("Məbləğ (AZN)").inputValue(), "25,00");
+  const retryButton = page.getByRole("button", { name: "Təkrar yoxla" });
+  await retryButton.waitFor();
   const moneyRetryResponse = page.waitForResponse((response) => response.url() === moneyRoute && response.request().method() === "POST");
-  await page.getByRole("button", { name: "Qeydə al" }).click();
+  await retryButton.click();
   assert.equal((await moneyRetryResponse).status(), 201);
   await page.getByText("Pul qeydi saxlanıldı. Bu, bank köçürməsi deyil.", { exact: true }).waitFor();
   await page.unroute(moneyRoute);
