@@ -1,6 +1,6 @@
 # EVE-013.2 — Agenda/ay və ev/sahib filtrləri
 
-Status: **`in_progress`**. Acceptance is not closed until migration, API and UI checks, CI, and independent review all pass. Ledger remains 44/90 (48.9%).
+Status: **`done` for the EVE-013.2 component scope**. Implementation PR #125 was squash-merged to `main`; PR CI, merged-main CI and independent review are complete. Ledger is 45/90 (50.0%). This does not close parent AT29 device acceptance, EVE-013.3 readiness/performance, or production release gates.
 
 Date: 2026-11-17 (Asia/Baku). Parent issue: [#21](https://github.com/fuadoglu/eve/issues/21). Normative package: EVE-013.2 in `docs/05-delivery/work-packages.json`; UI: UI05 `/calendar`; contract: `GET /calendar` in `docs/03-engineering/openapi.json`; acceptance: AT29 and calendar query performance.
 
@@ -11,7 +11,7 @@ Date: 2026-11-17 (Asia/Baku). Parent issue: [#21](https://github.com/fuadoglu/ev
 - The repository had no `/api/v1/calendar` route or calendar projection RPC. These are necessary to connect UI05 to authorized data rather than a fake calendar; the read-only route and RPC are included under integrator-owned package paths.
 - `GET /properties` itself is not implemented. Calendar filter choices use the additive internal `api.list_calendar_property_options` RPC. It returns only visible property id/account id/property name/area and the owner's display name; the latter is scoped by `property.read`, and profile email/phone are never returned.
 
-## Implemented locally so far
+## Implemented and merged
 
 - Added `GET /api/v1/calendar` with strict date/property query validation, same-session active check, private/no-store/noindex headers, contract envelope, and safe errors.
 - Added `api.get_calendar(date,date,uuid[])`: authorizes every requested property and fails the complete selection on any unauthorized ID; reads current-placement reservations under `reservation.read` and unreleased blocks under `property.read`; does not mutate domain state; bounds range and response size.
@@ -30,11 +30,11 @@ Date: 2026-11-17 (Asia/Baku). Parent issue: [#21](https://github.com/fuadoglu/ev
 - Production Chromium mobile shell smoke: **124 assertions** passed at 320/360/390/430 px, including no-overflow, keyboard, axe and navigation checks. This smoke did not receive authenticated calendar data and does not prove the populated calendar grid layout. The <=340 px CSS now gives day cells a 44 px minimum width and height; populated-grid browser measurement remains open.
 - Expired hold labels now schedule a local re-evaluation at the server-provided expiry timestamp; this is presentation only and GET remains non-mutating. The UI still relies on the device clock.
 - The property-options RPC now checks `api.is_my_session_active()` itself; SQL smoke `0069` revokes the synthetic active session and expects the direct RPC call to fail with SQLSTATE `28000`.
-- Docker daemon is unavailable (`docker info` failed); no local PostgreSQL migration/DB smoke result is claimed. Final PR CI run [#44089799298](https://github.com/fuadoglu/eve/actions/runs/44089799298) passed `docs`, PostgreSQL 17 `sql_schema` (migration 029 and smoke 0069, including revoked-session denial and an actor with no property membership), and synthetic Supabase `supabase_local` (active-session RPC calls, mixed authorized/foreign rejection, API allowlist/RLS coverage, and HTTP boundaries). Independent review initially raised a possible indirect RLS recursion; final reviewer confirmation closed that concern based on the successful PostgreSQL 17 no-membership smoke. The reviewer did not run tests independently. Earlier failed runs and fixture corrections remain in CI history.
+- Docker daemon is unavailable (`docker info` failed); no local PostgreSQL migration/DB smoke result is claimed. Final PR-head CI [#44090271956](https://github.com/fuadoglu/eve/actions/runs/44090271956) passed `docs`, PostgreSQL 17 `sql_schema` (migration 029 and smoke 0069, including revoked-session denial and an actor with no property membership), and synthetic Supabase `supabase_local` (active-session RPC calls, mixed authorized/foreign rejection, API allowlist/RLS coverage, and HTTP boundaries). The squash merge is `36bf81c430d65d80d52a523976e77304cc878e57`; merged-main CI [#44090770483](https://github.com/fuadoglu/eve/actions/runs/44090770483) passed all three jobs on that commit. Independent final review found no remaining blocker; the reviewer did not run tests independently. Earlier failed runs and fixture corrections remain in CI history.
 
 ## Open risks and limitations
 
-- The API route depends on the new migration being applied; until migration and CI pass, local page data loading will fail closed and show an error.
-- Independent review found and the implementation now addresses carry-in reservations/blocks missing from agenda, UUID-only owner labels, mismatched ARIA grid semantics, direct RPC access after session revocation, 320 px touch-target width, and stale expiry labels. The final targeted follow-up review found no concrete blocker; it was static and did not run tests.
-- The populated month/agenda grid and owner/property filters have not yet had browser accessibility or 320/360/390/430 px checks; the generic mobile shell smoke exercised the calendar route's unauthenticated fail-closed state only.
+- The API route depends on migration 029 in each target environment; until it is applied there, calendar loading fails closed. The migration is not applied to a hosted Eve staging/production database.
+- Independent review found and the implementation addresses carry-in reservations/blocks, UUID-only owner labels, mismatched ARIA grid semantics, direct RPC access after session revocation, the 320 px touch target and stale expiry labels. A possible RLS recursion concern was closed by the PostgreSQL 17 no-membership actor smoke plus final static review.
+- The authenticated populated month/agenda grid and its screen-reader interaction have not been browser-verified. The generic mobile shell smoke exercised the calendar route's unauthenticated fail-closed state; 320 px target width is covered by CSS dimensions and independent review, not a populated-grid screenshot.
 - No staging/production migration, authenticated hosted response, real-device AT29, p95 query performance, backup/restore, or production readiness is claimed. EVE-013.3 retains readiness and interval-performance acceptance.
