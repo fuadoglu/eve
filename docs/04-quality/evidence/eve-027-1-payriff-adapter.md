@@ -9,7 +9,9 @@ Adds Eve's internal `createOrder(order, returnUrl)` boundary for hosted checkout
 - `pnpm test:billing` passed 20/20, including positive transport mapping and negative order state/amount/line-count/recurring/return URL/checkout origin/credentials/hash/unknown-field/transport failure cases. Retries pass the same internal order ID as the transport request key; this proves stable Eve input only.
 - `pnpm typecheck` passed.
 - `pnpm build`, `node scripts/docs-check.mjs`, `node scripts/verify-contracts.mjs`, schema validation (207 schemas; 14 positive/23 negative), storage config, prototype smoke (71 synthetic assertions), and `git diff --check` passed.
-- Independent QA review found no local adapter-scope blocker; reviewer did not run tests. PR CI remains pending.
+- PR-head CI [#44151211977](https://github.com/fuadoglu/eve/actions/runs/44151211977) passed `docs`, PostgreSQL 17 `sql_schema`, and synthetic `supabase_local` on `be7a24d`. The adapter PR [#131](https://github.com/fuadoglu/eve/pull/131) was squash-merged as `b0a162e84added23af1f7a2c62eb9fe2bc6c330b`; merged-main CI [#44151716402](https://github.com/fuadoglu/eve/actions/runs/44151716402) on the merge commit passed all three jobs. Independent QA review found no adapter-scope blocker and did not run tests.
+
+EVE-027.1 is `done` for its internal adapter boundary only. Ledger count after closeout: 49/90 (54.4%).
 
 All transport fixtures use synthetic `.example` origins. Tests do not call Payriff or represent provider sandbox evidence.
 
