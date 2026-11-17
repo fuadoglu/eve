@@ -2,7 +2,7 @@
 
 ## Scope and status
 
-Implements the D44 realtor balance read and append-only settlement write at the database command and HTTP adapter layers. The package remains `in_progress` until PostgreSQL 17 CI and independent review pass and the PR is merged. It does not claim hosted Eve database deployment, provider acceptance, or production readiness.
+Implements the D44 realtor balance read and append-only settlement write at the database command and HTTP adapter layers. EVE-015.2 is `done` for this component/API package after PR #142 merge, PostgreSQL 17 and synthetic Supabase CI, and independent review. It does not claim hosted Eve database deployment, provider acceptance, full AT13 concurrency/no-double-income acceptance, or production readiness.
 
 ## Implemented behavior
 
@@ -28,12 +28,14 @@ Implements the D44 realtor balance read and append-only settlement write at the 
 - `node scripts/test-prototype.mjs` — passed (71 fake-DOM assertions; not an application/browser test).
 - `git diff --check` — passed.
 
-**Pending stronger evidence:**
+**CI and independent review:**
 
-- PostgreSQL 17 migration and `supabase/tests/0072_realtor_settlement_smoke.sql` are wired into CI but have not run in this worktree. Docker daemon and local PostgreSQL were unavailable; CI result is pending.
-- Smoke covers owner create/read/write, full-manager finance read, daily and cross-tenant denial, anon/direct-table grant boundaries, receipt/refund version bumps, transfer/offset bounds, stale version, replay/conflict and unchanged rent-entry count.
-- Independent reviewer result and post-merge CI are pending.
+- PR #142 head CI [#44173072955](https://github.com/fuadoglu/eve/actions/runs/44173072955) passed `docs`, PostgreSQL 17 `sql_schema` and fresh synthetic `supabase_local`.
+- Merged-main CI [#44173539341](https://github.com/fuadoglu/eve/actions/runs/44173539341) passed all three jobs: `docs`, PostgreSQL 17 `sql_schema` and fresh synthetic `supabase_local`.
+- The PostgreSQL smoke covers owner create/read/write, full-manager finance read, daily and cross-tenant denial, anon/direct-table grant boundaries, receipt/refund version bumps, deposit exclusion and refund/reversal lineage, transfer/offset bounds, stale version, replay/conflict and unchanged rent-entry count.
+- Independent read-only implementation review found and helped close three concrete issues (deposit activity in C/version, refund lineage, migration-role trigger grant ordering); final follow-up found no blocker. Reviewer did not run tests.
+- PR #142 squash-merged as `b95805315b5dd6d948e4320b01fdf2bdfa27ce10`.
 
 ## Limitations
 
-The manager has no separate realtor account list/detail UI, the owner panel does not yet expose settlement controls, and existing guest-facing finance pages are outside this package. The implementation is component/API scope only; AT13 full concurrency/no-double-income QA is EVE-015.3. Hosted migration application, backup/restore and release gates remain open.
+The manager has no separate realtor account list/detail UI, the owner panel does not yet expose settlement controls, and existing guest-facing finance pages are outside this package. The implementation is component/API scope only; AT13 full concurrent-write/no-double-income QA is EVE-015.3. Hosted Eve migration application, backup/restore and release gates remain open.

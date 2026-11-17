@@ -1425,7 +1425,7 @@
       "parent_issue": 23,
       "milestone": "M3",
       "title": "Realtor collected/transferred/offset",
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "EVE-015.1"
       ],
