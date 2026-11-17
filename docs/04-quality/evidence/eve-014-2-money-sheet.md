@@ -1,0 +1,27 @@
+# EVE-014.2 — Money sheet and reservation balance
+
+## Scope
+
+Implements the F05 reservation money sheet on the created-reservation detail: rent/deposit receipts, receipt-linked rent refunds and deposit returns, custodian, Baku calendar date, optional note, server balance refresh, deposit summary and ledger history. Adds the already documented authenticated `GET /reservations/{id}` HTTP route so the sheet can refresh the canonical balance after a ledger acknowledgement.
+
+Does not implement realtor settlement, deposit allocation/reversal controls, EVE-014.3’s full rounding/refund/idempotency acceptance, provider/hosted integration or production deployment.
+
+## Contract behavior
+
+- Money is entered as safe integer AZN qəpik, using the reservation parser that rejects unsupported precision.
+- Refund and deposit-return options select a source ledger entry. The UI shows the remaining source limit from the immutable ledger history; the server command remains authoritative and rejects excess amounts.
+- Receipt attribution defaults to the current reservation/property custodian. If the reservation has a configured realtor contact, realtor is selectable; refund attribution/contact comes from its source receipt.
+- Date defaults to the current Asia/Baku date and is converted to a noon instant in that time zone without hard-coding the offset.
+- A stable per-payload idempotency key is reused after an unacknowledged retry. “Saxlanıldı” appears only after a valid HTTP 201 rent-entry DTO. The reservation GET refreshes balance from the server. If that refresh fails after write acknowledgement, the UI says the entry was saved and the balance needs refresh.
+- The balance GET validates same-origin, active session, resource DTO and id, and responds private/no-store/noindex. The ledger GET continues to use its existing documented endpoint.
+- Eve records a money entry; the UI does not claim to move money between bank accounts.
+
+## Verification
+
+Initial implementation checks passed on the repository-pinned Node/pnpm runtime: `pnpm typecheck`; `pnpm test:finance` (9/9); `pnpm test:reservations` (47/47); `pnpm build`; `node --check scripts/test-reservation-route-http.mjs`; `node scripts/docs-check.mjs`; `node scripts/verify-contracts.mjs`; `python3 scripts/verify-storage-config.py`; schema validation (207 schemas; 14 positive/23 negative); `node scripts/test-prototype.mjs` (71 fake-DOM assertions); and `git diff --check`. After main sync, local docs/contracts/schema/storage/prototype validators and `node --check` passed. An independent review then found that the UI accepted any 2xx response as save acknowledgement although the contract requires HTTP 201; the UI now checks exactly 201. Direct local finance tests passed 10/10 and reservation tests 47/47, and `git diff --check` passed on Node 24.5.0. That runtime is below the documented 24.22.2 floor; the pinned pnpm shim is unavailable in this worktree, so a final supported-runtime typecheck/build has not run locally. CI #44154800517 passed on implementation head `cc3a3b8`; the final evidence/status-only head will be rechecked by CI after this update. The prototype smoke is not browser/layout evidence.
+
+The synthetic E2E extension in `scripts/test-reservation-route-http.mjs` covers the 300 AZN reservation with 100 AZN initial receipt, a 250 AZN receipt, overpayment preview, over-limit refund rejection, a valid source-linked 50 AZN refund and refreshed server balance. Initial PR CI #44148522226 passed docs and SQL but the browser assertion read the balance before the client had finished refreshing it. Run #44150309285 then passed the server-balance assertion and UI refresh, but failed because the generic `getByRole("alert")` matched both the form validation message and Next.js route announcer. Commit `c89282f` scopes the validation assertion to `.reservation-money-sheet`. Synced-head CI [#44153087161](https://github.com/fuadoglu/eve/actions/runs/44153087161) passed `docs`, PostgreSQL 17 `sql_schema`, and synthetic `supabase_local`, including the reservation money flow and calendar E2E inherited from current main. A subsequent independent review found the HTTP 201 acknowledgement gap; commit `2c3efa3` changes the UI to acknowledge only 201 and adds a focused predicate test. The browser E2E simulates a DB-accepted write surfaced to the browser as 200, retries with the same idempotency key, and asserts only one ledger row was created. Run #44154617726 failed because the test selected `Qeydə al` instead of the uncertain-state `Təkrar yoxla` button; commit `cc3a3b8` waits for and clicks the actual retry action. Independent follow-up review found no blocker. CI [#44154800517](https://github.com/fuadoglu/eve/actions/runs/44154800517) on implementation head `cc3a3b8` passed `docs`, PostgreSQL 17 `sql_schema`, and synthetic `supabase_local`. Local Docker is unavailable, so route-to-PostgreSQL E2E is CI evidence only. Independent reviewers did not run tests.
+
+## Limitations
+
+The accessible reservation detail is reached through the current reservation creation flow; a standalone `/reservations/{id}` page is not yet implemented. A realtor choice appears when the reservation contains its commission contact; broader realtor account/settlement management is out of scope. This work does not close AT11–12 end-to-end, hosted DB, production, backup/restore, or real-device gates.
