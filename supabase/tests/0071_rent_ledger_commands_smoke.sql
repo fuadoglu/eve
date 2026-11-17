@@ -13,7 +13,9 @@ begin
   end if;
   if has_table_privilege('authenticated','app_private.rent_entries','INSERT')
     or has_table_privilege('authenticated','app_private.rent_entries','UPDATE')
-    or has_table_privilege('authenticated','app_private.rent_entries','DELETE') then
+    or has_table_privilege('authenticated','app_private.rent_entries','DELETE')
+    or has_table_privilege('app_executor','app_private.rent_entries','UPDATE')
+    or has_table_privilege('app_executor','app_private.rent_entries','DELETE') then
     raise exception 'authenticated role received direct rent ledger mutation privilege';
   end if;
 end $$;

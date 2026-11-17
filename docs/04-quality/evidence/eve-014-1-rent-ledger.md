@@ -8,7 +8,7 @@ Adds the reservation money GET/POST route, strict `RentEntryCreate` / `RentEntry
 
 - Values are safe integer AZN qəpik. Eve records owner-side guest money and does not receive rent.
 - Each command is a new `rent_entries` row. Direct authenticated table mutation is not granted.
-- Every write locks the reservation first. Source linked refunds, returns, allocations and reversals lock their source and are bounded by its effective remaining amount.
+- Every write locks the reservation first. Source linked refunds, returns, allocations and reversals validate the immutable source row and its effective remaining amount while that reservation lock is held. This serializes ledger writes without granting UPDATE on the append-only ledger table.
 - Current reservation write permission and active entitlement are checked for each create. Daily managers may record guest money with manager custodian attribution; allocation and reversal require owner/full access on the source property.
 - Stable SHA-256 `operation_key` values scope idempotency to actor, reservation and request key. The raw request key is never persisted. Identical retry returns the original entry; changed payload conflicts.
 - GET pages use an opaque keyset cursor and the same current placement / historical finance-read scope as existing rent history. HTTP replies are private, no-store and noindex.

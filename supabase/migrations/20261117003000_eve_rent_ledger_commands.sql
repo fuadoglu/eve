@@ -1,5 +1,5 @@
 -- EVE-014.1: append-only reservation rent/deposit ledger commands and DTO read.
--- All writes lock the reservation before the source row, matching AT10 transitions.
+-- All writes lock the reservation; source limits are read under that reservation lock.
 grant select on app_private.contacts, app_private.contact_properties to app_executor;
 grant insert on app_private.rent_entries to app_executor;
 
@@ -106,8 +106,10 @@ begin
     v_entry := v_existing;
   else
     if v_original_id is not null then
+      -- The reservation row lock above serializes all ledger writers, including AT10.
+      -- Ledger rows remain append-only, so do not request UPDATE privilege to lock a source row.
       select * into v_source from app_private.rent_entries e where e.id=v_original_id
-        and e.reservation_id=v_reservation.id and e.owner_account_id=v_reservation.owner_account_id for update;
+        and e.reservation_id=v_reservation.id and e.owner_account_id=v_reservation.owner_account_id;
       if not found then raise exception using errcode='22023',message='rent_entry_source_not_found'; end if;
       if v_kind='rent_refund' and v_source.kind not in ('rent_receipt','deposit_to_rent') then
         raise exception using errcode='22023',message='rent_refund_source_invalid'; end if;
