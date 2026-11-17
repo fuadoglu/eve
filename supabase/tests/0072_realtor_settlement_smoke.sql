@@ -52,8 +52,23 @@ values ('fa600000-0000-0000-0000-000000000001','fa200000-0000-0000-0000-00000000
 insert into app_private.realtor_accounts(owner_account_id,reservation_id,contact_id,commission_kind,
   fixed_minor,percentage_basis_points,basis_minor,earned_minor)
 values ('fa200000-0000-0000-0000-000000000001','fa500000-0000-4000-8000-000000000001',
-  'fa400000-0000-0000-0000-000000000001','fixed',3000,null,10000,3000);
+  'fa400000-0000-0000-0000-000000000001','fixed',3000,null,10000,0);
 
+set local role authenticated;
+set local request.jwt.claims='{"sub":"fa000000-0000-0000-0000-000000000001","session_id":"fa100000-0000-0000-0000-000000000001","iat":1800000000}';
+do $$ declare failed boolean:=false; begin
+  failed:=false;
+  begin
+    perform api.record_realtor_settlement('fa500000-0000-4000-8000-000000000001',
+      '{"expected_version":1,"contact_id":"fa400000-0000-0000-0000-000000000001","kind":"owner_to_realtor","amount_minor":1}',
+      'settlement-prepay-key-0001');
+  exception when sqlstate '22023' then failed:=true; end;
+  if not failed then raise exception 'commission prepayment accepted'; end if;
+end $$;
+
+reset role;
+update app_private.realtor_accounts set earned_minor=3000,version=version+1,updated_at=statement_timestamp()
+where reservation_id='fa500000-0000-4000-8000-000000000001';
 set local role authenticated;
 set local request.jwt.claims='{"sub":"fa000000-0000-0000-0000-000000000001","session_id":"fa100000-0000-0000-0000-000000000001","iat":1800000000}';
 do $$
@@ -62,24 +77,17 @@ declare b jsonb; receipt jsonb; refund jsonb; deposit jsonb; allocation jsonb; d
   before_receipts bigint; after_receipts bigint;
 begin
   b:=api.get_realtor_balance('fa500000-0000-4000-8000-000000000001');
-  if (b->>'version')::int<>1 or (b->>'owner_due_minor')::bigint<>0 then raise exception 'empty balance mismatch: %',b; end if;
-  failed:=false;
-  begin
-    perform api.record_realtor_settlement('fa500000-0000-4000-8000-000000000001',
-      '{"expected_version":1,"contact_id":"fa400000-0000-0000-0000-000000000001","kind":"owner_to_realtor","amount_minor":1}',
-      'settlement-prepay-key-0001');
-  exception when sqlstate '22023' then failed:=true; end;
-  if not failed then raise exception 'commission prepayment accepted'; end if;
+  if (b->>'version')::int<>2 or (b->>'commission_minor')::bigint<>3000 then raise exception 'earned balance mismatch: %',b; end if;
   receipt:=api.create_rent_entry('fa500000-0000-4000-8000-000000000001',
     '{"kind":"rent_receipt","amount_minor":10000,"custodian":"realtor","contact_id":"fa400000-0000-0000-0000-000000000001"}',
     'settlement-rent-receipt-0001');
-  if (api.get_realtor_balance('fa500000-0000-4000-8000-000000000001')->>'version')::int<>2 then
+  if (api.get_realtor_balance('fa500000-0000-4000-8000-000000000001')->>'version')::int<>3 then
     raise exception 'realtor receipt did not increment aggregate version'; end if;
   refund:=api.create_rent_entry('fa500000-0000-4000-8000-000000000001',jsonb_build_object(
     'kind','rent_refund','amount_minor',1,'custodian','realtor','contact_id','fa400000-0000-0000-0000-000000000001',
     'original_id',receipt->>'id'),'settlement-rent-refund-0001');
   b:=api.get_realtor_balance('fa500000-0000-4000-8000-000000000001');
-  if (b->>'version')::int<>3 or (b->>'collected_minor')::bigint<>9999
+  if (b->>'version')::int<>4 or (b->>'collected_minor')::bigint<>9999
     or (b->>'commission_minor')::bigint<>3000 or (b->>'owner_due_minor')::bigint<>6999 then
     raise exception 'C/E or refund balance mismatch: %',b; end if;
   deposit:=api.create_rent_entry('fa500000-0000-4000-8000-000000000001',
@@ -95,42 +103,42 @@ begin
     'kind','reversal','amount_minor',50,'custodian','realtor','contact_id','fa400000-0000-0000-0000-000000000001',
     'original_id',deposit_refund->>'id','note','Refund reversal for deposit allocation'),'settlement-deposit-refund-reversal-001');
   b:=api.get_realtor_balance('fa500000-0000-4000-8000-000000000001');
-  if (b->>'version')::int<>3 or (b->>'collected_minor')::bigint<>9999 then
+  if (b->>'version')::int<>4 or (b->>'collected_minor')::bigint<>9999 then
     raise exception 'deposit activity changed D44 rent-receipt balance/version: %',b; end if;
   select count(*) into before_receipts from app_private.rent_entries where reservation_id='fa500000-0000-4000-8000-000000000001';
   settlement:=api.record_realtor_settlement('fa500000-0000-4000-8000-000000000001',
-    '{"expected_version":3,"contact_id":"fa400000-0000-0000-0000-000000000001","kind":"realtor_to_owner","amount_minor":6999}',
+    '{"expected_version":4,"contact_id":"fa400000-0000-0000-0000-000000000001","kind":"realtor_to_owner","amount_minor":6999}',
     'settlement-transfer-key-001');
-  if settlement->>'balance_version'<>'4' then raise exception 'settlement version not advanced: %',settlement; end if;
+  if settlement->>'balance_version'<>'5' then raise exception 'settlement version not advanced: %',settlement; end if;
   failed:=false;
   begin
     perform api.record_realtor_settlement('fa500000-0000-4000-8000-000000000001',
-      '{"expected_version":4,"contact_id":"fa400000-0000-0000-0000-000000000001","kind":"commission_offset","amount_minor":3001}',
+      '{"expected_version":5,"contact_id":"fa400000-0000-0000-0000-000000000001","kind":"commission_offset","amount_minor":3001}',
       'settlement-excess-offset-01');
   exception when sqlstate '22023' then failed:=true; end;
   if not failed then raise exception 'offset exceeding both due amounts was accepted'; end if;
   perform api.record_realtor_settlement('fa500000-0000-4000-8000-000000000001',
-    '{"expected_version":4,"contact_id":"fa400000-0000-0000-0000-000000000001","kind":"commission_offset","amount_minor":3000}',
+    '{"expected_version":5,"contact_id":"fa400000-0000-0000-0000-000000000001","kind":"commission_offset","amount_minor":3000}',
     'settlement-offset-key-001');
   b:=api.get_realtor_balance('fa500000-0000-4000-8000-000000000001');
-  if (b->>'version')::int<>5 or (b->>'owner_due_minor')::bigint<>0 or (b->>'realtor_due_minor')::bigint<>0
+  if (b->>'version')::int<>6 or (b->>'owner_due_minor')::bigint<>0 or (b->>'realtor_due_minor')::bigint<>0
     or (b->>'commission_paid_minor')::bigint<>3000 then raise exception 'D44 offset net mismatch: %',b; end if;
   replay:=api.record_realtor_settlement('fa500000-0000-4000-8000-000000000001',
-    '{"expected_version":3,"contact_id":"fa400000-0000-0000-0000-000000000001","kind":"realtor_to_owner","amount_minor":6999}',
+    '{"expected_version":4,"contact_id":"fa400000-0000-0000-0000-000000000001","kind":"realtor_to_owner","amount_minor":6999}',
     'settlement-transfer-key-001');
-  if replay->>'id' is distinct from settlement->>'id' or replay->>'balance_version'<>'4' then
+  if replay->>'id' is distinct from settlement->>'id' or replay->>'balance_version'<>'5' then
     raise exception 'identical payload did not replay the original event after the balance became stale'; end if;
   failed:=false;
   begin
     perform api.record_realtor_settlement('fa500000-0000-4000-8000-000000000001',
-      '{"expected_version":3,"contact_id":"fa400000-0000-0000-0000-000000000001","kind":"realtor_to_owner","amount_minor":6998}',
+      '{"expected_version":4,"contact_id":"fa400000-0000-0000-0000-000000000001","kind":"realtor_to_owner","amount_minor":6998}',
       'settlement-transfer-key-001');
   exception when unique_violation then failed:=true; end;
   if not failed then raise exception 'changed settlement payload replay was accepted'; end if;
   failed:=false;
   begin
     perform api.record_realtor_settlement('fa500000-0000-4000-8000-000000000001',
-      '{"expected_version":4,"contact_id":"fa400000-0000-0000-0000-000000000001","kind":"realtor_to_owner","amount_minor":1}',
+      '{"expected_version":5,"contact_id":"fa400000-0000-0000-0000-000000000001","kind":"realtor_to_owner","amount_minor":1}',
       'settlement-stale-version-001');
   exception when serialization_failure then failed:=true; end;
   if not failed then raise exception 'stale balance version was accepted'; end if;
