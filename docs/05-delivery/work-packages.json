@@ -2509,7 +2509,7 @@
       "parent_issue": 35,
       "milestone": "M6",
       "title": "Payriff hosted checkout adapter",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-026.3",
         "EVE-003.2"
