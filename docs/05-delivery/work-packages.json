@@ -1394,7 +1394,7 @@
       "parent_issue": 23,
       "milestone": "M3",
       "title": "Commission basis və rounding",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-014.3"
       ],
