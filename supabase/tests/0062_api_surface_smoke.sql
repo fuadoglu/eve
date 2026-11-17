@@ -44,7 +44,9 @@ begin
       'api.exchange_scoped_link_for_server(text)'::regprocedure,
       'api.apply_verified_billing_order_for_server(uuid)'::regprocedure,
       'api.get_today(date,uuid)'::regprocedure,
-      'api.get_calendar(date,date,uuid[])'::regprocedure)
+      'api.get_calendar(date,date,uuid[])'::regprocedure,
+      'api.create_rent_entry(uuid,jsonb,text)'::regprocedure,
+      'api.list_reservation_rent_entries(uuid,timestamptz,uuid,integer)'::regprocedure)
       or p.prokind <> 'f'
       or (p.oid = 'api.is_my_session_active()'::regprocedure and p.proowner <> 'app_session_reader'::regrole)
       or (p.oid = 'api.revoke_my_sessions()'::regprocedure and p.proowner <> 'app_executor'::regrole)
@@ -62,6 +64,7 @@ begin
                         'api.move_reservation(uuid,jsonb,text)'::regprocedure,
                         'api.patch_reservation(uuid,jsonb,text)'::regprocedure,
                         'api.transition_reservation(uuid,jsonb,text)'::regprocedure,
+                        'api.create_rent_entry(uuid,jsonb,text)'::regprocedure,
       'api.transition_task(uuid,integer,text,text,text,text,uuid[],text)'::regprocedure,
       'api.finalize_media_upload_for_server(uuid,uuid,text,bigint,integer,text,text)'::regprocedure,
       'api.get_media_finalize_source_for_server(uuid,uuid,text)'::regprocedure,
@@ -80,6 +83,7 @@ begin
                     'api.move_reservation(uuid,jsonb,text)'::regprocedure,
                     'api.patch_reservation(uuid,jsonb,text)'::regprocedure,
                     'api.transition_reservation(uuid,jsonb,text)'::regprocedure,
+                    'api.create_rent_entry(uuid,jsonb,text)'::regprocedure,
       'api.transition_task(uuid,integer,text,text,text,text,uuid[],text)'::regprocedure,
       'api.finalize_media_upload_for_server(uuid,uuid,text,bigint,integer,text,text)'::regprocedure,
       'api.get_media_finalize_source_for_server(uuid,uuid,text)'::regprocedure,
@@ -111,7 +115,7 @@ begin
   select count(*) into mismatch_count
   from pg_proc p
   where p.pronamespace='api'::regnamespace;
-  if mismatch_count <> 32 then
+  if mismatch_count <> 34 then
     raise exception 'api RPC inventory changed: %', mismatch_count;
   end if;
 
