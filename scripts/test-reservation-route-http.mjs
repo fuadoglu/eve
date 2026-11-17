@@ -228,7 +228,7 @@ try {
   const calendarBody = await calendarResponse.json();
   assert.equal(calendarBody.data.reservations.some((reservation) => reservation.id === firstEnvelope.data.id), true);
   await page.getByRole("button", { name: "Agenda" }).click();
-  await page.getByText("Synthetic guest", { exact: true }).waitFor();
+  await page.getByText("Synthetic guest", { exact: true }).first().waitFor();
   const agendaAudit = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
   assert.deepEqual(agendaAudit.violations.map((violation) => violation.id), [],
     `populated calendar agenda axe violations: ${agendaAudit.violations.map((violation) => `${violation.id}:${violation.nodes.length}`).join(",")}`);
