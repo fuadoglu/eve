@@ -15,6 +15,8 @@ Yoxlama tarixi: 2026-11-12 (Asia/Baku). Bu, R12, D07/D14, AT26–28 üçün **r�
 
 Eve-nin daxili adapter müqaviləsi `createOrder(order, returnUrl)`, `getOrderStatus(providerId)`, `normalizeVerifiedEvent(payload)` və `reconcile(order)`-dır. Bu adlar **Eve interfeysidir**, Payriff endpoint və ya event schema iddiası deyil. Order owner/amount/currency/merchant serverdə saxlanılan dəyərlə tutuşdurulmadan entitlement tətbiq edilmir. Browser return yalnız `pending` göstərir. Webhook varsa onun doğrulama üsulu provider sənədindən/sandbox-dan alınır; təsdiqsiz `signature` field və ya status enum-u uydurulmur. Doğrulanmış event də idempotent DB transaction və order-line unique sərhədini əvəz etmir.
 
+EVE-027.2 yalnız serverin artıq təsdiqlədiyi daxili normalized event-i `payment_events` inbox-a yazan və mövcud tətbiq transaction-ına bağlayan service-role bridge təqdim edir. Bridge verification etmir, public webhook/route deyil və Payriff payload-ı qəbul etmir. Opaque event/transaction identifikatorlarının provider formatı EXT04/05 təsdiqinə qədər naməlum qalır; expired/closed order üçün avtomatik entitlement verilmir, manual review tələb olunur (D43).
+
 | AT | Sandbox-da tələb edilən sübut | Hazırkı nəticə |
 |---|---|---|
 | AT26 | Forged browser return/webhook `paid` etmir; order/amount/currency/merchant server statusu ilə yoxlanır | Yalnız yoxlama planı; sandbox yoxdur. |

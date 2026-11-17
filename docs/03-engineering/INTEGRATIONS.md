@@ -18,6 +18,8 @@ Adapter kontraktı: createOrder(order,returnUrl), getOrderStatus(providerId), no
 
 Axın: server order+line yaradır → provider checkout URL → istifadəçi checkout → return page pending → webhook inbox və ya reconcile → server status verify → idempotent transaction entitlement → UI status polling dayanır.
 
+EVE-027.2-də daxili `api.reconcile_verified_billing_event_for_server` bridge-i yalnız server `service_role` ilə çağırıla bilər və Eve tərəfindən artıq normalized/verified sayılmış input qəbul edir. O, provider raw payload/signature saxlamır; order məbləği/currency-ni yoxlayır, `payment_events(provider,event_key)` dedupe edir və mövcud entitlement transaction-ını eyni DB transaction-da çağırır. Client/browser üçün route yoxdur. `event_key` və transaction reference Eve kontraktındakı opaque dəyərlərdir; Payriff wire field formatı kimi iddia edilmir. Closed/expired order event-i entitlement vermədən manual review tələb edir. Provider verification/status lookup, route, sandbox və real merchant konfiqurasiyası açıq EXT04/EXT05 gate-ləridir.
+
 Webhook üçün:
 - Raw body yalnız verification ehtiyacı qədər saxlanır, PII redacted audit ayrıdır.
 - Rəsmi signature varsa constant-time verification; yoxdursa provider status lookup mandatory.
