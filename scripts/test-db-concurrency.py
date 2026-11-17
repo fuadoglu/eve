@@ -483,7 +483,9 @@ select api.record_realtor_settlement('{reservation_id}',
     second: subprocess.Popen[str] | None = None
     try:
         assert first.stdin and first.stdout and first.stderr
-        first.stdin.write(settlement_sql.format(idempotency_key=f"settlement-race-a-{reservation_id}"))
+        first.stdin.write(settlement_sql.replace(
+            "{idempotency_key}", f"settlement-race-a-{reservation_id}", 1
+        ))
         first.stdin.flush()
         marker_seen, first_output = wait_for_marker(first.stdout, "REALTOR_SETTLEMENT_RECORDED")
         if not marker_seen:
@@ -494,7 +496,9 @@ select api.record_realtor_settlement('{reservation_id}',
             text=True, bufsize=1,
         )
         assert second.stdin
-        second.stdin.write(settlement_sql.format(idempotency_key=f"settlement-race-b-{reservation_id}"))
+        second.stdin.write(settlement_sql.replace(
+            "{idempotency_key}", f"settlement-race-b-{reservation_id}", 1
+        ))
         second.stdin.close()
         wait_for_lock_waiters(reservation_id, 1)
         first.stdin.write("commit;\\n")
