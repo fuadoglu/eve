@@ -12,8 +12,12 @@ Extends the synthetic PostgreSQL rent-ledger acceptance smoke for AT11 and the f
 
 ## Verification state
 
-Implementation PR CI and merged-main CI must both pass the PostgreSQL 17 `sql_schema` job before this package is closed. This document does not claim a passing result before those runs. Local Docker availability is not assumed.
+Implementation PR #134 was squash-merged as `a020c9adf220bbcee9990b33585735ae5612a3dc`. Final PR-head CI [#44157997140](https://github.com/fuadoglu/eve/actions/runs/44157997140) and merged-main CI [#44158566334](https://github.com/fuadoglu/eve/actions/runs/44158566334) passed `docs`, PostgreSQL 17 `sql_schema`, and synthetic `supabase_local`. The independent SQL review found that the first version queried a private ledger table directly; the fixture was corrected to read through the authorized `api.list_reservation_rent_entries` RPC. Follow-up review found no remaining blocker and did not run tests. Local Docker availability is not assumed.
 
 ## Limitations
 
 The fixture seeds a synthetic completed inspection record directly in PostgreSQL; it is not an inspection UI/API integration test. It does not prove hosted database deployment, real guests, backup/restore, realtor settlement, or production readiness.
+
+## Package closeout
+
+EVE-014.3 is `done` for its documented synthetic PostgreSQL acceptance scope. It does not close the external hosted database, backup/restore, or production release gates.
