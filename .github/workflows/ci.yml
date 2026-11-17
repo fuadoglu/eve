@@ -320,6 +320,8 @@ jobs:
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261117002900_eve_calendar_projection.sql
       - name: Calendar range, property scope and GET purity smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0069_calendar_projection_smoke.sql
+      - name: Calendar interval query p95 synthetic smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0070_calendar_interval_performance.sql
       - name: 56 cədvəlin RLS və grant coverage smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_rls_coverage_smoke.sql
       - name: Data API RPC allowlist və grant smoke

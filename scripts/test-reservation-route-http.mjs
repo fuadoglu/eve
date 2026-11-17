@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { spawn, spawnSync } from "node:child_process";
 import { setTimeout as delay } from "node:timers/promises";
+import AxeBuilder from "@axe-core/playwright";
 import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import { chromium } from "playwright";
@@ -17,6 +18,7 @@ const email = `eve-reservation-${suffix}@example.test`;
 const password = `${randomUUID()}aA1!`;
 const ownerAccountId = randomUUID();
 const propertyId = randomUUID();
+const reservationDates = getNextMonthReservationDates();
 let nextServer;
 let browser;
 let serverDiagnostics = "";
@@ -130,8 +132,8 @@ try {
     const diagnostics = browserDiagnostics.join(" | ") || "no-browser-errors";
     throw new Error(`reservation client validation did not hydrate: ${diagnostics}`);
   }
-  await page.getByLabel("Giriş tarixi").fill("2027-08-01");
-  await page.getByLabel("Çıxış tarixi").fill("2027-08-04");
+  await page.getByLabel("Giriş tarixi").fill(reservationDates.checkIn);
+  await page.getByLabel("Çıxış tarixi").fill(reservationDates.checkOut);
   await page.getByLabel("Qonağın adı").fill("Synthetic guest");
   await page.getByLabel("Ümumi qiymət (AZN)").fill("300,00");
   await page.locator(".reservation-more summary").click();
@@ -214,7 +216,54 @@ try {
     data: { ...body, guest_name: "Other synthetic guest" },
   });
   assert.equal(conflictResponse.status(), 409);
-  console.log("PASS reservation browser E2E: authenticated property context, mobile offline guard, server acknowledgement/balance, DB-backed idempotent retry and occupancy conflict");
+
+  await page.goto(`${baseUrl}/calendar`, { waitUntil: "networkidle" });
+  await page.locator(".monthGrid").waitFor();
+  const calendarLoad = page.waitForResponse((response) =>
+    response.url().startsWith(`${baseUrl}/api/v1/calendar?`) && response.request().method() === "GET");
+  await page.getByRole("button", { name: "Növbəti ay" }).click();
+  const calendarResponse = await calendarLoad;
+  assert.equal(calendarResponse.status(), 200);
+  const calendarBody = await calendarResponse.json();
+  assert.equal(calendarBody.data.reservations.some((reservation) => reservation.id === firstEnvelope.data.id), true);
+  await page.getByRole("button", { name: "Agenda" }).click();
+  await page.locator(".entryCard strong").getByText("Synthetic guest", { exact: true }).waitFor();
+  const agendaAudit = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
+  assert.deepEqual(agendaAudit.violations.map((violation) => violation.id), [],
+    `populated calendar agenda axe violations: ${agendaAudit.violations.map((violation) => `${violation.id}:${violation.nodes.length}`).join(",")}`);
+  await page.getByRole("button", { name: "Ay" }).click();
+  const markedDay = page.locator('.dayCell[aria-label*="1 qeyd"]').first();
+  await markedDay.waitFor();
+  const markedDayName = await markedDay.getAttribute("aria-label");
+  assert.ok(markedDayName?.includes("1 qeyd"), "reservation day must expose an accessible count in its name");
+  await markedDay.focus();
+  await page.keyboard.press("Enter");
+  await page.waitForFunction((element) => element.getAttribute("aria-pressed") === "true", await markedDay.elementHandle());
+  const monthAudit = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
+  assert.deepEqual(monthAudit.violations.map((violation) => violation.id), [],
+    `populated calendar month axe violations: ${monthAudit.violations.map((violation) => `${violation.id}:${violation.nodes.length}`).join(",")}`);
+  const cdp = await context.newCDPSession(page);
+  const axTree = await cdp.send("Accessibility.getFullAXTree");
+  const axDay = axTree.nodes.find((node) => node.role?.value === "button" && node.name?.value === markedDayName);
+  assert.ok(axDay, "reservation day button name must appear in the browser accessibility tree");
+  assert.equal(String(axDay.properties?.find((property) => property.name === "pressed")?.value?.value), "true",
+    "selected reservation day must expose pressed=true in the browser accessibility tree");
+  await cdp.detach();
+
+  for (const width of [320, 360, 390, 430]) {
+    await page.setViewportSize({ width, height: 844 });
+    const metrics = await page.evaluate(() => ({
+      documentWidth: document.documentElement.scrollWidth,
+      bodyWidth: document.body.scrollWidth,
+      smallestDay: Math.min(...[...document.querySelectorAll(".dayCell")].map((node) => node.getBoundingClientRect().width)),
+      smallestDayHeight: Math.min(...[...document.querySelectorAll(".dayCell")].map((node) => node.getBoundingClientRect().height)),
+    }));
+    assert.ok(metrics.documentWidth <= width && metrics.bodyWidth <= width,
+      `calendar horizontal overflow at ${width}px: ${JSON.stringify(metrics)}`);
+    assert.ok(metrics.smallestDay >= 44 && metrics.smallestDayHeight >= 44,
+      `calendar day target below 44px at ${width}px: ${JSON.stringify(metrics)}`);
+  }
+  console.log("PASS reservation + calendar browser E2E: authenticated DB-backed event, interval API, agenda/month, keyboard day selection, 320/360/390/430px width and 44px targets; synthetic local Supabase");
   await context.close();
 } catch (error) {
   const message = error instanceof Error ? error.message : String(error);
@@ -262,4 +311,16 @@ function sanitizeDatabaseFailure(message) {
   if (message.startsWith("permission denied for function")) return "permission_denied_for_function";
   if (message.startsWith("permission denied for schema")) return "permission_denied_for_schema";
   return "other_database_error";
+}
+
+function getNextMonthReservationDates() {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Baku", year: "numeric", month: "2-digit",
+  }).formatToParts(new Date());
+  const year = Number(parts.find((part) => part.type === "year")?.value);
+  const month = Number(parts.find((part) => part.type === "month")?.value);
+  const checkIn = new Date(Date.UTC(year, month, 10, 12));
+  const checkOut = new Date(Date.UTC(year, month, 12, 12));
+  const format = (date) => date.toISOString().slice(0, 10);
+  return { checkIn: format(checkIn), checkOut: format(checkOut) };
 }
