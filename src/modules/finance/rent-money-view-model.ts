@@ -2,6 +2,11 @@ import type { RentEntry } from "./rent-entry-contract.ts";
 
 const refundableSources = new Set(["rent_receipt", "deposit_to_rent", "deposit_receipt"]);
 
+/** The documented money-entry POST acknowledges creation only with HTTP 201. */
+export function isRentEntryCreationAcknowledged(status: number): boolean {
+  return status === 201;
+}
+
 /** Computes per-source refundable room from the append-only history; the server remains authoritative. */
 export function refundableMinor(source: RentEntry, entries: RentEntry[]): number {
   if (!refundableSources.has(source.kind)) return 0;

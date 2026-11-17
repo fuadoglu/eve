@@ -8,7 +8,7 @@ import {
   type ReservationDto,
 } from "./reservation-contract.ts";
 import { parseRentEntry, type RentEntry } from "../finance/rent-entry-contract.ts";
-import { bakuDateToIso, bakuToday, depositTotals, refundableMinor } from "../finance/rent-money-view-model.ts";
+import { bakuDateToIso, bakuToday, depositTotals, isRentEntryCreationAcknowledged, refundableMinor } from "../finance/rent-money-view-model.ts";
 
 const statusLabels: Record<ReservationDto["status"], string> = {
   hold: "Müvəqqəti saxlanılıb",
@@ -108,8 +108,8 @@ export function ReservationDetail({ reservation: initialReservation, propertyNam
       let body: unknown;
       try { body = await response.json(); } catch { throw new Error("save_response_invalid"); }
       const savedEntry = isRecord(body) && isRecord(body.data) ? parseRentEntry(body.data) : null;
-      if (!response.ok) {
-        const outcomeMayBeUnknown = response.status >= 500 || [408, 425, 429].includes(response.status);
+      if (!isRentEntryCreationAcknowledged(response.status)) {
+        const outcomeMayBeUnknown = response.ok || response.status >= 500 || [408, 425, 429].includes(response.status);
         setUncertain(outcomeMayBeUnknown);
         if (outcomeMayBeUnknown) {
           setFormError("Server cavabı qeyri-müəyyəndir. Dəyişiklik etmədən eyni sorğu açarı ilə təkrar yoxlayın.");

@@ -1,13 +1,18 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import type { RentEntry } from "../../../src/modules/finance/rent-entry-contract.ts";
-import { bakuDateToIso, bakuToday, depositTotals, refundableMinor } from "../../../src/modules/finance/rent-money-view-model.ts";
+import { bakuDateToIso, bakuToday, depositTotals, isRentEntryCreationAcknowledged, refundableMinor } from "../../../src/modules/finance/rent-money-view-model.ts";
 
 const entry = (id: string, kind: RentEntry["kind"], amount_minor: number, original_id: string | null = null): RentEntry => ({
   id, reservation_id: "00000000-0000-4000-8000-000000000001", placement_id: "00000000-0000-4000-8000-000000000002",
   property_id: "00000000-0000-4000-8000-000000000003", kind, amount_minor, currency: "AZN", custodian: "owner",
   ...(original_id ? { original_id } : {}), occurred_at: "2026-11-17T08:00:00.000Z", version: 1,
   created_at: "2026-11-17T08:00:00.000Z", updated_at: "2026-11-17T08:00:00.000Z",
+});
+
+test("money-entry creation is acknowledged only by the documented HTTP 201 response", () => {
+  assert.equal(isRentEntryCreationAcknowledged(201), true);
+  for (const status of [200, 202, 204, 400, 500]) assert.equal(isRentEntryCreationAcknowledged(status), false);
 });
 
 test("available rent refund includes refunds and subtracts a reversal of a refund", () => {
