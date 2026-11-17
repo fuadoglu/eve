@@ -68,6 +68,23 @@ create constraint trigger expense_total_on_allocation after insert or update or 
   on app_private.expense_allocations deferrable initially deferred for each row
   execute function app_private.check_expense_allocation_total();
 
+-- An allocation can change its amount/property in a future edit, but moving it
+-- to another header would skip the deferred sum check for the old header.
+create function app_private.prevent_expense_allocation_move() returns trigger
+language plpgsql set search_path = '' as $$
+begin
+  if new.expense_id is distinct from old.expense_id
+    or new.owner_account_id is distinct from old.owner_account_id then
+    raise exception using errcode='23514',message='expense_allocation_header_immutable';
+  end if;
+  return new;
+end;
+$$;
+revoke all on function app_private.prevent_expense_allocation_move() from public,anon,authenticated;
+create trigger expense_allocation_header_immutable before update
+  on app_private.expense_allocations for each row
+  execute function app_private.prevent_expense_allocation_move();
+
 create function api.create_expense_proposal(p_input jsonb,p_idempotency_key text)
 returns jsonb language plpgsql volatile security definer set search_path = '' as $$
 declare
@@ -183,7 +200,7 @@ begin
   end if;
   if v_replay then
     select * into v_expense from app_private.expenses e where e.id=v_prior.result_id
-      and e.owner_account_id=v_owner and e.approval='proposed' and e.submitted_by=v_actor;
+      and e.owner_account_id=v_owner and e.submitted_by=v_actor;
     if not found then raise exception using errcode='23505',message='idempotency_result_unavailable'; end if;
   else
 

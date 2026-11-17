@@ -334,6 +334,10 @@ jobs:
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261118003200_eve_realtor_settlement.sql
       - name: Realtor settlement tenant, version, idempotency and no-double-income smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0072_realtor_settlement_smoke.sql
+      - name: Expense proposal and allocation migration
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261118003400_eve_expense_proposal_allocation.sql
+      - name: Expense allocation, scope, and replay smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0075_expense_proposal_allocation_smoke.sql
       - name: Calendar interval query p95 synthetic smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0070_calendar_interval_performance.sql
       - name: 56 cədvəlin RLS və grant coverage smoke
@@ -421,6 +425,8 @@ jobs:
             < supabase/tests/0240_billing_period_apply_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
             < supabase/tests/0065_task_transition_history_smoke.sql
+          docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
+            < supabase/tests/0075_expense_proposal_allocation_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
             < supabase/tests/0062_rls_coverage_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \

@@ -17,6 +17,9 @@ payload return the same expense, while a changed payload conflicts. Deferred con
 check the whole allocation sum at commit. The private header RLS helper checks **all** allocation
 rows, including those hidden by row security, before a full manager sees the total. A manager with
 only one property of a multi-property expense cannot see its header.
+Allocation header IDs are immutable, so an UPDATE cannot move a row to another expense and leave
+the old header below its required sum. The replay query accepts both `proposed` and `approved`
+original rows, matching owner/full creation behavior.
 
 ## Verification
 
@@ -24,11 +27,14 @@ only one property of a multi-property expense cannot see its header.
   unauthorized Origin and server acknowledgement checks.
 - Local `pnpm typecheck`: passed.
 - `git diff --check`: passed.
-- PostgreSQL 17 integration test artifact: `supabase/tests/0075_expense_proposal_allocation_smoke.sql`.
-  It asserts RPC grants, owner approved/unpaid creation, replay, mismatched sum, cross-owner
-  rejection, partial manager header isolation, daily proposed/unpaid creation and deferred sum.
-  The local machine has no running PostgreSQL or Docker daemon, so this SQL test is **not yet run**;
-  it requires CI before package closeout.
+- Local PostgreSQL 16 temporary cluster: all 34 migration files through `034` applied with
+  `ON_ERROR_STOP=1`; `0075_expense_proposal_allocation_smoke.sql`,
+  `0062_api_surface_smoke.sql`, and `0062_rls_coverage_smoke.sql` each exited 0. The test
+  asserts approved owner replay, sum/cross-owner rejection, immutable allocation header, full
+  header visibility guard and daily proposed/unpaid state. This is synthetic local proof.
+- PostgreSQL 17 and fresh Supabase CI are still required before package closeout.
+- Independent read-only review found two P1 issues in the first commit (approved replay and
+  allocation header move). Both were corrected and await follow-up review of the final diff.
 
 ## Limits
 

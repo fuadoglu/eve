@@ -46,6 +46,7 @@ begin
       'api.get_today(date,uuid)'::regprocedure,
       'api.get_calendar(date,date,uuid[])'::regprocedure,
       'api.create_rent_entry(uuid,jsonb,text)'::regprocedure,
+      'api.create_expense_proposal(jsonb,text)'::regprocedure,
       'api.list_reservation_rent_entries(uuid,timestamptz,uuid,integer)'::regprocedure,
       'api.get_realtor_balance(uuid)'::regprocedure,
       'api.record_realtor_settlement(uuid,jsonb,text)'::regprocedure,
@@ -68,6 +69,7 @@ begin
                         'api.patch_reservation(uuid,jsonb,text)'::regprocedure,
                         'api.transition_reservation(uuid,jsonb,text)'::regprocedure,
                         'api.create_rent_entry(uuid,jsonb,text)'::regprocedure,
+      'api.create_expense_proposal(jsonb,text)'::regprocedure,
                         'api.record_realtor_settlement(uuid,jsonb,text)'::regprocedure,
       'api.transition_task(uuid,integer,text,text,text,text,uuid[],text)'::regprocedure,
       'api.finalize_media_upload_for_server(uuid,uuid,text,bigint,integer,text,text)'::regprocedure,
@@ -89,6 +91,7 @@ begin
                     'api.patch_reservation(uuid,jsonb,text)'::regprocedure,
                     'api.transition_reservation(uuid,jsonb,text)'::regprocedure,
                     'api.create_rent_entry(uuid,jsonb,text)'::regprocedure,
+      'api.create_expense_proposal(jsonb,text)'::regprocedure,
                     'api.record_realtor_settlement(uuid,jsonb,text)'::regprocedure,
       'api.transition_task(uuid,integer,text,text,text,text,uuid[],text)'::regprocedure,
       'api.finalize_media_upload_for_server(uuid,uuid,text,bigint,integer,text,text)'::regprocedure,
@@ -124,7 +127,7 @@ begin
   select count(*) into mismatch_count
   from pg_proc p
   where p.pronamespace='api'::regnamespace;
-  if mismatch_count <> 37 then
+  if mismatch_count <> 38 then
     raise exception 'api RPC inventory changed: %', mismatch_count;
   end if;
 

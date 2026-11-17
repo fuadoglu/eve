@@ -66,14 +66,33 @@ begin
   exception when sqlstate '22023' then v_failed:=true; end;
   if not v_failed then raise exception 'proposed expense was paid'; end if;
 end $$;
+reset role;
+do $$
+declare v_other uuid := gen_random_uuid(); v_failed boolean := false; v_message text;
+begin
+  insert into app_private.expenses(id,owner_account_id,category,total_minor,approval,payment_status,
+    expense_date,submitted_by,approved_by)
+  values(v_other,'f9200000-0000-0000-0000-000000000081','cleaning',100,'approved','unpaid',
+    date '2026-11-18','f9000000-0000-0000-0000-000000000081','f9000000-0000-0000-0000-000000000081');
+  insert into app_private.expense_allocations(owner_account_id,property_id,expense_id,amount_minor)
+  values('f9200000-0000-0000-0000-000000000081','f9300000-0000-4000-8000-000000000081',v_other,100);
+  begin
+    update app_private.expense_allocations set expense_id=v_other
+      where expense_id=current_setting('eve.test.expense_id')::uuid
+        and property_id='f9300000-0000-4000-8000-000000000082';
+  exception when check_violation then
+    get stacked diagnostics v_message = message_text;
+    v_failed := v_message = 'expense_allocation_header_immutable';
+  end;
+  if not v_failed then raise exception 'allocation moved away from old expense'; end if;
+end $$;
 set local role app_executor;
 set local request.jwt.claims = '{"sub":"f9000000-0000-0000-0000-000000000083","session_id":"f9100000-0000-0000-0000-000000000083","iat":1800000000}';
 do $$ begin
-  if exists(select 1 from app_private.expenses e where e.id=current_setting('eve.test.expense_id')::uuid)
-    or app_private.can_read_expense_header(
+  if app_private.can_read_expense_header(
       current_setting('eve.test.expense_id')::uuid,
       'f9200000-0000-0000-0000-000000000081') then
-    raise exception 'cross-property approved expense header leaked to partial-scope manager'; end if;
+    raise exception 'cross-property expense header guard allowed partial-scope manager'; end if;
 end $$;
 set local role authenticated;
 set local request.jwt.claims = '{"sub":"f9000000-0000-0000-0000-000000000084","session_id":"f9100000-0000-0000-0000-000000000084","iat":1800000000}';

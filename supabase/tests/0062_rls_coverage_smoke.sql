@@ -27,7 +27,7 @@ begin
       or has_table_privilege('app_executor',c.oid,'UPDATE') is distinct from
         (c.relname in ('manager_invites','property_memberships','idempotency_keys','tasks','access_links','media_assets','link_session_rate_limits','reservations','reservation_placements','occupancy','realtor_accounts'))
       or has_table_privilege('app_executor',c.oid,'INSERT') is distinct from
-        (c.relname in ('owner_accounts','properties','trial_claims','subscriptions','rooms','inventory_items','media_bindings','media_assets','manager_invites','invite_properties','property_memberships','manager_invite_accept_context','reservations','reservation_placements','occupancy','rent_entries','realtor_accounts','realtor_settlements','outbox','audit_events','idempotency_keys','task_transition_events','task_transition_media','link_session_rate_limits','tasks','reservation_attribution_transfers','inspection_days','inspection_events'))
+        (c.relname in ('owner_accounts','properties','trial_claims','subscriptions','rooms','inventory_items','media_bindings','media_assets','manager_invites','invite_properties','property_memberships','manager_invite_accept_context','reservations','reservation_placements','occupancy','rent_entries','realtor_accounts','realtor_settlements','outbox','audit_events','idempotency_keys','task_transition_events','task_transition_media','link_session_rate_limits','tasks','reservation_attribution_transfers','inspection_days','inspection_events','expenses','expense_allocations'))
       or has_table_privilege('app_executor',c.oid,'SELECT') is distinct from
         (c.relname in ('profiles','owner_accounts','properties','occupancy',
           'property_memberships','reservations','reservation_placements',
@@ -171,7 +171,10 @@ begin
     ('task_transition_events','task_transition_events_media_internal_read'),
     ('task_transition_media','task_transition_media_proxy_internal_read'),
     ('expenses','expenses_media_internal_read'),
+    ('expenses','expenses_executor_select'),
     ('expense_allocations','expense_allocations_media_internal_read'),
+    ('expense_allocations','expense_allocations_executor_select'),
+    ('idempotency_keys','idempotency_keys_expense_read'),
     ('inspection_answers','inspection_answers_media_internal_read'),
     ('inspection_submissions','inspection_submissions_media_internal_read'),
     ('inspection_events','inspection_events_media_internal_read'),
@@ -221,7 +224,7 @@ begin
   select count(*) into table_count
   from pg_policy p join pg_class c on c.oid=p.polrelid
   where c.relnamespace='app_private'::regnamespace;
-  if table_count <> 148 then
+  if table_count <> 155 then
     raise exception 'unexpected private table policies: %',table_count;
   end if;
   if not exists (select 1 from pg_policy where polrelid='app_private.link_session_rate_limits'::regclass
