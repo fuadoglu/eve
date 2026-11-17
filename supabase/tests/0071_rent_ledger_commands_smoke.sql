@@ -124,7 +124,9 @@ begin
     jsonb_build_object('kind','rent_refund','amount_minor',6000,'custodian','owner','original_id',v_extra_receipt->>'id'),
     'ledger-rent-refund-key-001');
   if v_refund->>'id' is distinct from v_refund_replay->>'id'
-    or (select count(*) from app_private.rent_entries e where e.original_entry_id=(v_extra_receipt->>'id')::uuid and e.kind='rent_refund')<>1 then
+    or (select count(*) from api.list_reservation_rent_entries(
+      'f9400000-0000-4000-8000-000000000021',null,null,100) e
+      where e.original_id=(v_extra_receipt->>'id')::uuid and e.kind='rent_refund')<>1 then
     raise exception 'AT11 refund retry was not idempotent';
   end if;
   v_failed := false;
@@ -145,7 +147,8 @@ begin
   v_deposit := api.create_rent_entry('f9400000-0000-4000-8000-000000000021',
     '{"kind":"deposit_receipt","amount_minor":5000,"custodian":"owner"}', 'ledger-deposit-key-0001');
   if (api.get_reservation('f9400000-0000-4000-8000-000000000021')#>>'{balance,deposit_held_minor}')::bigint<>5000
-    or exists(select 1 from app_private.rent_entries e where e.original_entry_id=(v_deposit->>'id')::uuid
+    or exists(select 1 from api.list_reservation_rent_entries(
+      'f9400000-0000-4000-8000-000000000021',null,null,100) e where e.original_id=(v_deposit->>'id')::uuid
       and e.kind in ('deposit_return','deposit_to_rent','deposit_to_damage')) then
     raise exception 'AT12 completed inspection did not remain financially separate from the deposit';
   end if;
