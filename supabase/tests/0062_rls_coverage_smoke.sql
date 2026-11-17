@@ -170,9 +170,7 @@ begin
     ('tasks','tasks_media_internal_read'),
     ('task_transition_events','task_transition_events_media_internal_read'),
     ('task_transition_media','task_transition_media_proxy_internal_read'),
-    ('expenses','expenses_media_internal_read'),
     ('expenses','expenses_executor_select'),
-    ('expense_allocations','expense_allocations_media_internal_read'),
     ('expense_allocations','expense_allocations_executor_select'),
     ('idempotency_keys','idempotency_keys_expense_read'),
     ('inspection_answers','inspection_answers_media_internal_read'),
@@ -224,7 +222,7 @@ begin
   select count(*) into table_count
   from pg_policy p join pg_class c on c.oid=p.polrelid
   where c.relnamespace='app_private'::regnamespace;
-  if table_count <> 155 then
+  if table_count <> 153 then
     raise exception 'unexpected private table policies: %',table_count;
   end if;
   if not exists (select 1 from pg_policy where polrelid='app_private.link_session_rate_limits'::regclass

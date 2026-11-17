@@ -85,14 +85,27 @@ begin
     v_failed := v_message = 'expense_allocation_header_immutable';
   end;
   if not v_failed then raise exception 'allocation moved away from old expense'; end if;
+  insert into app_private.media_assets(id,owner_account_id,property_id,classification,bucket,
+    object_key,mime,size_bytes,state,sha256)
+  values('f9400000-0000-4000-8000-000000000081','f9200000-0000-0000-0000-000000000081',
+    'f9300000-0000-4000-8000-000000000081','private_receipt','eve-private-receipt',
+    'f9400000-0000-4000-8000-000000000081','image/png',50,'validated',repeat('a',64));
+  insert into app_private.media_bindings(owner_account_id,property_id,media_asset_id,expense_id)
+  values('f9200000-0000-0000-0000-000000000081',
+    'f9300000-0000-4000-8000-000000000081',
+    'f9400000-0000-4000-8000-000000000081',current_setting('eve.test.expense_id')::uuid);
 end $$;
 set local role app_executor;
 set local request.jwt.claims = '{"sub":"f9000000-0000-0000-0000-000000000083","session_id":"f9100000-0000-0000-0000-000000000083","iat":1800000000}';
 do $$ begin
-  if app_private.can_read_expense_header(
+  if exists(select 1 from app_private.expenses e
+      where e.id=current_setting('eve.test.expense_id')::uuid)
+    or app_private.can_read_expense_header(
       current_setting('eve.test.expense_id')::uuid,
       'f9200000-0000-0000-0000-000000000081') then
-    raise exception 'cross-property expense header guard allowed partial-scope manager'; end if;
+    raise exception 'cross-property expense header leaked to partial-scope manager'; end if;
+  if not app_private.media_actor_can_read('f9400000-0000-4000-8000-000000000081') then
+    raise exception 'scoped receipt media was broken by expense header RLS'; end if;
 end $$;
 set local role authenticated;
 set local request.jwt.claims = '{"sub":"f9000000-0000-0000-0000-000000000084","session_id":"f9100000-0000-0000-0000-000000000084","iat":1800000000}';

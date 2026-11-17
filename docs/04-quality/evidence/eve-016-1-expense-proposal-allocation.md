@@ -17,6 +17,11 @@ payload return the same expense, while a changed payload conflicts. Deferred con
 check the whole allocation sum at commit. The private header RLS helper checks **all** allocation
 rows, including those hidden by row security, before a full manager sees the total. A manager with
 only one property of a multi-property expense cannot see its header.
+The forward migration removes the older permissive media `USING (true)` SELECT policies for
+expense headers/allocations. The private receipt-media predicate now joins the bound allocation
+directly, so a partial-scope manager may read the receipt for their property without seeing the
+whole expense header. The SQL smoke tests both the actual table SELECT denial and allowed scoped
+receipt read.
 Allocation header IDs are immutable, so an UPDATE cannot move a row to another expense and leave
 the old header below its required sum. The replay query accepts both `proposed` and `approved`
 original rows, matching owner/full creation behavior.
@@ -29,12 +34,14 @@ original rows, matching owner/full creation behavior.
 - `git diff --check`: passed.
 - Local PostgreSQL 16 temporary cluster: all 34 migration files through `034` applied with
   `ON_ERROR_STOP=1`; `0075_expense_proposal_allocation_smoke.sql`,
-  `0062_api_surface_smoke.sql`, and `0062_rls_coverage_smoke.sql` each exited 0. The test
+  `0062_api_surface_smoke.sql`, `0062_rls_coverage_smoke.sql`, and existing
+  `0222_media_access_smoke.sql` each exited 0. The test
   asserts approved owner replay, sum/cross-owner rejection, immutable allocation header, full
   header visibility guard and daily proposed/unpaid state. This is synthetic local proof.
 - PostgreSQL 17 and fresh Supabase CI are still required before package closeout.
-- Independent read-only review found two P1 issues in the first commit (approved replay and
-  allocation header move). Both were corrected and await follow-up review of the final diff.
+- Independent read-only review found three P1 issues in the first commit/follow-up: approved
+  replay, allocation header move, and a permissive media policy overriding header scope. All
+  were corrected and await final follow-up review of the latest diff.
 
 ## Limits
 

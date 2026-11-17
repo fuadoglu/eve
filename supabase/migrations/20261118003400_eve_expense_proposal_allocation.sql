@@ -4,6 +4,11 @@ grant select, insert on app_private.expenses, app_private.expense_allocations to
 grant select on app_private.subscriptions, app_private.contacts,
   app_private.contact_properties, app_private.tasks to app_executor;
 
+-- Earlier media proxy policies were permissive USING (true). With expense SELECT
+-- granted for this command, they would OR-open whole headers across properties.
+drop policy expenses_media_internal_read on app_private.expenses;
+drop policy expense_allocations_media_internal_read on app_private.expense_allocations;
+
 -- This helper sees the complete allocation set, including rows hidden from the caller by RLS.
 create function app_private.can_read_expense_header(p_expense_id uuid,p_owner_account_id uuid)
 returns boolean language sql stable security definer set search_path = '' as $$
@@ -84,6 +89,57 @@ revoke all on function app_private.prevent_expense_allocation_move() from public
 create trigger expense_allocation_header_immutable before update
   on app_private.expense_allocations for each row
   execute function app_private.prevent_expense_allocation_move();
+
+-- Receipt-media authorization needs only the expense/property allocation binding,
+-- never the header's total. Keep the existing function owner and direct grants.
+grant create on schema app_private to app_executor;
+grant app_executor to current_user with set true, inherit false;
+set role app_executor;
+create or replace function app_private.media_actor_can_read(p_media_id uuid)
+returns boolean
+language plpgsql stable security definer set search_path = ''
+as $$
+declare v_media app_private.media_assets%rowtype;
+begin
+  select * into v_media from app_private.media_assets a
+  where a.id=p_media_id and a.state='validated' and a.deleted_at is null;
+  if not found or (select app_private.current_actor_id()) is null then return false; end if;
+
+  if v_media.classification='private_receipt' then
+    return app_private.has_property_capability(v_media.property_id,v_media.owner_account_id,'finance.read')
+      and exists (select 1 from app_private.media_bindings b
+        join app_private.expense_allocations al on al.expense_id=b.expense_id
+          and al.owner_account_id=b.owner_account_id and al.property_id=b.property_id
+        where b.media_asset_id=v_media.id and b.property_id=v_media.property_id
+          and b.owner_account_id=v_media.owner_account_id and b.expense_id is not null);
+  elsif v_media.classification='private_inventory' then
+    return app_private.has_property_capability(v_media.property_id,v_media.owner_account_id,'inventory.read')
+      and exists (select 1 from app_private.media_bindings b
+        where b.media_asset_id=v_media.id and b.property_id=v_media.property_id
+          and b.owner_account_id=v_media.owner_account_id and b.inventory_item_id is not null);
+  elsif v_media.classification='private_task' then
+    return app_private.has_property_capability(v_media.property_id,v_media.owner_account_id,'property.read')
+      and (exists (select 1 from app_private.media_bindings b
+          where b.media_asset_id=v_media.id and b.property_id=v_media.property_id
+            and b.owner_account_id=v_media.owner_account_id and b.task_id is not null)
+        or exists (select 1 from app_private.task_transition_media tm
+          where tm.media_asset_id=v_media.id and tm.property_id=v_media.property_id
+            and tm.owner_account_id=v_media.owner_account_id));
+  elsif v_media.classification='private_inspection' then
+    return app_private.has_property_capability(v_media.property_id,v_media.owner_account_id,'property.read')
+      and exists (select 1 from app_private.media_bindings b
+        join app_private.inspection_answers a on a.id=b.inspection_answer_id
+          and a.property_id=b.property_id and a.owner_account_id=b.owner_account_id
+        where b.media_asset_id=v_media.id and b.property_id=v_media.property_id
+          and b.owner_account_id=v_media.owner_account_id);
+  end if;
+  -- private_guest is bearer-link only; public classifications use a different safe projection.
+  return false;
+end;
+$$;
+reset role;
+revoke app_executor from current_user;
+revoke create on schema app_private from app_executor;
 
 create function api.create_expense_proposal(p_input jsonb,p_idempotency_key text)
 returns jsonb language plpgsql volatile security definer set search_path = '' as $$
