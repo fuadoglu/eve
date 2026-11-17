@@ -1,0 +1,152 @@
+-- EVE-018.1 synthetic DB component: required task/inspection/readiness projection.
+do $$ begin
+  if has_function_privilege('authenticated',
+       'app_private.recompute_property_readiness(uuid,uuid)','EXECUTE')
+     or has_function_privilege('service_role',
+       'app_private.recompute_property_readiness(uuid,uuid)','EXECUTE')
+     or has_function_privilege('app_executor',
+       'app_private.recompute_property_readiness(uuid,uuid)','EXECUTE') then
+    raise exception 'readiness recompute helper is directly callable';
+  end if;
+end $$;
+begin;
+set constraints all deferred;
+insert into auth.users(id,email) values
+  ('a1810000-0000-0000-0000-000000000001','eve0181-owner@example.test');
+insert into app_private.owner_accounts(id,owner_user_id) values
+  ('a1811000-0000-0000-0000-000000000001','a1810000-0000-0000-0000-000000000001');
+insert into app_private.properties(id,owner_account_id,name,area) values
+  ('a1812000-0000-0000-0000-000000000001','a1811000-0000-0000-0000-000000000001','Cleaning A','Bakı'),
+  ('a1812000-0000-0000-0000-000000000002','a1811000-0000-0000-0000-000000000001','Cleaning B','Bakı');
+insert into app_private.reservations(id,owner_account_id,property_id,current_placement_id,
+  guest_name,check_in,check_out,check_in_time,check_out_time,guest_count,state,total_minor,
+  actual_check_in_at) values
+  ('a181a000-0000-0000-0000-000000000001','a1811000-0000-0000-0000-000000000001',
+   'a1812000-0000-0000-0000-000000000002','a181b000-0000-0000-0000-000000000001',
+   'Guest',current_date-1,current_date+1,'14:00','12:00',1,'checked_in',10000,now());
+insert into app_private.reservation_placements(id,owner_account_id,property_id,reservation_id,
+  placement_no,check_in_snapshot,check_out_snapshot,effective_from,created_by) values
+  ('a181b000-0000-0000-0000-000000000001','a1811000-0000-0000-0000-000000000001',
+   'a1812000-0000-0000-0000-000000000002','a181a000-0000-0000-0000-000000000001',
+   1,current_date-1,current_date+1,now(),'a1810000-0000-0000-0000-000000000001');
+insert into app_private.tasks(id,owner_account_id,property_id,reservation_id,placement_id,
+  kind,title,due_at,required_for_readiness) values
+  ('a181c000-0000-0000-0000-000000000001','a1811000-0000-0000-0000-000000000001',
+   'a1812000-0000-0000-0000-000000000002','a181a000-0000-0000-0000-000000000001',
+   'a181b000-0000-0000-0000-000000000001','cleaning','Future cleaning',now()+interval '1 day',false);
+do $$ begin
+  begin
+    insert into app_private.tasks(owner_account_id,property_id,reservation_id,placement_id,
+      kind,title,due_at,required_for_readiness) values
+      ('a1811000-0000-0000-0000-000000000001','a1812000-0000-0000-0000-000000000002',
+       'a181a000-0000-0000-0000-000000000001','a181b000-0000-0000-0000-000000000001',
+       'cleaning','Duplicate',now(),true);
+    raise exception 'duplicate active reservation cleaning task accepted';
+  exception when unique_violation then null;
+  end;
+end $$;
+update app_private.reservations set state='completed',actual_check_out_at=now()
+  where id='a181a000-0000-0000-0000-000000000001';
+do $$ begin
+  if not (select required_for_readiness from app_private.tasks
+      where id='a181c000-0000-0000-0000-000000000001')
+     or (select readiness from app_private.properties
+      where id='a1812000-0000-0000-0000-000000000002')<>'cleaning_pending' then
+    raise exception 'checkout did not promote reused cleaning task to required/pending';
+  end if;
+end $$;
+insert into app_private.inspection_days(id,owner_account_id,property_id,local_date) values
+  ('a1813000-0000-0000-0000-000000000001','a1811000-0000-0000-0000-000000000001',
+   'a1812000-0000-0000-0000-000000000001',current_date);
+insert into app_private.inspection_events(id,owner_account_id,property_id,day_id,handover_key,event_kind,due_at) values
+  ('a1814000-0000-0000-0000-000000000001','a1811000-0000-0000-0000-000000000001',
+   'a1812000-0000-0000-0000-000000000001','a1813000-0000-0000-0000-000000000001',
+   'eve0181-cleaning-a','manual',now());
+insert into app_private.inspection_snapshots(id,owner_account_id,property_id,event_id,inventory_version,manifest,content_hash) values
+  ('a1815000-0000-0000-0000-000000000001','a1811000-0000-0000-0000-000000000001',
+   'a1812000-0000-0000-0000-000000000001','a1814000-0000-0000-0000-000000000001',1,'{}',repeat('a',64));
+insert into app_private.rooms(id,owner_account_id,property_id,name) values
+  ('a1817000-0000-0000-0000-000000000001','a1811000-0000-0000-0000-000000000001',
+   'a1812000-0000-0000-0000-000000000001','Room');
+insert into app_private.inspection_snapshot_rooms(id,owner_account_id,property_id,snapshot_id,source_room_id,name) values
+  ('a1816000-0000-0000-0000-000000000001','a1811000-0000-0000-0000-000000000001',
+   'a1812000-0000-0000-0000-000000000001','a1815000-0000-0000-0000-000000000001',
+   'a1817000-0000-0000-0000-000000000001','Room');
+insert into app_private.tasks(id,owner_account_id,property_id,kind,title,due_at,required_for_readiness,inspection_event_id) values
+  ('a1818000-0000-0000-0000-000000000001','a1811000-0000-0000-0000-000000000001',
+   'a1812000-0000-0000-0000-000000000001','cleaning','Cleaning A',now(),true,
+   'a1814000-0000-0000-0000-000000000001'),
+  ('a1818000-0000-0000-0000-000000000002','a1811000-0000-0000-0000-000000000001',
+   'a1812000-0000-0000-0000-000000000001','repair','Safety check',now(),true,
+   'a1814000-0000-0000-0000-000000000001');
+do $$ begin
+  if (select readiness from app_private.properties where id='a1812000-0000-0000-0000-000000000001')<>'cleaning_pending'
+    or (select readiness from app_private.properties where id='a1812000-0000-0000-0000-000000000002')<>'cleaning_pending' then
+    raise exception 'required task did not keep both properties independently pending';
+  end if;
+end $$;
+
+-- A completed task cannot clear readiness before its linked inspection is complete.
+update app_private.tasks set state='completed' where id='a1818000-0000-0000-0000-000000000001';
+do $$ begin
+  if (select readiness from app_private.properties where id='a1812000-0000-0000-0000-000000000001')<>'cleaning_pending' then
+    raise exception 'first completion cleared another required task';
+  end if;
+end $$;
+update app_private.tasks set state='completed' where id='a1818000-0000-0000-0000-000000000002';
+do $$ begin
+  if (select readiness from app_private.properties where id='a1812000-0000-0000-0000-000000000001')<>'cleaning_pending' then
+    raise exception 'completion without linked inspection cleared pending readiness';
+  end if;
+end $$;
+insert into app_private.inspection_submissions(id,owner_account_id,property_id,event_id,snapshot_id,side,
+  actor_user_id,state,completed_at) values
+  ('a1819000-0000-0000-0000-000000000001','a1811000-0000-0000-0000-000000000001',
+   'a1812000-0000-0000-0000-000000000001','a1814000-0000-0000-0000-000000000001',
+   'a1815000-0000-0000-0000-000000000001','giver','a1810000-0000-0000-0000-000000000001',
+   'completed',now());
+select app_private.recompute_property_readiness('a1812000-0000-0000-0000-000000000001',
+  'a1811000-0000-0000-0000-000000000001');
+do $$ begin
+  if (select readiness from app_private.properties where id='a1812000-0000-0000-0000-000000000001')<>'cleaning_pending' then
+    raise exception 'missing room answer allowed ready state';
+  end if;
+end $$;
+insert into app_private.inspection_room_answers(owner_account_id,property_id,submission_id,snapshot_room_id,result,confirmed_at)
+ values ('a1811000-0000-0000-0000-000000000001','a1812000-0000-0000-0000-000000000001',
+   'a1819000-0000-0000-0000-000000000001','a1816000-0000-0000-0000-000000000001','ok',now());
+select app_private.recompute_property_readiness('a1812000-0000-0000-0000-000000000001',
+  'a1811000-0000-0000-0000-000000000001');
+do $$ begin
+  if (select readiness from app_private.properties where id='a1812000-0000-0000-0000-000000000001')<>'ready' then
+    raise exception 'completed inspection and all required tasks did not mark ready';
+  end if;
+end $$;
+
+-- An ordinary task state write recomputes readiness in the same transaction.
+insert into app_private.tasks(id,owner_account_id,property_id,kind,title,due_at,required_for_readiness,inspection_event_id) values
+  ('a1818000-0000-0000-0000-000000000004','a1811000-0000-0000-0000-000000000001',
+   'a1812000-0000-0000-0000-000000000001','repair','Required repair',now(),true,
+   'a1814000-0000-0000-0000-000000000001');
+update app_private.tasks set state='completed'
+  where id='a1818000-0000-0000-0000-000000000004';
+do $$ begin
+  if (select readiness from app_private.properties where id='a1812000-0000-0000-0000-000000000001')<>'ready' then
+    raise exception 'task completion did not synchronously recompute readiness';
+  end if;
+end $$;
+
+-- A new required task reopens cleaning; an explicit attention state is preserved.
+insert into app_private.tasks(id,owner_account_id,property_id,kind,title,due_at,required_for_readiness) values
+  ('a1818000-0000-0000-0000-000000000003','a1811000-0000-0000-0000-000000000001',
+   'a1812000-0000-0000-0000-000000000001','cleaning','Second turnover',now(),true);
+update app_private.properties set readiness='attention_required'
+  where id='a1812000-0000-0000-0000-000000000001';
+update app_private.tasks set state='cancelled'
+  where id='a1818000-0000-0000-0000-000000000003';
+do $$ begin
+  if (select readiness from app_private.properties where id='a1812000-0000-0000-0000-000000000001')<>'attention_required' then
+    raise exception 'task cancellation silently cleared explicit attention state';
+  end if;
+end $$;
+rollback;
