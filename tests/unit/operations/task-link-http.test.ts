@@ -51,6 +51,32 @@ test("POST needs explicit same-origin action; revoke and expiry fail closed", as
   assert.equal(revoked.headers.get("cache-control"), "private, no-store");
 });
 
+test("scoped report carries a bounded proposed expense only on explicit POST", async () => {
+  const reportUrl = `https://eve.example/api/v1/s/${token}/report-done`;
+  const headers = { cookie, Origin: "https://eve.example", "Content-Type": "application/json",
+    "Idempotency-Key": "task-expense-key-0001" };
+  const proposal = { amount_minor: 1250, category: "cleaning", note: "Material" };
+  let received: unknown;
+  const transition = async (_hash: string, input: unknown) => { received = input; return { ...scoped, state: "reported_done", version: 2 }; };
+  const response = await handleTransitionScopedTask(new Request(reportUrl, { method: "POST", headers,
+    body: JSON.stringify({ expected_version: 1, claimed_name: "Usta", expense_proposal: proposal }) }), token, "report_done", transition);
+  assert.equal(response.status, 200);
+  assert.deepEqual((received as { expense_proposal: unknown }).expense_proposal, proposal);
+  const invalid = await handleTransitionScopedTask(new Request(reportUrl, { method: "POST", headers,
+    body: JSON.stringify({ expected_version: 1, claimed_name: "Usta", expense_proposal: { ...proposal, amount_minor: 0 } }) }), token,
+    "report_done", async () => { throw new Error("should not call provider"); });
+  assert.equal(invalid.status, 422);
+  const foreignProperty = await handleTransitionScopedTask(new Request(reportUrl, { method: "POST", headers,
+    body: JSON.stringify({ expected_version: 1, claimed_name: "Usta", expense_proposal: { ...proposal, property_id: taskId } }) }), token,
+    "report_done", async () => { throw new Error("should not call provider"); });
+  assert.equal(foreignProperty.status, 422);
+  const acceptUrl = `https://eve.example/api/v1/s/${token}/accept`;
+  const onAccept = await handleTransitionScopedTask(new Request(acceptUrl, { method: "POST", headers,
+    body: JSON.stringify({ expected_version: 1, claimed_name: "Usta", expense_proposal: proposal }) }), token,
+    "accept", async () => { throw new Error("should not call provider"); });
+  assert.equal(onAccept.status, 422);
+});
+
 test("task share returns only acknowledged link and no sent claim", async () => {
   const request = new Request(`https://eve.example/api/v1/tasks/${taskId}/share-link`, { method: "POST",
     headers: { Origin: "https://eve.example", "Content-Type": "application/json", "Idempotency-Key": "task-share-key-00001" },

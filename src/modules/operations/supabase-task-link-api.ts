@@ -5,7 +5,7 @@ import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { getSupabasePublicConfig } from "../../lib/env/supabase-public.ts";
 import { getSupabaseSecretKey } from "../../lib/env/supabase-server.ts";
-import { TaskLinkApiError } from "./task-link-http.ts";
+import { TaskLinkApiError, type ScopedExpenseProposal } from "./task-link-http.ts";
 import { deriveTaskLinkToken, sha256 } from "./task-link-token.ts";
 
 type RpcError = { code?: string } | null;
@@ -49,12 +49,13 @@ export async function readScopedTask(tokenHash: string): Promise<unknown> {
 
 export async function transitionScopedTask(tokenHash: string, input: {
   expected_version: number; action: "accept" | "report_done"; claimed_name: string;
-  note?: string; media_ids?: string[];
+  note?: string; media_ids?: string[]; expense_proposal?: ScopedExpenseProposal;
 }, key: string): Promise<unknown> {
   return rpc(serverClient(), "transition_scoped_task_for_server", {
     p_link_token_hash: tokenHash,p_expected_version: input.expected_version,
     p_action: input.action,p_idempotency_key: key,p_claimed_name: input.claimed_name,
     p_note: input.note ?? null,p_media_ids: input.media_ids ?? [],
+    p_expense_proposal: input.expense_proposal ?? null,
   });
 }
 

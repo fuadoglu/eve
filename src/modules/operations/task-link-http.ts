@@ -9,9 +9,11 @@ export class TaskLinkApiError extends Error {
 export type CreateTaskLink = (taskId: string, expiresAt: string | null, key: string) => Promise<unknown>;
 export type RevokeTaskLink = (linkId: string) => Promise<unknown>;
 export type ReadScopedTask = (tokenHash: string) => Promise<unknown>;
+export type ScopedExpenseProposal = { amount_minor: number; category: "utilities" | "building_service" |
+  "cleaning" | "repair" | "purchase" | "consumables" | "other"; note?: string };
 export type TransitionScopedTask = (tokenHash: string, input: {
   expected_version: number; action: "accept" | "report_done"; claimed_name: string;
-  note?: string; media_ids?: string[];
+  note?: string; media_ids?: string[]; expense_proposal?: ScopedExpenseProposal;
 }, key: string) => Promise<unknown>;
 
 export async function handleCreateTaskLink(request: Request, taskId: string, create: CreateTaskLink): Promise<Response> {
@@ -56,19 +58,21 @@ export async function handleTransitionScopedTask(request: Request, token: string
   const hash = scopeHash(request, token);
   if (!hash) return fail(404, "NOT_FOUND");
   const parsed = await parseMutation(request, action === "accept"
-    ? ["expected_version", "claimed_name"] : ["expected_version", "claimed_name", "note", "media_ids"]);
+    ? ["expected_version", "claimed_name"] : ["expected_version", "claimed_name", "note", "media_ids", "expense_proposal"]);
   if (!parsed.ok) return parsed.response;
-  const { expected_version, claimed_name, note, media_ids } = parsed.body;
+  const { expected_version, claimed_name, note, media_ids, expense_proposal } = parsed.body;
   if (!Number.isSafeInteger(expected_version) || (expected_version as number) < 1
     || typeof claimed_name !== "string" || claimed_name.trim().length < 1 || claimed_name.length > 100
     || (note !== undefined && (typeof note !== "string" || note.length > 2000))
     || (media_ids !== undefined && (!Array.isArray(media_ids) || media_ids.length > 20
-      || new Set(media_ids).size !== media_ids.length || media_ids.some((id) => !isUuid(id))))) return fail(422, "VALIDATION_ERROR");
+      || new Set(media_ids).size !== media_ids.length || media_ids.some((id) => !isUuid(id))))
+    || (expense_proposal !== undefined && !validScopedExpense(expense_proposal))) return fail(422, "VALIDATION_ERROR");
   try {
     const result = await transition(hash, {
       expected_version: expected_version as number, action, claimed_name,
       ...(note === undefined ? {} : { note: note as string }),
       ...(media_ids === undefined ? {} : { media_ids: media_ids as string[] }),
+      ...(expense_proposal === undefined ? {} : { expense_proposal: expense_proposal as ScopedExpenseProposal }),
     }, parsed.key);
     return json(200, parseScopedTask(result));
   } catch (error) { return mapped(error); }
@@ -102,6 +106,14 @@ function scopeHash(request: Request, token: string): string | null {
   const cookie = (request.headers.get("cookie") ?? "").split(";").map((part) => part.trim())
     .find((part) => part.startsWith("eve_scope="))?.slice("eve_scope=".length);
   return cookie === expected ? expected : null;
+}
+
+function validScopedExpense(value: unknown): value is ScopedExpenseProposal {
+  return isRecord(value) && Object.keys(value).every((key) => ["amount_minor", "category", "note"].includes(key))
+    && typeof value.amount_minor === "number" && Number.isSafeInteger(value.amount_minor)
+    && value.amount_minor > 0
+    && ["utilities", "building_service", "cleaning", "repair", "purchase", "consumables", "other"].includes(String(value.category))
+    && (value.note === undefined || (typeof value.note === "string" && value.note.length <= 2000));
 }
 
 function parseScopedTask(value: unknown): Record<string, unknown> {

@@ -24,9 +24,9 @@ do $$ begin
     or has_function_privilege('authenticated','api.create_task_link(uuid,uuid,uuid,text,text,text,timestamptz)','EXECUTE')
     or has_function_privilege('authenticated','api.revoke_task_link(uuid,uuid,uuid)','EXECUTE')
     or has_function_privilege('anon','api.read_scoped_task_for_server(text)','EXECUTE')
-    or has_function_privilege('anon','api.transition_scoped_task_for_server(text,integer,text,text,text,text,uuid[])','EXECUTE')
+    or has_function_privilege('anon','api.transition_scoped_task_for_server(text,integer,text,text,text,text,uuid[],jsonb)','EXECUTE')
     or has_function_privilege('authenticated','api.read_scoped_task_for_server(text)','EXECUTE')
-    or has_function_privilege('authenticated','api.transition_scoped_task_for_server(text,integer,text,text,text,text,uuid[])','EXECUTE')
+    or has_function_privilege('authenticated','api.transition_scoped_task_for_server(text,integer,text,text,text,text,uuid[],jsonb)','EXECUTE')
     or not has_function_privilege('service_role','api.create_task_link(uuid,uuid,uuid,text,text,text,timestamptz)','EXECUTE')
     or not has_function_privilege('service_role','api.revoke_task_link(uuid,uuid,uuid)','EXECUTE') then
     raise exception 'task link RPC grants are broader than intended';
@@ -85,7 +85,7 @@ reset role;
 set local request.jwt.claim.sub='';
 set local request.jwt.claim.role='service_role';
 set local role service_role;
-do $$ declare result jsonb;
+do $$ declare result jsonb; v_proposal jsonb := '{"amount_minor":1250,"category":"cleaning","note":"Təmizlik materialı"}'::jsonb;
 begin
   result := api.read_scoped_task_for_server(repeat('a',64));
   if result->>'state'<>'open' or result->>'version'<>'1' then raise exception 'scoped safe read wrong'; end if;
@@ -104,8 +104,52 @@ begin
   if result->>'state'<>'accepted' or result->>'version'<>'2' then
     raise exception 'explicit scoped POST did not accept task';
   end if;
+  begin
+    perform api.transition_scoped_task_for_server(repeat('a',64),2,'report_done',
+      'task-link-invalid-expense-01','Usta',null,array[]::uuid[],
+      '{"amount_minor":1250,"category":"cleaning","property_id":"f2000000-0000-0000-0000-000000000075"}'::jsonb);
+    raise exception 'cross-property expense input accepted';
+  exception when invalid_parameter_value then null;
+  end;
+  begin
+    perform api.transition_scoped_task_for_server(repeat('a',64),2,'report_done',
+      'task-link-invalid-sum-001','Usta',null,array[]::uuid[],
+      '{"amount_minor":0,"category":"cleaning"}'::jsonb);
+    raise exception 'zero-value expense input accepted';
+  exception when invalid_parameter_value then null;
+  end;
+  result := api.transition_scoped_task_for_server(repeat('a',64),2,'report_done',
+    'task-link-expense-key-001','Usta','İş bitdi',array[]::uuid[],v_proposal);
+  if result->>'state'<>'reported_done' or result->>'version'<>'3' then
+    raise exception 'scoped report plus expense did not acknowledge task';
+  end if;
+  result := api.transition_scoped_task_for_server(repeat('a',64),2,'report_done',
+    'task-link-expense-key-001','Usta','İş bitdi',array[]::uuid[],v_proposal);
+  if result->>'state'<>'reported_done' or result->>'version'<>'3' then
+    raise exception 'scoped report replay changed task';
+  end if;
+  begin
+    perform api.transition_scoped_task_for_server(repeat('a',64),2,'report_done',
+      'task-link-expense-key-001','Usta','İş bitdi',array[]::uuid[],
+      '{"amount_minor":1251,"category":"cleaning","note":"Təmizlik materialı"}'::jsonb);
+    raise exception 'same-key changed expense payload accepted';
+  exception when unique_violation then null;
+  end;
 end $$;
 reset role;
+do $$ begin
+  if (select count(*) from app_private.expenses e where e.source_task_id='f3000000-0000-0000-0000-000000000074'
+      and e.submitted_link_id=current_setting('test.task_link_id')::uuid)<>1
+    or not exists(select 1 from app_private.expenses e
+      join app_private.expense_allocations a on a.expense_id=e.id and a.owner_account_id=e.owner_account_id
+      where e.source_task_id='f3000000-0000-0000-0000-000000000074'
+        and e.submitted_link_id=current_setting('test.task_link_id')::uuid
+        and e.approval='proposed' and e.payment_status='unpaid'
+        and e.submitted_by is null and e.approved_by is null and e.total_minor=1250
+        and a.property_id='f2000000-0000-0000-0000-000000000074' and a.amount_minor=1250) then
+    raise exception 'scoped expense state, allocation, or replay count mismatch';
+  end if;
+end $$;
 
 set local request.jwt.claim.role='service_role';
 set local request.jwt.claim.sub='';
@@ -138,7 +182,7 @@ do $$ begin
     perform api.transition_scoped_task_for_server(repeat('a',64),2,'report_done',
       'task-link-done-key-001','Usta',null,array[]::uuid[]);
     raise exception 'revoked task link wrote task';
-  exception when insufficient_privilege then null;
+  exception when sqlstate 'P4100' then null;
   end;
 end $$;
 reset role;
