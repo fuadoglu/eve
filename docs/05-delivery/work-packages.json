@@ -962,6 +962,7 @@
         "supabase/tests/0064_reservation_create_smoke.sql",
         "supabase/tests/0062_api_surface_smoke.sql",
         "supabase/tests/0062_rls_coverage_smoke.sql",
+        "supabase/tests/0062_rls_coverage_smoke.sql",
         "docs/03-engineering/openapi.json",
         ".github/workflows/ci.yml"
       ],
@@ -1229,17 +1230,27 @@
       "parent_issue": 21,
       "milestone": "M2",
       "title": "Agenda/ay və ev/sahib filtrləri",
-      "status": "backlog",
+      "status": "in_progress",
       "depends_on": [
         "EVE-013.1"
       ],
       "role": "ux_frontend",
       "owned_path_candidates": [
-        "src/modules/reservations/",
-        "src/modules/properties/",
-        "app/(panel)/calendar/"
+        "src/app/calendar/",
+        "src/app/api/v1/calendar/",
+        "src/modules/reservations/calendar-*",
+        "src/modules/reservations/supabase-calendar-api.ts",
+        "supabase/migrations/20261117002900_eve_calendar_projection.sql",
+        "supabase/tests/0069_calendar_projection_smoke.sql",
+        "supabase/tests/0062_api_surface_smoke.sql",
+        "scripts/test-local-supabase-http.py",
+        ".github/workflows/ci.yml",
+        "tests/unit/reservations/calendar-*.test.ts",
+        "docs/04-quality/evidence/eve-013-2-calendar-agenda.md",
+        "docs/05-delivery/STATUS.md",
+        "docs/05-delivery/work-packages.json"
       ],
-      "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
+      "ownership_rule": "İnteqrator bu package üçün calendar route, read-only projection, UI və aid SQL/Data API/unit smoke fayllarını koordinasiya edir. Mövcud OpenAPI GET /calendar, GET /properties və property.read/reservation.read capability müqavilələri dəyişmir; yeni SQL read RPC-lər yalnız api schema allowlist-indədir. Sahibin görünən adı yalnız property.read scope-u daxilində qaytarılır. OpenAPI/data dictionary/field bindings/lockfile dəyişmir. Readiness/performance ölçümü EVE-013.3-də qalır.",
       "deliverable": "Agenda/ay və ev/sahib filtrləri üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
       "acceptance": [
         "Agenda/ay və ev/sahib filtrləri üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",

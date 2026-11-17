@@ -116,7 +116,9 @@ begin
   select count(*) into bad_count
   from (values
     ('profiles','profiles_self_read'),
+    ('profiles','profiles_visible_property_owner_read'),
     ('owner_accounts','owner_accounts_self_read'),
+    ('owner_accounts','owner_accounts_visible_property_read'),
     ('properties','properties_scoped_read'),
     ('properties','properties_matching_invite_read'),
     ('property_memberships','property_memberships_self_or_owner_read'),
@@ -209,7 +211,7 @@ begin
   select count(*) into table_count
   from pg_policy p join pg_class c on c.oid=p.polrelid
   where c.relnamespace='app_private'::regnamespace;
-  if table_count <> 142 then
+  if table_count <> 144 then
     raise exception 'unexpected private table policies: %',table_count;
   end if;
   if not exists (select 1 from pg_policy where polrelid='app_private.link_session_rate_limits'::regclass
