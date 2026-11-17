@@ -22,7 +22,9 @@ begin
     or (new.kind='rent_refund' and exists(select 1 from app_private.rent_entries src
       where src.id=new.original_entry_id and src.kind='rent_receipt'))
     or (new.kind='reversal' and exists(select 1 from app_private.rent_entries src
-      where src.id=new.original_entry_id and src.kind in ('rent_receipt','rent_refund')))
+      left join app_private.rent_entries root on root.id=src.original_entry_id
+      where src.id=new.original_entry_id and (src.kind='rent_receipt'
+        or (src.kind='rent_refund' and root.kind='rent_receipt'))))
   ) then
     update app_private.realtor_accounts a set version=a.version+1,updated_at=statement_timestamp()
     where a.reservation_id=new.reservation_id and a.owner_account_id=new.owner_account_id
@@ -61,9 +63,10 @@ begin
         when e.kind='rent_receipt' then e.amount_minor
         when e.kind='rent_refund' and src.kind='rent_receipt' then -e.amount_minor
         when e.kind='reversal' and src.kind='rent_receipt' then -e.amount_minor
-        when e.kind='reversal' and src.kind='rent_refund' then e.amount_minor
+        when e.kind='reversal' and src.kind='rent_refund' and root.kind='rent_receipt' then e.amount_minor
         else 0 end)
         from app_private.rent_entries e left join app_private.rent_entries src on src.id=e.original_entry_id
+        left join app_private.rent_entries root on root.id=src.original_entry_id
         where e.reservation_id=r.id and e.owner_account_id=r.owner_account_id
           and e.realtor_contact_id=a.contact_id and e.custodian='realtor'),0)::bigint collected,
       coalesce((select sum(s.amount_minor) from app_private.realtor_settlements s
@@ -148,8 +151,9 @@ begin
     when e.kind='rent_receipt' then e.amount_minor
     when e.kind='rent_refund' and src.kind='rent_receipt' then -e.amount_minor
     when e.kind='reversal' and src.kind='rent_receipt' then -e.amount_minor
-    when e.kind='reversal' and src.kind='rent_refund' then e.amount_minor else 0 end),0)::bigint into v_collected
+    when e.kind='reversal' and src.kind='rent_refund' and root.kind='rent_receipt' then e.amount_minor else 0 end),0)::bigint into v_collected
   from app_private.rent_entries e left join app_private.rent_entries src on src.id=e.original_entry_id
+    left join app_private.rent_entries root on root.id=src.original_entry_id
   where e.reservation_id=v_res.id and e.owner_account_id=v_res.owner_account_id
     and e.custodian='realtor' and e.realtor_contact_id=v_contact;
   select coalesce(sum(s.amount_minor) filter(where s.kind='realtor_to_owner'),0),

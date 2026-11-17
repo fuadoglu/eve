@@ -57,7 +57,8 @@ values ('fa200000-0000-0000-0000-000000000001','fa500000-0000-4000-8000-00000000
 set local role authenticated;
 set local request.jwt.claims='{"sub":"fa000000-0000-0000-0000-000000000001","session_id":"fa100000-0000-0000-0000-000000000001","iat":1800000000}';
 do $$
-declare b jsonb; receipt jsonb; refund jsonb; deposit jsonb; allocation jsonb; settlement jsonb; replay jsonb; failed boolean;
+declare b jsonb; receipt jsonb; refund jsonb; deposit jsonb; allocation jsonb; deposit_refund jsonb; refund_reversal jsonb;
+  settlement jsonb; replay jsonb; failed boolean;
   before_receipts bigint; after_receipts bigint;
 begin
   b:=api.get_realtor_balance('fa500000-0000-4000-8000-000000000001');
@@ -87,6 +88,12 @@ begin
   allocation:=api.create_rent_entry('fa500000-0000-4000-8000-000000000001',jsonb_build_object(
     'kind','deposit_to_rent','amount_minor',100,'custodian','realtor','contact_id','fa400000-0000-0000-0000-000000000001',
     'original_id',deposit->>'id','note','Depozitin kirayəyə keçirilməsi'),'settlement-deposit-allocation-001');
+  deposit_refund:=api.create_rent_entry('fa500000-0000-4000-8000-000000000001',jsonb_build_object(
+    'kind','rent_refund','amount_minor',50,'custodian','realtor','contact_id','fa400000-0000-0000-0000-000000000001',
+    'original_id',allocation->>'id'),'settlement-deposit-rent-refund-001');
+  refund_reversal:=api.create_rent_entry('fa500000-0000-4000-8000-000000000001',jsonb_build_object(
+    'kind','reversal','amount_minor',50,'custodian','realtor','contact_id','fa400000-0000-0000-0000-000000000001',
+    'original_id',deposit_refund->>'id','note','Refund reversal for deposit allocation'),'settlement-deposit-refund-reversal-001');
   b:=api.get_realtor_balance('fa500000-0000-4000-8000-000000000001');
   if (b->>'version')::int<>3 or (b->>'collected_minor')::bigint<>9999 then
     raise exception 'deposit activity changed D44 rent-receipt balance/version: %',b; end if;
