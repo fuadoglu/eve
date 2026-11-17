@@ -1408,7 +1408,7 @@
       "acceptance": [
         "A 1 qəpik rent basis at 5000 basis points produces 1 qəpik using half-up rounding; the basis remains reservation total_minor when the separate deposit receipt is 5000 qəpik.",
         "The existing 30000 qəpik rent at 1000 basis points continues to produce a 3000 qəpik commission.",
-        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP və Payriff sandbox sübutları EVE-007.3 və EVE-027.3 release gate-lərində qalır; EVE-015.3 isə AT13 component acceptance-dir.",
         "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
       ],
       "verification": "PostgreSQL 17 sql_schema CI executes supabase/tests/0064_reservation_create_smoke.sql after reservation-create migration; also node scripts/docs-check.mjs and node scripts/verify-contracts.mjs.",
@@ -1441,7 +1441,7 @@
         "`realtor_to_owner` cannot exceed held rent; `owner_to_realtor` cannot exceed unpaid earned commission; `commission_offset` cannot exceed either; commission prepayment is rejected.",
         "GET RealtorBalance returns the aggregate `version`; POST compares `expected_version`, increments it on every balance input mutation, and returns `balance_version`.",
         "Same actor/key/canonical payload replays before stale-version validation; same key with changed payload conflicts.",
-        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
+        "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP və Payriff sandbox sübutları EVE-007.3 və EVE-027.3 release gate-lərində qalır; EVE-015.3 isə AT13 component acceptance-dir.",
         "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
       ],
       "verification": "PostgreSQL 17 SQL smoke plus owner/manager/anon RLS/API grants, source receipt/refund version bumps, stale version and idempotency replay/conflict; node scripts/docs-check.mjs and node scripts/verify-contracts.mjs.",
