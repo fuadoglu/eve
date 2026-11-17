@@ -61,6 +61,8 @@ test("import preview accepts a bounded server acknowledgement and reports row er
     preview_hash: previewHash,
     row_count: 2,
     errors: [{ row: 2, field: "quantity", message: "Dəyər yanlışdır" }],
+    error_count: 1,
+    errors_truncated: false,
     version: 1,
     created_at: "2026-11-13T10:00:00Z",
     updated_at: "2026-11-13T10:00:00+04:00",
@@ -70,6 +72,20 @@ test("import preview accepts a bounded server acknowledgement and reports row er
   assert.throws(() => validateImportPreview({ ...acknowledgement, preview_hash: "short" }), TypeError);
   assert.throws(() => validateImportPreview({ ...acknowledgement, errors: [{ row: 0, field: "quantity", message: "x" }] }), TypeError);
   assert.throws(() => validateImportPreview({ ...acknowledgement, row_count: 1_000_001 }), TypeError);
+  assert.throws(() => validateImportPreview({ ...acknowledgement, error_count: 2 }), TypeError);
+  assert.throws(() => validateImportPreview({ ...acknowledgement, errors_truncated: true }), TypeError);
+  assert.throws(() => validateImportPreview({ ...acknowledgement, error_count: 0 }), TypeError);
+  assert.doesNotThrow(() => validateImportPreview({
+    ...acknowledgement,
+    row_count: 1_001,
+    error_count: 1_001,
+    errors: Array.from({ length: 1_000 }, (_, index) => ({
+      row: index + 1,
+      field: "quantity",
+      message: "invalid_quantity",
+    })),
+    errors_truncated: true,
+  }));
   assert.throws(() => validateImportPreview({ ...acknowledgement, invented: true }), TypeError);
   assert.throws(() => validateImportPreview({ ...acknowledgement, created_at: "2026-02-30T10:00:00Z" }), TypeError);
   assert.doesNotThrow(() => validateImportPreview({

@@ -72,6 +72,8 @@ export type ImportPreviewDto = {
   preview_hash: string;
   row_count: number;
   errors: ImportPreviewError[];
+  error_count: number;
+  errors_truncated: boolean;
   version: number;
   created_at: string;
   updated_at: string;
@@ -133,7 +135,7 @@ export function validateInventoryImportPreviewInput(value: unknown): InventoryIm
 
 export function validateImportPreview(value: unknown): ImportPreviewDto {
   if (!isRecord(value)
-      || !hasOnlyKeys(value, ["id", "property_id", "kind", "state", "preview_hash", "row_count", "errors", "version", "created_at", "updated_at"])
+      || !hasOnlyKeys(value, ["id", "property_id", "kind", "state", "preview_hash", "row_count", "errors", "error_count", "errors_truncated", "version", "created_at", "updated_at"])
       || !isUuid(value.id)
       || !isUuid(value.property_id)
       || (value.kind !== "inventory" && value.kind !== "reservations")
@@ -143,6 +145,13 @@ export function validateImportPreview(value: unknown): ImportPreviewDto {
       || !isIntegerInRange(value.row_count, 0, 1_000_000)
       || !Array.isArray(value.errors)
       || value.errors.length > 1_000
+      || !isIntegerInRange(value.error_count, 0, 10_000)
+      || value.error_count > value.row_count
+      || value.errors.length !== Math.min(value.error_count, 1_000)
+      || typeof value.errors_truncated !== "boolean"
+      || value.errors_truncated !== (value.error_count > value.errors.length)
+      || (value.state === "preview_ready" && value.error_count !== 0)
+      || (value.state === "invalid" && value.error_count === 0)
       || !isIntegerInRange(value.version, 1, Number.MAX_SAFE_INTEGER)
       || !isDateTime(value.created_at)
       || !isDateTime(value.updated_at)) {
@@ -170,6 +179,8 @@ export function validateImportPreview(value: unknown): ImportPreviewDto {
     preview_hash: value.preview_hash,
     row_count: value.row_count,
     errors,
+    error_count: value.error_count,
+    errors_truncated: value.errors_truncated,
     version: value.version,
     created_at: value.created_at,
     updated_at: value.updated_at,
