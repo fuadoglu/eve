@@ -501,7 +501,7 @@ select api.record_realtor_settlement('{reservation_id}',
         ))
         second.stdin.close()
         wait_for_lock_waiters(reservation_id, 1)
-        first.stdin.write("commit;\\n")
+        first.stdin.write("commit;\n")
         first.stdin.close()
         first_stdout = first.stdout.read()
         first_stderr = first.stderr.read()
