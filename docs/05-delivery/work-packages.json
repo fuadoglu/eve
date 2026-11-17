@@ -1491,7 +1491,7 @@
       "parent_issue": 24,
       "milestone": "M3",
       "title": "Expense proposal və allocation",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-014.3",
         "EVE-008.3"
