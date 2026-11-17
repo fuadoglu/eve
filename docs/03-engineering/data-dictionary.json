@@ -2992,6 +2992,26 @@
           "validation": [
             "SHA-256 hex64"
           ]
+        },
+        {
+          "name": "request_hash",
+          "type": "varchar(64)",
+          "nullable": false,
+          "default": "repeat('0',64)",
+          "description": "Canonical settlement payload hash; replay-də stale version-dan əvvəl yoxlanır",
+          "validation": [
+            "request_hash matches lowercase SHA-256 hex"
+          ]
+        },
+        {
+          "name": "balance_version",
+          "type": "integer",
+          "nullable": false,
+          "default": "1",
+          "description": "Settlement yazıldıqdan sonra realtor_accounts.version; append-only event daxilində snapshot",
+          "validation": [
+            "balance_version >= 1"
+          ]
         }
       ],
       "primary_key": [
@@ -3622,6 +3642,16 @@
         {
           "name": "realtor_settlements_amount_minor_safe",
           "expression": "amount_minor > 0 AND amount_minor <= 9007199254740991",
+          "enforcement": "CHECK"
+        },
+        {
+          "name": "realtor_settlements_balance_version_positive",
+          "expression": "balance_version >= 1",
+          "enforcement": "CHECK"
+        },
+        {
+          "name": "realtor_settlements_request_hash_sha256",
+          "expression": "request_hash ~ '^[0-9a-f]{64}$'",
           "enforcement": "CHECK"
         }
       ],

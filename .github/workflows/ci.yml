@@ -330,6 +330,10 @@ jobs:
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261117003100_eve_verified_billing_event.sql
       - name: Verified inbox dedupe, reconciliation and entitlement DB smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0272_verified_billing_event_smoke.sql
+      - name: Realtor settlement version, D44 bounds and replay migration
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261118003200_eve_realtor_settlement.sql
+      - name: Realtor settlement tenant, version, idempotency and no-double-income smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0072_realtor_settlement_smoke.sql
       - name: Calendar interval query p95 synthetic smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0070_calendar_interval_performance.sql
       - name: 56 cədvəlin RLS və grant coverage smoke
