@@ -838,6 +838,22 @@
       "note": "API-dəki null/omission PATCH semantikası saxlanır; server derived owner/property ayrıca yoxlanır."
     },
     {
+      "schema": "RealtorBalance",
+      "api_field": "version",
+      "table": "realtor_accounts",
+      "column": "version",
+      "mode": "alias",
+      "note": "Reservation-level settlement aggregate version; checked by SettlementInput.expected_version (D44)."
+    },
+    {
+      "schema": "RealtorSettlement",
+      "api_field": "balance_version",
+      "table": "realtor_accounts",
+      "column": "version",
+      "mode": "alias",
+      "note": "Resulting aggregate version; settlement event row remains append-only and has no row version (D44)."
+    },
+    {
       "schema": "Expense",
       "api_field": "category",
       "table": "expenses",

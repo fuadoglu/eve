@@ -264,11 +264,11 @@
       "requirements": [
         "R05"
       ],
-      "layer": "unit",
+      "layer": "db",
       "priority": "P0",
-      "given": "30000 rent, 3000 fee, realtor 10000 collected",
-      "when": "7000 transfer, sonra 10000 full-transfer alternativini sına",
-      "then": "Birinci realtor owner-a 7000; ikinci owner realtor-a 3000; settlement ikinci rent deyil.",
+      "given": "30000 rent, 3000 earned commission, realtor custodian-collected rent 10000",
+      "when": "Case A: record 7000 realtor_to_owner cash transfer + 3000 commission_offset. Case B alternative: transfer all 10000 to owner with no offset.",
+      "then": "Case A has zero owner_due/realtor_due and commission_paid=3000. Case B has owner_due=0 and realtor_due=3000. Settlement never creates a second rent receipt; net due is positive in at most one direction.",
       "status": "planned",
       "evidence_required": [
         "commit_sha",
