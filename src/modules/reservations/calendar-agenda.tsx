@@ -318,7 +318,7 @@ function MonthGrid({
       {dates.map((date) => {
         const entries = entriesByDate.get(date) ?? [];
         const isCurrentMonth = date.slice(0, 7) === currentMonth;
-        const accessibleLabel = `${formatDateLong(date)}${entries.length ? `, ${entries.length} qeyd` : ", qeyd yoxdur"}`;
+        const accessibleLabel = `${Number(date.slice(8, 10))}, ${formatDateLong(date)}${entries.length ? `, ${entries.length} qeyd` : ", qeyd yoxdur"}`;
         return <button key={date} type="button" aria-label={accessibleLabel}
           aria-pressed={selectedDate === date} className={`${styles.dayCell} ${!isCurrentMonth ? styles.outsideMonth : ""}`}
           onClick={() => onSelectDate(date)}>
