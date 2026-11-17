@@ -224,7 +224,7 @@ try {
   await page.getByLabel("İlkin pul qeydi").selectOption(originalReceipt.id);
   await page.getByLabel("Məbləğ (AZN)").fill("101,00");
   await page.getByRole("button", { name: "Qeydə al" }).click();
-  assert.match(await page.getByRole("alert").innerText(), /qaytarıla bilən qalığı/);
+  assert.match(await page.locator(".reservation-money-sheet").getByRole("alert").innerText(), /qaytarıla bilən qalığı/);
   await page.getByLabel("Məbləğ (AZN)").fill("50,00");
   const refundResponse = page.waitForResponse((response) => response.url().endsWith(`/api/v1/reservations/${firstEnvelope.data.id}/money`) && response.request().method() === "POST");
   const refundBalanceRefresh = page.waitForResponse((response) => response.url().endsWith(`/api/v1/reservations/${firstEnvelope.data.id}`) && response.request().method() === "GET");
