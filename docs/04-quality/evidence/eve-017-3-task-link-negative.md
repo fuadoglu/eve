@@ -16,7 +16,7 @@ Task: EVE-017.3, parent EVE-017 / issue #25. Acceptance: AT15–16.
 - `pnpm build` — passed and lists all task routes and landing page.
 - `node scripts/docs-check.mjs` and `node scripts/verify-contracts.mjs` — passed (91 Markdown files, 118 operations, 90 packages).
 - `git diff --check` — passed.
-- PostgreSQL SQL smoke 0074 is authored but **not yet executed**. Local PostgreSQL was not running and Docker daemon was absent. PostgreSQL 17 CI must pass before counting this package done.
+- PostgreSQL 16 temporary local cluster: all existing 001–032 migrations, forward migration 035 and SQL smoke 0074 passed with `ON_ERROR_STOP=1`. This is local synthetic integration proof. Docker daemon was absent; PostgreSQL 17 CI and fresh Supabase HTTP smoke must still pass before counting this package done.
 
 ## Contract coordination and limits
 
