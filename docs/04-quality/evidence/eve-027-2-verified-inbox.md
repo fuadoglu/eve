@@ -16,8 +16,12 @@ Adds a server-only service-role bridge that accepts Eve-normalized input only af
 
 ## Verification state
 
-Local normalized DTO contract tests passed 2/2 using Node 24.5.0 with native type stripping. `node scripts/docs-check.mjs`, `node scripts/verify-contracts.mjs`, and `node scripts/test-prototype.mjs` passed; the prototype smoke reports 71 assertions with its documented fake-DOM limit. `git diff --check` passed. The independent read-only review found no blocker in migration, event transaction, deduplication, RLS/API grants, TypeScript boundary, tests, or D43 docs; it did not run tests. PR CI and merged-main CI are pending. Local Python schema validation could not run because `jsonschema` is not installed; local Docker is unavailable. All SQL smoke records are synthetic.
+PR #138 was squash-merged as `6aa07d3c15b6508b3db20e7e092de28d8efd6828`. Final-head CI [#44163636041](https://github.com/fuadoglu/eve/actions/runs/44163636041) and merged-main CI [#44164230330](https://github.com/fuadoglu/eve/actions/runs/44164230330) passed `docs`, PostgreSQL 17 `sql_schema`, and synthetic `supabase_local`. The initial run found that the exact private RLS policy count had not been increased for the three new event policies; the expected inventory was corrected to 147 and the synchronized final run passed. Local normalized DTO tests passed 2/2 on Node 24.5.0 using native type stripping. `node scripts/docs-check.mjs`, `node scripts/verify-contracts.mjs`, `node scripts/test-prototype.mjs` (71 assertions with its documented fake-DOM limit), and `git diff --check` passed. Independent review found no blocker in migration, event transaction, deduplication, RLS/API grants, TypeScript boundary, tests, or D43 docs; it did not run tests. Local Python schema validation could not run because `jsonschema` is not installed; local Docker is unavailable. SQL fixtures are synthetic.
 
 ## Limitations
 
 This boundary trusts its server-only caller to have completed provider verification. It is not wired to an inbound route and does not establish Payriff event key/transaction ID formats, merchant identity mapping, endpoint, auth, signature verification, status lookup, provider idempotency, sandbox behavior, hosted DB application, or production readiness. Closed-order recovery is manual-review output only; an operator workflow is not included.
+
+## Package closeout
+
+EVE-027.2 is `done` for the internal normalized inbox and synthetic PostgreSQL/API acceptance scope. Provider signature/status verification, inbound route wiring, Payriff sandbox, hosted database migration, backup/restore, and production release gates remain open.

@@ -2540,7 +2540,7 @@
       "parent_issue": 35,
       "milestone": "M6",
       "title": "Verified inbox/reconcile transaction",
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "EVE-027.1"
       ],
