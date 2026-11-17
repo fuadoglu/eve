@@ -205,9 +205,14 @@ try {
   await page.getByText("Pul qeydi əlavə et").click();
   await page.getByLabel("Məbləğ (AZN)").fill("250,00");
   const receiptResponse = page.waitForResponse((response) => response.url().endsWith(`/api/v1/reservations/${firstEnvelope.data.id}/money`) && response.request().method() === "POST");
+  const receiptBalanceRefresh = page.waitForResponse((response) => response.url().endsWith(`/api/v1/reservations/${firstEnvelope.data.id}`) && response.request().method() === "GET");
   await page.getByRole("button", { name: "Qeydə al" }).click();
   assert.equal((await receiptResponse).status(), 201);
-  await page.getByText("Artıq ödəniş").waitFor();
+  const receiptBalanceResponse = await receiptBalanceRefresh;
+  assert.equal(receiptBalanceResponse.status(), 200);
+  const receiptBalanceEnvelope = await receiptBalanceResponse.json();
+  assert.equal(receiptBalanceEnvelope.data.balance.overpaid_minor, 5000);
+  await page.waitForFunction(() => /50[.,]00/.test(document.querySelector(".reservation-balance")?.innerText ?? ""));
   assert.match(await page.locator(".reservation-balance").innerText(), /50[.,]00/);
 
   const moneyPageResponse = await page.request.get(`${baseUrl}/api/v1/reservations/${firstEnvelope.data.id}/money?limit=100`, { headers: { Origin: baseUrl } });
@@ -222,8 +227,13 @@ try {
   assert.match(await page.getByRole("alert").innerText(), /qaytarıla bilən qalığı/);
   await page.getByLabel("Məbləğ (AZN)").fill("50,00");
   const refundResponse = page.waitForResponse((response) => response.url().endsWith(`/api/v1/reservations/${firstEnvelope.data.id}/money`) && response.request().method() === "POST");
+  const refundBalanceRefresh = page.waitForResponse((response) => response.url().endsWith(`/api/v1/reservations/${firstEnvelope.data.id}`) && response.request().method() === "GET");
   await page.getByRole("button", { name: "Qeydə al" }).click();
   assert.equal((await refundResponse).status(), 201);
+  const refundBalanceResponse = await refundBalanceRefresh;
+  assert.equal(refundBalanceResponse.status(), 200);
+  const refundBalanceEnvelope = await refundBalanceResponse.json();
+  assert.equal(refundBalanceEnvelope.data.balance.overpaid_minor, 0);
   await page.getByText("Kirayə qaytarılıb").waitFor();
   const finalBalance = await page.locator(".reservation-balance").innerText();
   assert.match(finalBalance, /Qalıb\s*0[.,]00/);
