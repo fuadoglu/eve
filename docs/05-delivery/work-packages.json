@@ -1375,11 +1375,12 @@
       "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
       "deliverable": "Refund/rounding/idempotency sınağı üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
       "acceptance": [
-        "AT11–12; rounding/refund",
+        "AT11: 30000 quote, 10000 + 25000 receipts, visible 5000 overpayment, same-key 6000 source-linked refund replay, 19001 over-limit refund rejection, fractional qəpik rejection; final balance is 29000 received, 6000 refunded and 1000 remaining.",
+        "AT12 financial boundary: a synthetic completed damaged-item inspection leaves the 5000 deposit untouched; only explicit authorized allocation changes it, and excess return is rejected.",
         "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
         "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
       ],
-      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "verification": "PostgreSQL 17 sql_schema CI executes supabase/tests/0071_rent_ledger_commands_smoke.sql after migration 20261117003000; also node scripts/docs-check.mjs and node scripts/verify-contracts.mjs.",
       "reviewer_role": "integration_reviewer",
       "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
       "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
