@@ -105,7 +105,8 @@ begin
   b:=api.get_realtor_balance('fa500000-0000-4000-8000-000000000001');
   if (b->>'version')::int<>4 or (b->>'collected_minor')::bigint<>9999 then
     raise exception 'deposit activity changed D44 rent-receipt balance/version: %',b; end if;
-  select count(*) into before_receipts from app_private.rent_entries where reservation_id='fa500000-0000-4000-8000-000000000001';
+  select count(*) into before_receipts from api.list_reservation_rent_entries(
+    'fa500000-0000-4000-8000-000000000001',null,null,100);
   settlement:=api.record_realtor_settlement('fa500000-0000-4000-8000-000000000001',
     '{"expected_version":4,"contact_id":"fa400000-0000-0000-0000-000000000001","kind":"realtor_to_owner","amount_minor":6999}',
     'settlement-transfer-key-001');
@@ -142,7 +143,8 @@ begin
       'settlement-stale-version-001');
   exception when serialization_failure then failed:=true; end;
   if not failed then raise exception 'stale balance version was accepted'; end if;
-  select count(*) into after_receipts from app_private.rent_entries where reservation_id='fa500000-0000-4000-8000-000000000001';
+  select count(*) into after_receipts from api.list_reservation_rent_entries(
+    'fa500000-0000-4000-8000-000000000001',null,null,100);
   if before_receipts<>after_receipts then raise exception 'settlement created a rent entry'; end if;
 end $$;
 
