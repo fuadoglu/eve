@@ -196,7 +196,11 @@ end;
 $$;
 revoke all on function api.create_rent_entry(uuid,jsonb,text) from public,anon,authenticated;
 grant execute on function api.create_rent_entry(uuid,jsonb,text) to authenticated;
+grant create on schema api to app_executor;
+grant app_executor to current_user with set true, inherit false;
 alter function api.create_rent_entry(uuid,jsonb,text) owner to app_executor;
+revoke app_executor from current_user;
+revoke create on schema api from app_executor;
 
 create function api.list_reservation_rent_entries(
   p_reservation_id uuid, p_after_at timestamptz default null, p_after_id uuid default null, p_page_size integer default 30
@@ -220,4 +224,8 @@ language sql stable security definer set search_path = '' as $$
 $$;
 revoke all on function api.list_reservation_rent_entries(uuid,timestamptz,uuid,integer) from public,anon,authenticated;
 grant execute on function api.list_reservation_rent_entries(uuid,timestamptz,uuid,integer) to authenticated;
+grant create on schema api to app_executor;
+grant app_executor to current_user with set true, inherit false;
 alter function api.list_reservation_rent_entries(uuid,timestamptz,uuid,integer) owner to app_executor;
+revoke app_executor from current_user;
+revoke create on schema api from app_executor;

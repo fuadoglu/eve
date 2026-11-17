@@ -103,7 +103,7 @@ end $$;
 
 set local request.jwt.claims = '{"sub":"f9000000-0000-0000-0000-000000000022","session_id":"f9100000-0000-0000-0000-000000000022","iat":1800000000}';
 do $$
-declare v_failed boolean := false;
+declare v_failed boolean := false; v_source_id uuid;
 begin
   perform api.create_rent_entry('f9400000-0000-4000-8000-000000000021',
     '{"kind":"rent_receipt","amount_minor":200,"custodian":"manager"}', 'ledger-daily-receipt-001');
@@ -113,10 +113,13 @@ begin
   exception when insufficient_privilege then v_failed := true;
   end;
   if not v_failed then raise exception 'daily manager impersonated the owner custodian'; end if;
+  select e.id into v_source_id from api.list_reservation_rent_entries(
+    'f9400000-0000-4000-8000-000000000021',null,null,20) e where e.kind='deposit_receipt';
+  if v_source_id is null then raise exception 'daily manager cannot read the current deposit source'; end if;
   v_failed := false;
   begin
     perform api.create_rent_entry('f9400000-0000-4000-8000-000000000021',
-      '{"kind":"deposit_to_damage","amount_minor":100,"custodian":"manager","original_id":"f9990000-0000-4000-8000-000000000021","note":"test"}',
+      jsonb_build_object('kind','deposit_to_damage','amount_minor',100,'custodian','manager','original_id',v_source_id,'note','test'),
       'ledger-daily-allocation-001');
   exception when insufficient_privilege then v_failed := true;
   end;
