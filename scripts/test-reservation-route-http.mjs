@@ -253,6 +253,44 @@ try {
     data: { ...body, guest_name: "Other synthetic guest" },
   });
   assert.equal(conflictResponse.status(), 409);
+
+  await page.getByLabel("Əməliyyat növü").selectOption("rent_receipt");
+  await page.getByLabel("Məbləğ (AZN)").fill("25,00");
+  const moneyRoute = `${baseUrl}/api/v1/reservations/${firstEnvelope.data.id}/money`;
+  let simulatedUncertainResponse = true;
+  let originalMoneyKey = "";
+  await page.route(moneyRoute, async (route) => {
+    const requestKey = (await route.request().allHeaders())["idempotency-key"] ?? "";
+    if (simulatedUncertainResponse) {
+      simulatedUncertainResponse = false;
+      originalMoneyKey = requestKey;
+      assert.match(originalMoneyKey, /^[A-Za-z0-9_-]{16,128}$/);
+      const response = await route.fetch();
+      assert.equal(response.status(), 201);
+      await route.fulfill({ response, status: 200 });
+      return;
+    }
+    assert.equal(requestKey, originalMoneyKey, "an uncertain write retry must reuse the same idempotency key");
+    await route.continue();
+  });
+  const uncertainMoneyResponse = page.waitForResponse((response) => response.url() === moneyRoute && response.request().method() === "POST");
+  await page.getByRole("button", { name: "Qeydə al" }).click();
+  assert.equal((await uncertainMoneyResponse).status(), 200);
+  const uncertainMessage = page.locator(".reservation-money-sheet").getByRole("alert");
+  await uncertainMessage.waitFor();
+  assert.match(await uncertainMessage.innerText(), /qeyri-müəyyəndir/);
+  assert.equal(await page.getByText("Pul qeydi saxlanıldı. Bu, bank köçürməsi deyil.", { exact: true }).count(), 0);
+  assert.equal(await page.getByLabel("Məbləğ (AZN)").inputValue(), "25,00");
+  const moneyRetryResponse = page.waitForResponse((response) => response.url() === moneyRoute && response.request().method() === "POST");
+  await page.getByRole("button", { name: "Qeydə al" }).click();
+  assert.equal((await moneyRetryResponse).status(), 201);
+  await page.getByText("Pul qeydi saxlanıldı. Bu, bank köçürməsi deyil.", { exact: true }).waitFor();
+  await page.unroute(moneyRoute);
+  const moneyRetryCount = spawnSync("docker", ["exec", "supabase_db_eve", "psql", "-U", "supabase_admin", "-d", "postgres", "-Atqc",
+    `select count(*)::text from app_private.rent_entries where reservation_id='${firstEnvelope.data.id}';`], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+  if (moneyRetryCount.status !== 0) throw new Error("money_retry_database_count_failed");
+  assert.equal(moneyRetryCount.stdout.trim(), "4", "an uncertain accepted write and same-key retry must create one ledger row");
+
   await page.goto(`${baseUrl}/calendar`, { waitUntil: "networkidle" });
   await page.getByRole("button", { name: "Növbəti ay" }).waitFor();
   const calendarLoad = page.waitForResponse((response) =>
