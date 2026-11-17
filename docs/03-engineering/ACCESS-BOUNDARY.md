@@ -26,6 +26,8 @@ Owner ID immutable-dir. Arxiv/public visibility/manager permission yalnız owner
 
 Public və tokenli Next.js route user funksiyasını yüksək səlahiyyətlə ümumi `SELECT *` etməyə çevirmir. Tokenli Next.js server route service role ilə yalnız dar `api.transition_task` əməliyyatını çağıra bilər; DB token hash, expiry, revoke, scope və property aidiyyətini yenidən yoxlayır. Ayrı dar public/token projection funksiyası slug/token hash və expiry/public status/cari placement yoxlaması aparır. Dynamic SQL ilə table/column adı request-dən alınmır.
 
+Billing üçün `api.reconcile_verified_billing_event_for_server` yalnız `service_role`-a açıq server bridge-dir; authenticated/anon üçün bağlıdır və `payment_events` base cədvəlinə client grant vermir. Gələcək route/adapter bu bridge-i yalnız provider verification və Eve normalization tamamlandıqdan sonra çağırmalıdır. DB order ID, amount, currency, event key replay və transaction ID uniqueness sərhədlərini yenidən yoxlayır.
+
 ## İcra üçün mənfi test
 
 Authenticated user JWT-si ilə birbaşa `/rest/v1/properties`, private schema profile header, RPC-də owner override, daily manager financial export və server-only billing function çağırışı rədd edilməlidir. Eyni user üçün allowlist reservation RPC-si qanuni scope-da işləməlidir. Membership ləğvindən sonra əvvəlki sessiya yenidən hüquq yaratmır. AT05/AT06 buna görə birbaşa Data API sorğularını da əhatə edir.

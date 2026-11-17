@@ -2539,7 +2539,7 @@
       "parent_issue": 35,
       "milestone": "M6",
       "title": "Verified inbox/reconcile transaction",
-      "status": "backlog",
+      "status": "in_progress",
       "depends_on": [
         "EVE-027.1"
       ],
@@ -2550,11 +2550,13 @@
       "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
       "deliverable": "Verified inbox/reconcile transaction üçün task scope-u daxilində konkret fayllar və davranış sübutu.",
       "acceptance": [
-        "Verified inbox/reconcile transaction üçün nəzərdə tutulan konkret artefakt mövcuddur; əvvəlki vahidlə eyni field/enum/default istifadə edilir və yalnız bu scope-un davranışı göstərilir.",
+        "The server-only bridge accepts only Eve-normalized verified event fields; provider raw payload, signature, credential, or wire format is absent from the input and stored redacted payload.",
+        "Same provider/event key and same payload replays the same event and entitlement; a changed payload conflicts; a different event key for the same provider transaction cannot extend the entitlement twice.",
+        "Order amount/currency mismatch is rejected without entitlement; expired/closed orders retain a verified event for manual reconciliation without automatic entitlement (D43).",
         "Bu vahid yalnız öz komponent/kontrakt scope-unda yoxlanılır; real SMTP/Payriff/istifadəçi sübutu aid .3 external gate-ində qalır.",
         "Downstream interface/field/enum müqaviləsi dəyişirsə eyni PR-də uyğunlaşdırılıb."
       ],
-      "verification": "Local komponent/kontrakt yoxlaması; mock yalnız mock kimi işarələnir. External provider gate bu vahidin yoxlaması deyil.",
+      "verification": "PostgreSQL 17 sql_schema CI executes migration 20261117003100 and supabase/tests/0272_verified_billing_event_smoke.sql, plus exact RLS/API grants; billing unit tests validate the normalized internal DTO. External provider gate remains separate.",
       "reviewer_role": "qa_redteam",
       "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
       "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
