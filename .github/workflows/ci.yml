@@ -312,6 +312,10 @@ jobs:
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261116002800_eve_today_projection.sql
       - name: Today projection priority, ledger və property scope smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0068_today_projection_smoke.sql
+      - name: Reservation date/price and lifecycle migration
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261117002800_eve_reservation_at10_transitions.sql
+      - name: Reservation AT10 lifecycle and financial decision DB smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0068_reservation_at10_transition_smoke.sql
       - name: 56 cədvəlin RLS və grant coverage smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0062_rls_coverage_smoke.sql
       - name: Data API RPC allowlist və grant smoke
@@ -373,6 +377,8 @@ jobs:
             < supabase/tests/0067_reservation_move_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
             < supabase/tests/0068_today_projection_smoke.sql
+          docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
+            < supabase/tests/0068_reservation_at10_transition_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
             < supabase/tests/0062_session_revocation_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
