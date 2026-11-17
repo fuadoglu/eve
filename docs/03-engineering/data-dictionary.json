@@ -10691,7 +10691,7 @@
       "unique": [
         {
           "columns": [
-            "owner_account_id",
+            "import_job_id",
             "source_row_key"
           ],
           "predicate": null

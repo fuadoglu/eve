@@ -3,9 +3,14 @@ insert into auth.users(id) values
   ('aaaaaaaa-1930-0001-0000-000000000001'),
   ('aaaaaaaa-1930-0001-0000-000000000002')
 on conflict (id) do nothing;
+insert into auth.sessions(id,user_id,created_at) values
+  ('aaaaaaaa-1930-0002-0000-000000000001','aaaaaaaa-1930-0001-0000-000000000001',now()-interval '1 hour'),
+  ('aaaaaaaa-1930-0002-0000-000000000002','aaaaaaaa-1930-0001-0000-000000000002',now()-interval '1 hour')
+on conflict (id) do nothing;
 
 begin;
 set local request.jwt.claim.sub = 'aaaaaaaa-1930-0001-0000-000000000001';
+set local request.jwt.claims = '{"sub":"aaaaaaaa-1930-0001-0000-000000000001","session_id":"aaaaaaaa-1930-0002-0000-000000000001"}';
 do $$
 declare
   v_source uuid;
@@ -128,12 +133,24 @@ begin
   end if;
   v_preview := app_private.preview_inventory_rows(v_source,v_hash,
     '[{"source_row_key":"source-1","room_name":"Mətbəx","name":"Qaşıq","quantity":"4"}]'::jsonb);
-  if v_preview->>'state'<>'invalid'
-     or v_preview->'errors'->0->>'message'<>'already_imported' then
-    raise exception 'second import duplicate source key not reported: %',v_preview;
-  end if;
+  if v_preview->>'state'<>'preview_ready' then
+    raise exception 'independent batch reused source row key was rejected: %',v_preview; end if;
+  begin
+    perform app_private.commit_inventory_rows((v_preview->>'id')::uuid,1,v_preview->>'preview_hash');
+    raise exception 'same item from a repeated file was duplicated';
+  exception when unique_violation then null;
+  end;
+  v_preview := app_private.preview_inventory_rows(v_source,repeat('b',64),
+    '[{"source_row_key":"source-1","room_name":"Mətbəx","name":"Çəngəl","quantity":"2"}]'::jsonb);
+  if v_preview->>'state'<>'preview_ready' then
+    raise exception 'independent batch with same row key rejected: %',v_preview; end if;
+  perform app_private.commit_inventory_rows((v_preview->>'id')::uuid,1,v_preview->>'preview_hash');
+  if (select count(*) from app_private.inventory_items where property_id=v_source and name='Çəngəl')<>1 then
+    raise exception 'independent batch did not import distinct item'; end if;
 
   perform set_config('request.jwt.claim.sub','aaaaaaaa-1930-0001-0000-000000000002',true);
+  perform set_config('request.jwt.claims',
+    '{"sub":"aaaaaaaa-1930-0001-0000-000000000002","session_id":"aaaaaaaa-1930-0002-0000-000000000002"}',true);
   select id into v_foreign from api.create_property('Yad ev','Gəncə');
   begin
     perform api.copy_inventory(v_foreign,v_source,false);
@@ -155,6 +172,12 @@ begin
     perform app_private.commit_inventory_rows((v_valid->>'id')::uuid,1,v_valid->>'preview_hash');
     raise exception 'cross-tenant import commit accepted';
   exception when no_data_found then null;
+  end;
+  delete from auth.sessions where id='aaaaaaaa-1930-0002-0000-000000000002';
+  begin
+    perform api.copy_inventory(v_foreign,v_source,false);
+    raise exception 'revoked session copied inventory';
+  exception when sqlstate '28000' then null;
   end;
 end $$;
 rollback;
@@ -185,5 +208,7 @@ begin
   end if;
 end $$;
 
+delete from auth.sessions where user_id in
+  ('aaaaaaaa-1930-0001-0000-000000000001','aaaaaaaa-1930-0001-0000-000000000002');
 delete from auth.users where id in
   ('aaaaaaaa-1930-0001-0000-000000000001','aaaaaaaa-1930-0001-0000-000000000002');

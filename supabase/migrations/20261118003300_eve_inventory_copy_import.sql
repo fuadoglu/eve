@@ -38,6 +38,9 @@ declare
   v_room record;
   v_item record;
 begin
+  if not api.is_my_session_active() then
+    raise exception using errcode='28000',message='active_session_required';
+  end if;
   if p_property_id is null or p_source_property_id is null
      or p_property_id = p_source_property_id or p_include_media is null then
     raise exception using errcode='22023', message='invalid_inventory_copy';
@@ -113,6 +116,12 @@ revoke create on schema api from app_executor;
 
 -- The parser supplies normalized rows only after checking the uploaded file's
 -- bytes. These private functions are deliberately absent from the Data API.
+-- Source row keys identify a row inside one import batch, not globally across
+-- every property or future reservation import of the same owner.
+alter table app_private.import_rows
+  drop constraint import_rows_owner_account_id_source_row_key_key;
+alter table app_private.import_rows
+  add constraint import_rows_batch_source_row_key_key unique(import_job_id,source_row_key);
 grant select,insert,update on app_private.import_jobs to app_executor;
 grant select,insert on app_private.import_rows to app_executor;
 create policy import_jobs_inventory_read on app_private.import_jobs
@@ -208,9 +217,6 @@ begin
       v_error_field := 'unit'; v_error_message := 'invalid_unit';
     elsif coalesce(v_row->>'condition','ok') not in ('ok','needs_repair','damaged','missing') then
       v_error_field := 'condition'; v_error_message := 'invalid_condition';
-    elsif exists (select 1 from app_private.import_rows ir
-      where ir.owner_account_id=v_owner and ir.source_row_key=v_key) then
-      v_error_field := 'source_row_key'; v_error_message := 'already_imported';
     elsif v_key=any(v_duplicates) then
       v_error_field := 'source_row_key'; v_error_message := 'duplicate_source_row_key';
     end if;
@@ -296,7 +302,7 @@ begin
   loop
     v_key := v_row->>'source_row_key';
     if exists (select 1 from app_private.import_rows ir
-      where ir.owner_account_id=v_owner and ir.source_row_key=v_key) then
+      where ir.import_job_id=v_job.id and ir.source_row_key=v_key) then
       raise exception using errcode='23505',message='inventory_import_source_duplicate';
     end if;
     select id into v_room_id from app_private.rooms r
