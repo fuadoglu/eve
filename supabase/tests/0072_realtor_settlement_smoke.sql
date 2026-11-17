@@ -57,7 +57,7 @@ values ('fa200000-0000-0000-0000-000000000001','fa500000-0000-4000-8000-00000000
 set local role authenticated;
 set local request.jwt.claims='{"sub":"fa000000-0000-0000-0000-000000000001","session_id":"fa100000-0000-0000-0000-000000000001","iat":1800000000}';
 do $$
-declare b jsonb; receipt jsonb; refund jsonb; settlement jsonb; replay jsonb; failed boolean;
+declare b jsonb; receipt jsonb; refund jsonb; deposit jsonb; allocation jsonb; settlement jsonb; replay jsonb; failed boolean;
   before_receipts bigint; after_receipts bigint;
 begin
   b:=api.get_realtor_balance('fa500000-0000-4000-8000-000000000001');
@@ -81,6 +81,15 @@ begin
   if (b->>'version')::int<>3 or (b->>'collected_minor')::bigint<>9999
     or (b->>'commission_minor')::bigint<>3000 or (b->>'owner_due_minor')::bigint<>6999 then
     raise exception 'C/E or refund balance mismatch: %',b; end if;
+  deposit:=api.create_rent_entry('fa500000-0000-4000-8000-000000000001',
+    '{"kind":"deposit_receipt","amount_minor":500,"custodian":"realtor","contact_id":"fa400000-0000-0000-0000-000000000001"}',
+    'settlement-deposit-receipt-001');
+  allocation:=api.create_rent_entry('fa500000-0000-4000-8000-000000000001',jsonb_build_object(
+    'kind','deposit_to_rent','amount_minor',100,'custodian','realtor','contact_id','fa400000-0000-0000-0000-000000000001',
+    'original_id',deposit->>'id','note','Depozitin kirayəyə keçirilməsi'),'settlement-deposit-allocation-001');
+  b:=api.get_realtor_balance('fa500000-0000-4000-8000-000000000001');
+  if (b->>'version')::int<>3 or (b->>'collected_minor')::bigint<>9999 then
+    raise exception 'deposit activity changed D44 rent-receipt balance/version: %',b; end if;
   select count(*) into before_receipts from app_private.rent_entries where reservation_id='fa500000-0000-4000-8000-000000000001';
   settlement:=api.record_realtor_settlement('fa500000-0000-4000-8000-000000000001',
     '{"expected_version":3,"contact_id":"fa400000-0000-0000-0000-000000000001","kind":"realtor_to_owner","amount_minor":6999}',

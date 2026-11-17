@@ -17,7 +17,13 @@ create policy realtor_settlement_command_insert on app_private.realtor_settlemen
 create function app_private.bump_realtor_balance_version()
 returns trigger language plpgsql security definer set search_path = '' as $$
 begin
-  if new.custodian='realtor' and new.realtor_contact_id is not null then
+  if new.custodian='realtor' and new.realtor_contact_id is not null and (
+    new.kind='rent_receipt'
+    or (new.kind='rent_refund' and exists(select 1 from app_private.rent_entries src
+      where src.id=new.original_entry_id and src.kind='rent_receipt'))
+    or (new.kind='reversal' and exists(select 1 from app_private.rent_entries src
+      where src.id=new.original_entry_id and src.kind in ('rent_receipt','rent_refund')))
+  ) then
     update app_private.realtor_accounts a set version=a.version+1,updated_at=statement_timestamp()
     where a.reservation_id=new.reservation_id and a.owner_account_id=new.owner_account_id
       and a.contact_id=new.realtor_contact_id;
@@ -52,9 +58,9 @@ begin
   cross join lateral (
     select
       coalesce((select sum(case
-        when e.kind in ('rent_receipt','deposit_to_rent') then e.amount_minor
-        when e.kind='rent_refund' then -e.amount_minor
-        when e.kind='reversal' and src.kind in ('rent_receipt','deposit_to_rent') then -e.amount_minor
+        when e.kind='rent_receipt' then e.amount_minor
+        when e.kind='rent_refund' and src.kind='rent_receipt' then -e.amount_minor
+        when e.kind='reversal' and src.kind='rent_receipt' then -e.amount_minor
         when e.kind='reversal' and src.kind='rent_refund' then e.amount_minor
         else 0 end)
         from app_private.rent_entries e left join app_private.rent_entries src on src.id=e.original_entry_id
@@ -139,9 +145,9 @@ begin
   end if;
   if v_account.version<>v_expected then raise exception using errcode='40001',message='stale_realtor_balance'; end if;
   select coalesce(sum(case
-    when e.kind in ('rent_receipt','deposit_to_rent') then e.amount_minor
-    when e.kind='rent_refund' then -e.amount_minor
-    when e.kind='reversal' and src.kind in ('rent_receipt','deposit_to_rent') then -e.amount_minor
+    when e.kind='rent_receipt' then e.amount_minor
+    when e.kind='rent_refund' and src.kind='rent_receipt' then -e.amount_minor
+    when e.kind='reversal' and src.kind='rent_receipt' then -e.amount_minor
     when e.kind='reversal' and src.kind='rent_refund' then e.amount_minor else 0 end),0)::bigint into v_collected
   from app_private.rent_entries e left join app_private.rent_entries src on src.id=e.original_entry_id
   where e.reservation_id=v_res.id and e.owner_account_id=v_res.owner_account_id
