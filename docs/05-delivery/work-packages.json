@@ -1458,7 +1458,7 @@
       "parent_issue": 23,
       "milestone": "M3",
       "title": "Net istiqamət və double-income sınağı",
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "EVE-015.2"
       ],
