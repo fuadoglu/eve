@@ -38,10 +38,11 @@ original rows, matching owner/full creation behavior.
   `0222_media_access_smoke.sql` each exited 0. The test
   asserts approved owner replay, sum/cross-owner rejection, immutable allocation header, full
   header visibility guard and daily proposed/unpaid state. This is synthetic local proof.
-- PostgreSQL 17 and fresh Supabase CI are still required before package closeout.
+- PR #146 final-head CI #44184973021 and merged-main CI #44185603088 each passed
+  `docs`, PostgreSQL 17 `sql_schema`, and fresh synthetic `supabase_local`.
 - Independent read-only review found three P1 issues in the first commit/follow-up: approved
   replay, allocation header move, and a permissive media policy overriding header scope. All
-  were corrected and await final follow-up review of the latest diff.
+  were corrected; final follow-up review found no remaining blocker and did not run tests.
 
 ## Limits
 
