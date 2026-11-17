@@ -44,9 +44,20 @@ test("transition validates action-specific fields and refuses success for mismat
   let calls = 0;
   const transition = async () => { calls++; return dto(); };
   assert.equal((await handleReservationTransition(request("/transition", { expected_version: 3, action: "release_remaining_days" }), id, transition)).status, 422);
+  assert.equal((await handleReservationTransition(request("/transition", { expected_version: 3, action: "release_remaining_days",
+    new_check_out: "2027-05-02", new_total_minor: 0 }), id, transition)).status, 422);
+  assert.equal((await handleReservationTransition(request("/transition", { expected_version: 3, action: "release_remaining_days",
+    new_check_out: "2027-05-02", new_total_minor: 1000, free_stay: true }), id, transition)).status, 422);
   assert.equal(calls, 0);
   const ok = await handleReservationTransition(request("/transition", { expected_version: 3, action: "confirm" }), id, transition);
   assert.equal(ok.status, 200);
+  let zeroReleaseInput: unknown;
+  const zeroRelease = await handleReservationTransition(request("/transition", { expected_version: 3, action: "release_remaining_days",
+    new_check_out: "2027-05-02", new_total_minor: 0, free_stay: true }), id,
+  async (_gotId, input) => { zeroReleaseInput = input; return dto(); });
+  assert.equal(zeroRelease.status, 200);
+  assert.equal((zeroReleaseInput as { free_stay?: boolean }).free_stay, true);
+  assert.equal((await handleReservationTransition(request("/transition", { expected_version: 3, action: "check_in", free_stay: true }), id, transition)).status, 422);
   const mismatch = await handleReservationTransition(request("/transition", { expected_version: 3, action: "check_in" }), id, async () => ({ ...dto(), id: "f4000000-0000-4000-8000-000000000099" }));
   assert.equal(mismatch.status, 503);
 });

@@ -22,11 +22,13 @@ insert into app_private.owner_accounts(id,owner_user_id) values
 insert into app_private.properties(id,owner_account_id,name,area,max_guests) values
   ('f8200000-0000-4000-8000-000000000001','f8100000-0000-0000-0000-000000000001','AT10 source','Bakı',4),
   ('f8200000-0000-4000-8000-000000000002','f8100000-0000-0000-0000-000000000001','AT10 target','Bakı',4),
-  ('f8200000-0000-4000-8000-000000000003','f8100000-0000-0000-0000-000000000002','AT10 other','Bakı',4);
+  ('f8200000-0000-4000-8000-000000000003','f8100000-0000-0000-0000-000000000002','AT10 other','Bakı',4),
+  ('f8200000-0000-4000-8000-000000000004','f8100000-0000-0000-0000-000000000001','AT10 zero release','Bakı',4);
 insert into app_private.subscriptions(owner_account_id,property_id,state,current_end) values
   ('f8100000-0000-0000-0000-000000000001','f8200000-0000-4000-8000-000000000001','active',now()+interval '30 days'),
   ('f8100000-0000-0000-0000-000000000001','f8200000-0000-4000-8000-000000000002','trialing',now()+interval '30 days'),
-  ('f8100000-0000-0000-0000-000000000002','f8200000-0000-4000-8000-000000000003','active',now()+interval '30 days');
+  ('f8100000-0000-0000-0000-000000000002','f8200000-0000-4000-8000-000000000003','active',now()+interval '30 days'),
+  ('f8100000-0000-0000-0000-000000000001','f8200000-0000-4000-8000-000000000004','trialing',now()+interval '30 days');
 insert into app_private.property_memberships(owner_account_id,property_id,user_id,permission,granted_by) values
   ('f8100000-0000-0000-0000-000000000001','f8200000-0000-4000-8000-000000000001','f8000000-0000-0000-0000-000000000002','daily','f8000000-0000-0000-0000-000000000001'),
   ('f8100000-0000-0000-0000-000000000001','f8200000-0000-4000-8000-000000000001','f8000000-0000-0000-0000-000000000003','full','f8000000-0000-0000-0000-000000000001'),
@@ -51,7 +53,10 @@ values ('f8300000-0000-0000-0000-000000000001','f8100000-0000-0000-0000-00000000
   (now() at time zone 'Asia/Baku')::date-7,(now() at time zone 'Asia/Baku')::date-6,'14:00','12:00',1,'confirmed',5000),
  ('f8300000-0000-0000-0000-000000000005','f8100000-0000-0000-0000-000000000001',
   'f8200000-0000-4000-8000-000000000002','f8400000-0000-0000-0000-000000000005','No-show guest',null,
-  (now() at time zone 'Asia/Baku')::date-9,(now() at time zone 'Asia/Baku')::date-8,'14:00','12:00',1,'confirmed',5000);
+  (now() at time zone 'Asia/Baku')::date-9,(now() at time zone 'Asia/Baku')::date-8,'14:00','12:00',1,'confirmed',5000),
+ ('f8300000-0000-0000-0000-000000000006','f8100000-0000-0000-0000-000000000001',
+  'f8200000-0000-4000-8000-000000000004','f8400000-0000-0000-0000-000000000006','Zero release guest',null,
+  (now() at time zone 'Asia/Baku')::date-3,(now() at time zone 'Asia/Baku')::date+2,'14:00','12:00',1,'confirmed',5000);
 insert into app_private.reservation_placements(id,owner_account_id,property_id,reservation_id,placement_no,
   check_in_snapshot,check_out_snapshot,effective_from,created_by) values
   ('f8400000-0000-0000-0000-000000000001','f8100000-0000-0000-0000-000000000001','f8200000-0000-4000-8000-000000000001',
@@ -63,7 +68,9 @@ insert into app_private.reservation_placements(id,owner_account_id,property_id,r
   ('f8400000-0000-0000-0000-000000000004','f8100000-0000-0000-0000-000000000001','f8200000-0000-4000-8000-000000000002',
     'f8300000-0000-0000-0000-000000000004',1,(now() at time zone 'Asia/Baku')::date-7,(now() at time zone 'Asia/Baku')::date-6,now()-interval '2 days','f8000000-0000-0000-0000-000000000001'),
   ('f8400000-0000-0000-0000-000000000005','f8100000-0000-0000-0000-000000000001','f8200000-0000-4000-8000-000000000002',
-    'f8300000-0000-0000-0000-000000000005',1,(now() at time zone 'Asia/Baku')::date-9,(now() at time zone 'Asia/Baku')::date-8,now()-interval '2 days','f8000000-0000-0000-0000-000000000001');
+    'f8300000-0000-0000-0000-000000000005',1,(now() at time zone 'Asia/Baku')::date-9,(now() at time zone 'Asia/Baku')::date-8,now()-interval '2 days','f8000000-0000-0000-0000-000000000001'),
+  ('f8400000-0000-0000-0000-000000000006','f8100000-0000-0000-0000-000000000001','f8200000-0000-4000-8000-000000000004',
+    'f8300000-0000-0000-0000-000000000006',1,(now() at time zone 'Asia/Baku')::date-3,(now() at time zone 'Asia/Baku')::date+2,now()-interval '2 days','f8000000-0000-0000-0000-000000000001');
 insert into app_private.occupancy(owner_account_id,property_id,placement_id,date_range) values
   ('f8100000-0000-0000-0000-000000000001','f8200000-0000-4000-8000-000000000001','f8400000-0000-0000-0000-000000000001',
     daterange((now() at time zone 'Asia/Baku')::date-1,(now() at time zone 'Asia/Baku')::date+4,'[)')),
@@ -74,7 +81,9 @@ insert into app_private.occupancy(owner_account_id,property_id,placement_id,date
   ('f8100000-0000-0000-0000-000000000001','f8200000-0000-4000-8000-000000000002','f8400000-0000-0000-0000-000000000004',
     daterange((now() at time zone 'Asia/Baku')::date-7,(now() at time zone 'Asia/Baku')::date-6,'[)')),
   ('f8100000-0000-0000-0000-000000000001','f8200000-0000-4000-8000-000000000002','f8400000-0000-0000-0000-000000000005',
-    daterange((now() at time zone 'Asia/Baku')::date-9,(now() at time zone 'Asia/Baku')::date-8,'[)'));
+    daterange((now() at time zone 'Asia/Baku')::date-9,(now() at time zone 'Asia/Baku')::date-8,'[)')),
+  ('f8100000-0000-0000-0000-000000000001','f8200000-0000-4000-8000-000000000004','f8400000-0000-0000-0000-000000000006',
+    daterange((now() at time zone 'Asia/Baku')::date-3,(now() at time zone 'Asia/Baku')::date+2,'[)'));
 insert into app_private.tasks(owner_account_id,property_id,reservation_id,placement_id,kind,title,due_at,state,
   required_for_readiness,version) values
   ('f8100000-0000-0000-0000-000000000001','f8200000-0000-4000-8000-000000000001','f8300000-0000-0000-0000-000000000001',
@@ -281,6 +290,45 @@ do $$ begin
     or not exists(select 1 from app_private.tasks where reservation_id='f8300000-0000-0000-0000-000000000001'
       and kind='cleaning' and state='open' and inspection_event_id is not null) then
     raise exception 'early release reopened occupancy or lost checkout cleaning/history'; end if;
+end $$;
+
+-- Zero-price remaining-day release requires explicit free-stay confirmation at the API/RPC boundary.
+set local role authenticated;
+set local request.jwt.claim.sub='f8000000-0000-0000-0000-000000000001';
+set local request.jwt.claims='{"sub":"f8000000-0000-0000-0000-000000000001","session_id":"f8800000-0000-0000-0000-000000000001"}';
+do $$ declare v_failed boolean:=false; v_result jsonb; v_today date:=(now() at time zone 'Asia/Baku')::date;
+begin
+  perform api.transition_reservation('f8300000-0000-0000-0000-000000000006'::uuid,
+    '{"expected_version":1,"action":"check_in"}'::jsonb,'at10-zero-checkin-key-0000001');
+  perform api.transition_reservation('f8300000-0000-0000-0000-000000000006'::uuid,
+    '{"expected_version":2,"action":"check_out"}'::jsonb,'at10-zero-checkout-key-000001');
+  begin
+    perform api.transition_reservation('f8300000-0000-0000-0000-000000000006'::uuid,
+      jsonb_build_object('expected_version',3,'action','release_remaining_days','new_check_out',v_today::text,'new_total_minor',5000,'free_stay',true),
+      'at10-zero-release-unneeded-confirmation');
+  exception when invalid_parameter_value then v_failed:=true; end;
+  if not v_failed then raise exception 'free_stay confirmation was accepted for a non-zero release'; end if;
+  v_failed:=false;
+  begin
+    perform api.transition_reservation('f8300000-0000-0000-0000-000000000006'::uuid,
+      jsonb_build_object('expected_version',3,'action','release_remaining_days','new_check_out',v_today::text,'new_total_minor',0),
+      'at10-zero-release-missing-confirmation');
+  exception when invalid_parameter_value then v_failed:=true; end;
+  if not v_failed then raise exception 'zero-price release without free_stay confirmation was accepted'; end if;
+  v_result:=api.transition_reservation('f8300000-0000-0000-0000-000000000006'::uuid,
+    jsonb_build_object('expected_version',3,'action','release_remaining_days','new_check_out',v_today::text,'new_total_minor',0,'free_stay',true),
+    'at10-zero-release-confirmed-key');
+  if (v_result->>'version')::int<>4 or v_result->>'replayed'<>'false' then
+    raise exception 'confirmed zero-price release acknowledgement mismatch: %',v_result; end if;
+end $$;
+reset role;
+do $$ begin
+  if not exists(select 1 from app_private.reservations where id='f8300000-0000-0000-0000-000000000006'
+      and state='completed' and version=4 and total_minor=0 and zero_price_confirmed=true
+      and check_out=(now() at time zone 'Asia/Baku')::date)
+    or (select count(*) from app_private.reservation_placements where reservation_id='f8300000-0000-0000-0000-000000000006')<>2
+    or exists(select 1 from app_private.occupancy where placement_id='f8400000-0000-0000-0000-000000000006' and active) then
+    raise exception 'confirmed zero-price release did not preserve completion, confirmation, placement history and closed occupancy'; end if;
 end $$;
 
 -- A rent ledger makes a cancel decision mandatory. keep_as_is adds no refund record.

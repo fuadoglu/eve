@@ -1157,6 +1157,7 @@
         "tests/unit/reservations/reservation-move-handlers.test.ts",
         "tests/unit/reservations/reservation-at10-http.test.ts",
         "docs/01-product/DECISIONS.md",
+        "docs/03-engineering/API-CONTRACT.md",
         "docs/03-engineering/openapi.json",
         "docs/04-quality/evidence/eve-012-3-placement-history.md",
         "docs/05-delivery/STATUS.md",

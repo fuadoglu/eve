@@ -436,7 +436,7 @@ begin
   if not api.is_my_session_active() then raise exception using errcode='28000',message='active_session_required'; end if;
   if v_actor is null then raise exception using errcode='28000',message='authentication_required'; end if;
   if p_reservation_id is null or jsonb_typeof(p_input) is distinct from 'object'
-    or p_input - array['expected_version','action','reason','new_check_out','new_total_minor','financial_decision'] <> '{}'::jsonb
+    or p_input - array['expected_version','action','reason','new_check_out','new_total_minor','financial_decision','free_stay'] <> '{}'::jsonb
     or jsonb_typeof(p_input->'expected_version') is distinct from 'number'
     or (p_input->>'expected_version') !~ '^[1-9][0-9]*$'
     or (p_input->>'expected_version')::numeric>2147483647
@@ -446,6 +446,7 @@ begin
     or (p_input ? 'new_check_out' and (jsonb_typeof(p_input->'new_check_out') is distinct from 'string' or (p_input->>'new_check_out') !~ '^\d{4}-\d{2}-\d{2}$'))
     or (p_input ? 'new_total_minor' and (jsonb_typeof(p_input->'new_total_minor') is distinct from 'number'
       or (p_input->>'new_total_minor') !~ '^(0|[1-9][0-9]*)$' or (p_input->>'new_total_minor')::numeric>9007199254740991))
+    or (p_input ? 'free_stay' and jsonb_typeof(p_input->'free_stay') is distinct from 'boolean')
     or p_idempotency_key is null or p_idempotency_key !~ '^[A-Za-z0-9_-]{16,128}$' then
     raise exception using errcode='22023',message='invalid_reservation_transition_input';
   end if;
@@ -454,6 +455,13 @@ begin
   v_decision := p_input->'financial_decision';
   if v_action='release_remaining_days' and (not (p_input ? 'new_check_out') or not (p_input ? 'new_total_minor')) then
     raise exception using errcode='22023',message='release_remaining_days_requires_price_and_date'; end if;
+  if p_input ? 'free_stay' and (v_action<>'release_remaining_days'
+     or coalesce((p_input->>'free_stay')::boolean,false) is not true
+     or coalesce((p_input->>'new_total_minor')::numeric,-1)<>0) then
+    raise exception using errcode='22023',message='free_stay_confirmation_not_applicable'; end if;
+  if v_action='release_remaining_days' and (p_input->>'new_total_minor')::numeric=0
+     and coalesce((p_input->>'free_stay')::boolean,false) is not true then
+    raise exception using errcode='22023',message='zero_price_requires_free_stay_confirmation'; end if;
   if v_action in ('confirm','check_in','check_out','release_remaining_days') and p_input ? 'financial_decision' then
     raise exception using errcode='22023',message='financial_decision_not_allowed_for_action'; end if;
   if v_action in ('cancel','no_show') and v_decision is not null and (

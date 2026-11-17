@@ -62,11 +62,13 @@ function parsePatch(value: unknown): Record<string, unknown> {
 }
 
 function parseTransition(value: unknown): Record<string, unknown> {
-  if (!isRecord(value) || !hasOnly(value, ["expected_version", "action", "reason", "new_check_out", "new_total_minor", "financial_decision"])
+  if (!isRecord(value) || !hasOnly(value, ["expected_version", "action", "reason", "new_check_out", "new_total_minor", "financial_decision", "free_stay"])
     || !positiveInt(value.expected_version) || !["confirm", "cancel", "no_show", "check_in", "check_out", "release_remaining_days"].includes(String(value.action))
     || ("reason" in value && (typeof value.reason !== "string" || [...value.reason].length > 2000))
-    || ("new_check_out" in value && !calendarDate(value.new_check_out)) || ("new_total_minor" in value && !minor(value.new_total_minor))) throw new TypeError("invalid_transition");
-  if (value.action === "release_remaining_days" && (!calendarDate(value.new_check_out) || !minor(value.new_total_minor))) throw new TypeError("invalid_release");
+    || ("new_check_out" in value && !calendarDate(value.new_check_out)) || ("new_total_minor" in value && !minor(value.new_total_minor))
+    || ("free_stay" in value && (value.action !== "release_remaining_days" || value.free_stay !== true || value.new_total_minor !== 0))) throw new TypeError("invalid_transition");
+  if (value.action === "release_remaining_days" && (!calendarDate(value.new_check_out) || !minor(value.new_total_minor)
+    || value.new_total_minor === 0 && value.free_stay !== true)) throw new TypeError("invalid_release");
   if ("financial_decision" in value) {
     const decision = value.financial_decision;
     if (value.action !== "cancel" && value.action !== "no_show" || !isFinancialDecision(decision)) throw new TypeError("invalid_financial_decision");

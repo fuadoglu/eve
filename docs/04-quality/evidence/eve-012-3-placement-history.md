@@ -2,7 +2,7 @@
 
 ## Scope and status
 
-Status: `in_progress`. Draft PR #122 contains implementation commit `cf11992` and allowlist fix `85cae2b`; placement-history, same-owner move, date/price patch, lifecycle transition RPCs, and authenticated HTTP routes are in the proposed package increment. PR CI run #43964485492 passed all three jobs. The package is not closed: SQL local evidence is synthetic PostgreSQL 16, full-scope PR review is pending, and merged-main CI plus closure evidence remain required.
+Status: `in_progress`. Draft PR #122 contains implementation commit `cf11992`, allowlist fix `85cae2b`, and evidence commit `dd39551`; placement-history, same-owner move, date/price patch, lifecycle transition RPCs, and authenticated HTTP routes are in the proposed package increment. PR CI run #43965109406 passed all three jobs on `dd39551`. A full-scope review then identified a zero-price confirmation contract gap; the working tree now corrects it in SQL, HTTP parsing, OpenAPI, API-CONTRACT and regression coverage. The package is not closed: the correction still needs fresh independent review, commit, CI and merged-main evidence.
 
 Normative references: `docs/03-engineering/DATA-MODEL.md` §§4–5, `docs/04-quality/ACCEPTANCE.md` AT10, and `docs/05-delivery/work-packages.json` EVE-012.3.
 
@@ -17,7 +17,7 @@ Normative references: `docs/03-engineering/DATA-MODEL.md` §§4–5, `docs/04-qu
 - CI runs the migration and smoke in the PostgreSQL 17 schema job; the fresh local Supabase job runs the smoke after migration application.
 - `20261117002800_eve_reservation_at10_transitions.sql` adds the transactional date/price patch and confirm/cancel/no-show/check-in/check-out/release-remaining-days commands. It preserves placement history, occupancy, future cleaning task schedule, actual stay timestamps, guest-link revocation, task transition history, audit/outbox, receipt-linked refund/deposit return, and idempotency. Refund entries remain attached to their original property and placement. RLS exposes historical realtor settlements only to finance readers of the source or current reservation property; commission reduction cannot go below immutable owner-to-realtor/offset settlements.
 - The PATCH and transition routes use the current cookie session, recheck application-session revocation, validate same-origin/idempotency and request shape, verify the internal RPC acknowledgement, then read and return the server reservation DTO. The existing OpenAPI paths are used; no alternate contract was introduced.
-- `0068_reservation_at10_transition_smoke.sql` covers date/price patch, stale key/version, overlap rollback, same-owner move in the same AT10 path, source-only privacy, occupancy/placement/link/task effects, check-in/out, early release, explicit financial choice, daily-manager denial, historical receipt refund after move, settled-commission protection, zero commission keep with refund when no realtor account exists, and no-show occupancy/link/future-task effects with transition history.
+- `0068_reservation_at10_transition_smoke.sql` covers date/price patch, stale key/version, overlap rollback, same-owner move in the same AT10 path, source-only privacy, occupancy/placement/link/task effects, check-in/out, early release, explicit financial choice, daily-manager denial, historical receipt refund after move, settled-commission protection, zero commission keep with refund when no realtor account exists, and no-show occupancy/link/future-task effects with transition history. The working-tree correction adds positive and negative zero-price release confirmation cases.
 - `.github/workflows/ci.yml` now applies the transition migration and runs the 0068 smoke in PostgreSQL 17 `sql_schema`, and executes the smoke against the fresh synthetic Supabase stack.
 
 ## Evidence
@@ -41,9 +41,15 @@ Normative references: `docs/03-engineering/DATA-MODEL.md` §§4–5, `docs/04-qu
 - The previous move-only independent review is historical evidence for that increment. A fresh read-only review of the new SQL identified settlement visibility and commission-balance issues; implementation and regression cases were updated. Follow-up and final full-scope read-only reviews confirmed those fixes and found no remaining static blocker in the requested RLS, commission, refunds, lifecycle, and no-show paths. Reviewer did not execute tests; the integrator reran the corrected PostgreSQL 16 smoke successfully. PostgreSQL 17 CI remains required.
 - No new migration has been applied to the hosted migration-check project, staging, or production. The local synthetic database alone does not establish hosted migration history or release readiness.
 
+## 2026-11-17 full-scope review correction
+
+Read-only review of PR head `dd39551` identified that `release_remaining_days` could set a zero total without the explicitly required `free_stay=true`; it also found that `free_stay=true` was not rejected for a non-zero total. The correction aligns the SQL RPC, HTTP request parser, OpenAPI schema and API-CONTRACT: the field is valid only for `release_remaining_days` with `new_total_minor=0`, and must be true. The first re-review found that OpenAPI still allowed `free_stay=false`; the schema now declares `const: true`. The SQL smoke checks the rejected zero-without-confirmation and positive-with-confirmation cases plus successful confirmed-zero case on an isolated fixture.
+
+Current local evidence on the final reviewed working tree: reservation unit suite 37/37; `tsc --noEmit`; docs/contracts/schema/prototype/storage validators; Next.js production build; full migration chain and `0068`, `0062_rls_coverage_smoke.sql`, `0062_api_surface_smoke.sql` on isolated synthetic PostgreSQL 16.13 all passed. The schema validator includes the positive/negative zero-price confirmation contract examples. Independent read-only review found no remaining implementation blocker; CI on the correction, merge and merged-main CI remain pending. The earlier PR CI pass on `dd39551` does not cover this correction.
+
 ## Explicitly open
 
-- Complete full-scope independent PR review, merge PR #122 under repository rules, then record merged-main CI.
+- Push the reviewed zero-price confirmation correction, wait for all PR CI jobs, merge PR #122 under repository rules, then record merged-main CI.
 - EVE-012.3 acceptance, parent #20, and package ledger closure remain open until PR/review/CI/main-branch evidence is complete.
 
 This package is not production-ready evidence and does not claim any hosted database or production change.
