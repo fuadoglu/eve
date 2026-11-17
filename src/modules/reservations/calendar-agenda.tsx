@@ -318,12 +318,15 @@ function MonthGrid({
       {dates.map((date) => {
         const entries = entriesByDate.get(date) ?? [];
         const isCurrentMonth = date.slice(0, 7) === currentMonth;
-        const accessibleLabel = `${Number(date.slice(8, 10))}, ${formatDateLong(date)}${entries.length ? `, ${entries.length} qeyd` : ", qeyd yoxdur"}`;
+        const dayNumber = Number(date.slice(8, 10));
+        const accessibleLabel = entries.length
+          ? `${dayNumber} ${entries.length} qeyd, ${formatDateLong(date)}`
+          : `${dayNumber}, qeyd yoxdur, ${formatDateLong(date)}`;
         return <button key={date} type="button" aria-label={accessibleLabel}
           aria-pressed={selectedDate === date} className={`${styles.dayCell} ${!isCurrentMonth ? styles.outsideMonth : ""}`}
           onClick={() => onSelectDate(date)}>
-          <span className={styles.dayNumber}>{Number(date.slice(8, 10))}</span>
-          {entries.length > 0 && <span className={styles.dayCount}>{entries.length}</span>}
+          <span className={styles.dayNumber}>{dayNumber}</span>
+          {entries.length > 0 && <span aria-hidden="true" className={styles.dayCount}>{entries.length}</span>}
           <span className={styles.dayMarkers} aria-hidden="true">
             {entries.slice(0, 2).map((entry) => <span key={`${entry.kind}-${entry.id}`} className={entry.kind === "block" ? styles.blockMarker : styles.reservationMarker} />)}
           </span>
