@@ -13,6 +13,12 @@ class ApiError extends Error { constructor(readonly code: string) { super(code);
 export const patchReservation: ReservationWriteOperation = (id, input, key) => writeReservation("patch_reservation", id, input, key);
 export const transitionReservation: ReservationWriteOperation = (id, input, key) => writeReservation("transition_reservation", id, input, key);
 
+export async function getReservation(id: string): Promise<unknown> {
+  const client = await getClient();
+  await requireActiveSession(client);
+  return rpc(client, "get_reservation", { p_reservation_id: id });
+}
+
 async function writeReservation(operation: "patch_reservation" | "transition_reservation", id: string, input: unknown, key: string): Promise<unknown> {
   const client = await getClient();
   await requireActiveSession(client);

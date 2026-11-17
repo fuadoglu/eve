@@ -202,19 +202,46 @@ try {
   assert.equal(firstDto.data.balance.rent_received_minor, 10000);
   assert.equal(firstDto.data.balance.remaining_minor, 20000);
 
+  await page.getByText("Pul qeydi əlavə et").click();
+  await page.getByLabel("Məbləğ (AZN)").fill("250,00");
+  const receiptResponse = page.waitForResponse((response) => response.url().endsWith(`/api/v1/reservations/${firstEnvelope.data.id}/money`) && response.request().method() === "POST");
+  await page.getByRole("button", { name: "Qeydə al" }).click();
+  assert.equal((await receiptResponse).status(), 201);
+  await page.getByText("Artıq ödəniş").waitFor();
+  assert.match(await page.locator(".reservation-balance").innerText(), /50[.,]00/);
+
+  const moneyPageResponse = await page.request.get(`${baseUrl}/api/v1/reservations/${firstEnvelope.data.id}/money?limit=100`, { headers: { Origin: baseUrl } });
+  assert.equal(moneyPageResponse.status(), 200);
+  const moneyPage = await moneyPageResponse.json();
+  const originalReceipt = moneyPage.data.items.find((item) => item.kind === "rent_receipt" && item.amount_minor === 10000);
+  assert.ok(originalReceipt, "initial rent receipt remains linked and selectable");
+  await page.getByLabel("Əməliyyat növü").selectOption("rent_refund");
+  await page.getByLabel("İlkin pul qeydi").selectOption(originalReceipt.id);
+  await page.getByLabel("Məbləğ (AZN)").fill("101,00");
+  await page.getByRole("button", { name: "Qeydə al" }).click();
+  assert.match(await page.getByRole("alert").innerText(), /qaytarıla bilən qalığı/);
+  await page.getByLabel("Məbləğ (AZN)").fill("50,00");
+  const refundResponse = page.waitForResponse((response) => response.url().endsWith(`/api/v1/reservations/${firstEnvelope.data.id}/money`) && response.request().method() === "POST");
+  await page.getByRole("button", { name: "Qeydə al" }).click();
+  assert.equal((await refundResponse).status(), 201);
+  await page.getByText("Kirayə qaytarılıb").waitFor();
+  const finalBalance = await page.locator(".reservation-balance").innerText();
+  assert.match(finalBalance, /Qalıb\s*0[.,]00/);
+  assert.doesNotMatch(finalBalance, /Artıq ödəniş/);
+
   const countResult = spawnSync("docker", ["exec", "-i", "supabase_db_eve", "psql", "-U", "supabase_admin", "-d", "postgres", "-Atqc",
     `select (select count(*) from app_private.reservations where id='${firstEnvelope.data.id}')::text || ':' || (select count(*) from app_private.rent_entries where reservation_id='${firstEnvelope.data.id}')::text;`], {
     encoding: "utf8", stdio: ["ignore", "pipe", "pipe"],
   });
   if (countResult.status !== 0) throw new Error("reservation_retry_database_count_failed");
-  assert.equal(countResult.stdout.trim(), "1:1");
+  assert.equal(countResult.stdout.trim(), "1:3");
 
   const conflictResponse = await page.request.post(`${baseUrl}/api/v1/reservations`, {
     headers: { Origin: baseUrl, "Idempotency-Key": `reservation-conflict-${suffix}`, "Content-Type": "application/json" },
     data: { ...body, guest_name: "Other synthetic guest" },
   });
   assert.equal(conflictResponse.status(), 409);
-  console.log("PASS reservation browser E2E: authenticated property context, mobile offline guard, server acknowledgement/balance, DB-backed idempotent retry and occupancy conflict");
+  console.log("PASS reservation browser E2E: authenticated context, mobile offline guard, rent/debt/overpayment/refund limit, server balance refresh, DB-backed idempotency and occupancy conflict");
   await context.close();
 } catch (error) {
   const message = error instanceof Error ? error.message : String(error);

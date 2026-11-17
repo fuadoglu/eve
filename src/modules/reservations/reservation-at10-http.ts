@@ -2,7 +2,28 @@ import { parseReservationEnvelope } from "./reservation-contract.ts";
 import { isSameOriginRequest } from "./reservation-handlers.ts";
 
 export type ReservationWriteOperation = (reservationId: string, input: unknown, idempotencyKey: string) => Promise<unknown>;
+export type ReservationReadOperation = (reservationId: string) => Promise<unknown>;
 const MAX_MINOR = Number.MAX_SAFE_INTEGER;
+
+export async function handleReservationGet(request: Request, id: string, get: ReservationReadOperation): Promise<Response> {
+  if (!isSameOriginRequest(request)) return error(403, "FORBIDDEN", "Sorğu bu mənbədən qəbul edilmir.");
+  if (!isUuid(id)) return error(404, "NOT_FOUND", "Rezervasiya tapılmadı.");
+  if (new URL(request.url).search) return error(400, "VALIDATION_ERROR", "Sorğu parametrləri düzgün deyil.");
+  try {
+    const envelope = parseReservationEnvelope({ data: await get(id), meta: { request_id: crypto.randomUUID() } });
+    if (envelope.data.id !== id) throw new TypeError("reservation_read_result_mismatch");
+    return json(200, envelope);
+  } catch (cause) {
+    const code = isRecord(cause) && typeof cause.code === "string" ? cause.code : "PROVIDER_UNAVAILABLE";
+    const status = code === "UNAUTHENTICATED" ? 401 : code === "FORBIDDEN" ? 403 : code === "NOT_FOUND" ? 404
+      : code === "VALIDATION_ERROR" ? 422 : code === "CONFLICT" ? 409 : 503;
+    const message = code === "UNAUTHENTICATED" ? "Sessiya yoxdur, bitib və ya ləğv edilib."
+      : code === "FORBIDDEN" ? "Bu rezervasiyanı görmək icazəsi yoxdur."
+        : code === "NOT_FOUND" ? "Rezervasiya tapılmadı və ya giriş icazəsi yoxdur."
+          : "Rezervasiya xidməti hazırda əlçatan deyil.";
+    return error(status, code, message);
+  }
+}
 
 export async function handleReservationPatch(request: Request, id: string, patch: ReservationWriteOperation): Promise<Response> {
   return handleWrite(request, id, patch, parsePatch, "Rezervasiya məlumatlarını yoxlayın.");

@@ -1302,7 +1302,7 @@
       "parent_issue": 22,
       "milestone": "M3",
       "title": "Rent/deposit/refund immutable ledger",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-011.3",
         "EVE-012.3"

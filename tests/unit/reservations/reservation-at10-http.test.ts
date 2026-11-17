@@ -1,12 +1,16 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { handleReservationPatch, handleReservationTransition } from "../../../src/modules/reservations/reservation-at10-http.ts";
+import { handleReservationGet, handleReservationPatch, handleReservationTransition } from "../../../src/modules/reservations/reservation-at10-http.ts";
 
 const id = "f4000000-0000-4000-8000-000000000001";
 const key = "reservation-at10-key-0001";
 const old = process.env.APP_BASE_URL;
 process.env.APP_BASE_URL = "https://eve.test";
 test.after(() => { if (old === undefined) delete process.env.APP_BASE_URL; else process.env.APP_BASE_URL = old; });
+
+function getRequest(url = `https://eve.test/api/v1/reservations/${id}`, headers: Record<string, string> = {}) {
+  return new Request(url, { method: "GET", headers: { Host: "eve.test", Origin: "https://eve.test", ...headers } });
+}
 
 function request(path: string, body: unknown, headers: Record<string, string> = {}) {
   return new Request(`https://eve.test/api/v1/reservations/${id}${path}`, { method: path ? "POST" : "PATCH",
@@ -16,6 +20,28 @@ function dto() { return { id, property_id: "f2000000-0000-4000-8000-000000000001
   guest_name: "A Guest", guest_count: 1, check_in: "2027-05-01", check_out: "2027-05-03", check_in_time: "15:00", check_out_time: "11:00",
   status: "confirmed", total_minor: 28000, currency: "AZN", balance: { rent_received_minor: 0, rent_refunded_minor: 0, remaining_minor: 28000, overpaid_minor: 0, deposit_held_minor: 0 },
   version: 4, created_at: "2027-01-01T00:00:00.000Z", updated_at: "2027-01-02T00:00:00.000Z" }; }
+
+test("GET returns a validated private reservation and refuses cross-origin or ambiguous requests", async () => {
+  let calls = 0;
+  const get = async (gotId: string) => { calls++; assert.equal(gotId, id); return dto(); };
+  const response = await handleReservationGet(getRequest(), id, get);
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("Cache-Control"), "private, no-store");
+  assert.equal(response.headers.get("X-Robots-Tag"), "noindex, nofollow");
+  assert.equal((await response.json()).data.balance.remaining_minor, 28000);
+  assert.equal((await handleReservationGet(getRequest(undefined, { Origin: "https://attacker.test" }), id, get)).status, 403);
+  assert.equal((await handleReservationGet(getRequest(`https://eve.test/api/v1/reservations/${id}?extra=1`), id, get)).status, 400);
+  assert.equal((await handleReservationGet(getRequest(), "invalid", get)).status, 404);
+  assert.equal(calls, 1);
+});
+
+test("GET maps a hidden reservation and does not expose server details", async () => {
+  const denied = await handleReservationGet(getRequest(), id, async () => { throw Object.assign(new Error("private DB detail"), { code: "NOT_FOUND" }); });
+  assert.equal(denied.status, 404);
+  assert.equal((await denied.text()).includes("private DB detail"), false);
+  const mismatch = await handleReservationGet(getRequest(), id, async () => ({ ...dto(), id: "f4000000-0000-4000-8000-000000000099" }));
+  assert.equal(mismatch.status, 503);
+});
 
 test("PATCH enforces origin, media type, idempotency key and documented input bounds before operation", async () => {
   let calls = 0;

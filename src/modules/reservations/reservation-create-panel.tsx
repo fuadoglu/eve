@@ -32,6 +32,6 @@ export function ReservationCreatePanel({
       return body as Awaited<ReturnType<ReservationProvider["createReservation"]>>;
     },
   };
-  if (created) return <ReservationDetail reservation={created} propertyName={property.name} />;
+  if (created) return <ReservationDetail reservation={created} propertyName={property.name} defaultCustodian={defaultCustodian} />;
   return <ReservationForm property={property} defaultCustodian={defaultCustodian} contacts={[]} provider={provider} onCreated={setCreated} />;
 }

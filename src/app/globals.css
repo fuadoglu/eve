@@ -106,6 +106,21 @@ h1 { font-size: clamp(30px, 8vw, 38px); line-height: 1.15; margin: 0 0 var(--spa
 .reservation-balance { display: grid; gap: var(--space-3); padding: var(--space-4); border-radius: var(--radius); background: #f8fafc; }
 .reservation-balance h3, .reservation-note h3 { margin: 0; font-size: 18px; }
 .reservation-balance-primary { padding-top: var(--space-3); border-top: 1px solid var(--border); color: var(--ink); font-size: 18px; }
+.reservation-money-sheet, .reservation-money-history { display: grid; gap: var(--space-3); padding: var(--space-4); border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+.reservation-money-sheet > summary { min-height: 44px; display: flex; align-items: center; font-weight: 700; cursor: pointer; }
+.reservation-money-sheet form { display: grid; gap: var(--space-3); }
+.reservation-money-sheet label { display: grid; gap: var(--space-1); font-weight: 600; }
+.reservation-money-sheet input, .reservation-money-sheet select, .reservation-money-sheet textarea { width: 100%; min-height: 44px; padding: var(--space-3); border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--ink); font: inherit; }
+.reservation-money-sheet button, .reservation-money-history button { min-height: 44px; padding: var(--space-3) var(--space-4); border: 0; border-radius: var(--radius); background: var(--teal); color: white; font: inherit; font-weight: 700; }
+.reservation-money-sheet button:disabled { opacity: .65; }
+.reservation-money-history h3 { margin: 0; font-size: 18px; }
+.reservation-deposit-summary { display: grid; gap: var(--space-2); margin: 0; padding-block: var(--space-3); border-block: 1px solid var(--border); }
+.reservation-deposit-summary > div { display: flex; justify-content: space-between; gap: var(--space-3); }
+.reservation-deposit-summary dt { color: var(--muted); }
+.reservation-deposit-summary dd { margin: 0; font-weight: 700; text-align: right; }
+.reservation-money-history ul { display: grid; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
+.reservation-money-history li { display: grid; grid-template-columns: 1fr auto; gap: var(--space-1) var(--space-3); align-items: baseline; }
+.reservation-money-history time { grid-column: 1 / -1; color: var(--muted); font-size: .9rem; }
 .reservation-note p { margin: var(--space-2) 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
 @media (min-width: 560px) { .reservation-card { padding: var(--space-6); } .reservation-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (prefers-reduced-motion: no-preference) { .plus-button, .nav-link, .primary-link { transition: background-color .15s ease, color .15s ease; } }
