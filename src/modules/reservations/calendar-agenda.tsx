@@ -326,7 +326,7 @@ function MonthGrid({
           aria-pressed={selectedDate === date} className={`${styles.dayCell} ${!isCurrentMonth ? styles.outsideMonth : ""}`}
           onClick={() => onSelectDate(date)}>
           <span className={styles.dayNumber}>{dayNumber}</span>
-          {entries.length > 0 && <span aria-hidden="true" className={styles.dayCount}>{entries.length}</span>}
+          {entries.length > 0 && <><span aria-hidden="true"> </span><span aria-hidden="true" className={styles.dayCount}>{entries.length}</span></>}
           <span className={styles.dayMarkers} aria-hidden="true">
             {entries.slice(0, 2).map((entry) => <span key={`${entry.kind}-${entry.id}`} className={entry.kind === "block" ? styles.blockMarker : styles.reservationMarker} />)}
           </span>
