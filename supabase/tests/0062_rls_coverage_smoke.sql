@@ -27,7 +27,7 @@ begin
       or has_table_privilege('app_executor',c.oid,'UPDATE') is distinct from
         (c.relname in ('manager_invites','property_memberships','idempotency_keys','tasks','access_links','media_assets','link_session_rate_limits','reservations','reservation_placements','occupancy','realtor_accounts'))
       or has_table_privilege('app_executor',c.oid,'INSERT') is distinct from
-        (c.relname in ('owner_accounts','properties','trial_claims','subscriptions','rooms','inventory_items','media_bindings','media_assets','manager_invites','invite_properties','property_memberships','manager_invite_accept_context','reservations','reservation_placements','occupancy','rent_entries','realtor_accounts','outbox','audit_events','idempotency_keys','task_transition_events','task_transition_media','link_session_rate_limits','tasks','reservation_attribution_transfers','inspection_days','inspection_events'))
+        (c.relname in ('owner_accounts','properties','trial_claims','subscriptions','rooms','inventory_items','media_bindings','media_assets','manager_invites','invite_properties','property_memberships','manager_invite_accept_context','reservations','reservation_placements','occupancy','rent_entries','realtor_accounts','realtor_settlements','outbox','audit_events','idempotency_keys','task_transition_events','task_transition_media','link_session_rate_limits','tasks','reservation_attribution_transfers','inspection_days','inspection_events'))
       or has_table_privilege('app_executor',c.oid,'SELECT') is distinct from
         (c.relname in ('profiles','owner_accounts','properties','occupancy',
           'property_memberships','reservations','reservation_placements',
@@ -221,7 +221,7 @@ begin
   select count(*) into table_count
   from pg_policy p join pg_class c on c.oid=p.polrelid
   where c.relnamespace='app_private'::regnamespace;
-  if table_count <> 147 then
+  if table_count <> 148 then
     raise exception 'unexpected private table policies: %',table_count;
   end if;
   if not exists (select 1 from pg_policy where polrelid='app_private.link_session_rate_limits'::regclass
@@ -239,9 +239,10 @@ begin
         'occupancy_reservation_create','rent_entries_reservation_create',
         'media_assets_upload_create','idempotency_keys_upload_create','tasks_move_insert','reservation_attribution_move_insert','idempotency_keys_move_create',
         'realtor_accounts_reservation_create','idempotency_keys_reservation_create',
+        'realtor_settlement_command_insert',
         'outbox_reservation_create','audit_events_reservation_create','task_transition_events_internal_insert','task_transition_media_internal_insert','outbox_task_transition_create',
         'placements_at10_insert','occupancy_at10_insert','at10_idempotency_insert','at10_task_event_insert','at10_rent_insert',
-        'at10_audit_insert','at10_outbox_insert','at10_inspection_day_insert','at10_inspection_event_insert')) <> 25
+        'at10_audit_insert','at10_outbox_insert','at10_inspection_day_insert','at10_inspection_event_insert')) <> 26
      or not exists (select 1 from pg_policy where polrelid='app_private.idempotency_keys'::regclass
        and polname='idempotency_keys_reservation_update' and polcmd='w'
        and polroles=array['app_executor'::regrole::oid])

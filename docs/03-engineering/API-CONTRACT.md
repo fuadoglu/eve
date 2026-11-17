@@ -134,7 +134,7 @@ Draft guide blokları media_id saxlayır; public/scoped oxuma cavabları Rendere
 | DELETE /blocks/{id} | removeBlock | reservation.write / active | VersionInput → Ack |
 | GET /reservations/{id}/money | listRentEntries | rent.read / read_only | — → RentEntryPage |
 | POST /reservations/{id}/money | createRentEntry | rent.write / active | RentEntryCreate → RentEntry |
-| GET /reservations/{id}/realtor-balance | getRealtorBalance | rent.read / read_only | — → RealtorBalance |
+| GET /reservations/{id}/realtor-balance | getRealtorBalance | finance.read / read_only | — → RealtorBalance |
 | POST /reservations/{id}/realtor-settlements | recordRealtorSettlement | finance.manage / active | SettlementInput → RealtorSettlement; `expected_version` matches `RealtorBalance.version`, result returns `balance_version` |
 | GET /properties/{id}/finance | getFinanceSummary | finance.read / read_only | — → FinanceSummary |
 | GET /expenses | listExpenses | finance.read / read_only | — → ExpensePage |

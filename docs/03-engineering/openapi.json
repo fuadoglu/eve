@@ -2488,7 +2488,7 @@
           "R05",
           "R13"
         ],
-        "x-capability": "rent.read",
+        "x-capability": "finance.read",
         "x-entitlement": "read_only",
         "parameters": [
           {
