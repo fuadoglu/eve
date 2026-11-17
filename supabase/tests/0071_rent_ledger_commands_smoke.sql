@@ -116,7 +116,7 @@ begin
   perform api.create_rent_entry('f9400000-0000-4000-8000-000000000021',
     '{"kind":"deposit_receipt","amount_minor":200,"custodian":"manager"}', 'ledger-daily-deposit-001');
   select e.id into v_source_id from api.list_reservation_rent_entries(
-    'f9400000-0000-4000-8000-000000000021',null,null,20) e where e.kind='deposit_receipt';
+    'f9400000-0000-4000-8000-000000000021',null,null,20) e where e.kind='deposit_receipt' and e.custodian='manager';
   if v_source_id is null then raise exception 'daily manager cannot read the current deposit source'; end if;
   v_failed := false;
   begin
