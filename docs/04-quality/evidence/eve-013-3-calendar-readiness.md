@@ -1,6 +1,6 @@
 # EVE-013.3 — Təqvim readiness və interval query ölçümü
 
-Tarix: 2026-11-17 (Asia/Baku). Status: **CI və müstəqil review keçib; PR #129 draft vəziyyətindədir və merge gözləyir**. Bu package ledger-də Done sayılmır. Parent issue: [#21](https://github.com/fuadoglu/eve/issues/21).
+Tarix: 2026-11-17 (Asia/Baku). Status: **EVE-013.3 component scope merged və `done`**. Parent issue: [#21](https://github.com/fuadoglu/eve/issues/21).
 
 ## Scope
 
@@ -26,6 +26,12 @@ Tarix: 2026-11-17 (Asia/Baku). Status: **CI və müstəqil review keçib; PR #12
 - `node scripts/docs-check.mjs`, `node scripts/verify-contracts.mjs`, `python scripts/validate-schemas.py` (207 schemas; 14 positive, 23 negative examples), `python scripts/verify-storage-config.py`, `node scripts/test-prototype.mjs` (71 assertions), `node --check scripts/test-reservation-route-http.mjs`, and `git diff --check`: passed.
 - Independent read-only review found no remaining code blocker after the populated-state axe/name/pressed-state checks were added. The reviewer did not execute tests.
 - Local authenticated browser-to-PostgreSQL and PostgreSQL 17 perf smoke were **not run locally** because the Docker daemon is unavailable; their passing result is from CI run #44147195163 only.
+
+## Merge closeout
+
+- Replacement PR [#129](https://github.com/fuadoglu/eve/pull/129) was squash-merged as `3d3b664ade4765165351eb4704a2a0dbcb494661` on 2026-11-17. Its final head CI [#44148696058](https://github.com/fuadoglu/eve/actions/runs/44148696058) and merged-main CI [#44150775623](https://github.com/fuadoglu/eve/actions/runs/44150775623) passed `docs`, `sql_schema`, and `supabase_local`.
+- The 5,000-row/30-day synthetic query measured p95 25.62 ms; browser and SQL evidence remain the CI scopes described above.
+- EVE-013.3 is now `done` for its component scope. Ledger: 46/90 (51.1%). Real device and human screen-reader checks, hosted performance/migration, backup/restore, and production gates remain unverified; this does not close parent #21 or claim production readiness.
 
 ## Evidence boundary
 

@@ -1271,7 +1271,7 @@
       "parent_issue": 21,
       "milestone": "M2",
       "title": "Readiness və interval query ölçümü",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-013.2"
       ],
@@ -1288,7 +1288,7 @@
         "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
         "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
       ],
-      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "verification": "PR #129 squash commit 3d3b664ade4765165351eb4704a2a0dbcb494661; final-head CI #44148696058 və merged-main CI #44150775623 `docs`, `sql_schema`, `supabase_local` keçdi. Müstəqil review blocker tapmadı (test işlətməyib). EVE-013.3 evidence: synthetic PostgreSQL 17 5,000 reservation / 30-day query p95 25.62 ms; authenticated synthetic browser-to-PostgreSQL agenda/month, keyboard, accessibility tree, axe və viewport checks.",
       "reviewer_role": "integration_reviewer",
       "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
       "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
