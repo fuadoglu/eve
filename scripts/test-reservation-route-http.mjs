@@ -218,7 +218,11 @@ try {
   assert.equal(conflictResponse.status(), 409);
 
   await page.goto(`${baseUrl}/calendar`, { waitUntil: "networkidle" });
-  await page.getByRole("group", { name: /təqvimi/i }).waitFor();
+  try { await page.getByRole("group", { name: /təqvimi/i }).waitFor({ timeout: 15000 }); }
+  catch {
+    const visibleText = (await page.locator("body").innerText()).replace(/\s+/g, " ").trim();
+    throw new Error(`calendar did not reach the named calendar group: ${visibleText.slice(0, 500)}`);
+  }
   const calendarLoad = page.waitForResponse((response) =>
     response.url().startsWith(`${baseUrl}/api/v1/calendar?`) && response.request().method() === "GET");
   await page.getByRole("button", { name: "Növbəti ay" }).click();
