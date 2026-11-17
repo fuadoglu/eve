@@ -2,7 +2,7 @@
 
 ## Scope and status
 
-Status: `in_progress`. Draft PR #122 contains implementation commit `cf11992`, allowlist fix `85cae2b`, and evidence commit `dd39551`; placement-history, same-owner move, date/price patch, lifecycle transition RPCs, and authenticated HTTP routes are in the proposed package increment. PR CI run #43965109406 passed all three jobs on `dd39551`. A full-scope review then identified a zero-price confirmation contract gap; the working tree now corrects it in SQL, HTTP parsing, OpenAPI, API-CONTRACT and regression coverage. The package is not closed: the correction still needs fresh independent review, commit, CI and merged-main evidence.
+Status: `in_progress`. Draft PR #122 contains implementation commit `cf11992`, allowlist fix `85cae2b`, evidence commit `dd39551`, and correction commit `07223fb`; placement-history, same-owner move, date/price patch, lifecycle transition RPCs, and authenticated HTTP routes are in the proposed package increment. PR CI run #44032973544 passed all three jobs on `07223fb`. Full-scope read-only review found and the correction closed the zero-price consent contract gap across SQL, HTTP parsing, OpenAPI, API-CONTRACT and regression coverage. The package is not closed: PR merge and merged-main CI evidence remain required.
 
 Normative references: `docs/03-engineering/DATA-MODEL.md` §§4–5, `docs/04-quality/ACCEPTANCE.md` AT10, and `docs/05-delivery/work-packages.json` EVE-012.3.
 
@@ -45,11 +45,11 @@ Normative references: `docs/03-engineering/DATA-MODEL.md` §§4–5, `docs/04-qu
 
 Read-only review of PR head `dd39551` identified that `release_remaining_days` could set a zero total without the explicitly required `free_stay=true`; it also found that `free_stay=true` was not rejected for a non-zero total. The correction aligns the SQL RPC, HTTP request parser, OpenAPI schema and API-CONTRACT: the field is valid only for `release_remaining_days` with `new_total_minor=0`, and must be true. The first re-review found that OpenAPI still allowed `free_stay=false`; the schema now declares `const: true`. The SQL smoke checks the rejected zero-without-confirmation and positive-with-confirmation cases plus successful confirmed-zero case on an isolated fixture.
 
-Current local evidence on the final reviewed working tree: reservation unit suite 37/37; `tsc --noEmit`; docs/contracts/schema/prototype/storage validators; Next.js production build; full migration chain and `0068`, `0062_rls_coverage_smoke.sql`, `0062_api_surface_smoke.sql` on isolated synthetic PostgreSQL 16.13 all passed. The schema validator includes the positive/negative zero-price confirmation contract examples. Independent read-only review found no remaining implementation blocker; CI on the correction, merge and merged-main CI remain pending. The earlier PR CI pass on `dd39551` does not cover this correction.
+Current local evidence on the final reviewed working tree: reservation unit suite 37/37; `tsc --noEmit`; docs/contracts/schema/prototype/storage validators; Next.js production build; full migration chain and `0068`, `0062_rls_coverage_smoke.sql`, `0062_api_surface_smoke.sql` on isolated synthetic PostgreSQL 16.13 all passed. The schema validator includes the positive/negative zero-price confirmation contract examples. Independent read-only review found no remaining implementation blocker; PR CI run [#44032973544](https://github.com/fuadoglu/eve/actions/runs/44032973544) passed `docs`, PostgreSQL 17 `sql_schema`, and fresh synthetic Supabase `supabase_local` on `07223fb`. PR merge and merged-main CI remain pending. Earlier CI runs on `dd39551` do not cover this correction.
 
 ## Explicitly open
 
-- Push the reviewed zero-price confirmation correction, wait for all PR CI jobs, merge PR #122 under repository rules, then record merged-main CI.
+- Merge PR #122 under repository rules, then record merged-main CI.
 - EVE-012.3 acceptance, parent #20, and package ledger closure remain open until PR/review/CI/main-branch evidence is complete.
 
 This package is not production-ready evidence and does not claim any hosted database or production change.
