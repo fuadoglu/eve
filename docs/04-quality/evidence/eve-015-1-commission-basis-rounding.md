@@ -13,8 +13,12 @@ Adds a targeted case to the existing synthetic PostgreSQL reservation-create smo
 
 ## Verification state
 
-Final-head CI and merged-main CI must pass the PostgreSQL 17 `sql_schema` job before the package is closed. The smoke uses synthetic records and is not hosted or production evidence.
+PR #136 was squash-merged as `f6228e6d7479d585abe2ce72751793d8dee46d32`. Final-head CI [#44161080157](https://github.com/fuadoglu/eve/actions/runs/44161080157) and merged-main CI [#44161907770](https://github.com/fuadoglu/eve/actions/runs/44161907770) passed `docs`, PostgreSQL 17 `sql_schema`, and synthetic `supabase_local`. Independent review found no blocker and did not run tests. The smoke uses synthetic records and is not hosted or production evidence.
 
 ## Limitations
 
 This package checks commission calculation at creation. It does not cover realtor settlements, transferred/offset amounts, net direction, cancellation review, provider behavior, or production readiness.
+
+## Package closeout
+
+EVE-015.1 is `done` for the documented commission basis and rounding acceptance. Settlement behavior remains in EVE-015.2/.3; hosted/production evidence and release gates remain open.
