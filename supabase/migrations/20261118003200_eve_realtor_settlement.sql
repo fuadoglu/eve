@@ -35,9 +35,11 @@ end;
 $$;
 revoke all on function app_private.bump_realtor_balance_version() from public,anon,authenticated;
 grant execute on function app_private.bump_realtor_balance_version() to app_executor;
+grant usage,create on schema app_private to app_executor;
 grant app_executor to current_user with set true, inherit false;
 alter function app_private.bump_realtor_balance_version() owner to app_executor;
 revoke app_executor from current_user;
+revoke create on schema app_private from app_executor;
 create trigger rent_entries_bump_realtor_balance_version
   after insert on app_private.rent_entries
   for each row execute function app_private.bump_realtor_balance_version();
