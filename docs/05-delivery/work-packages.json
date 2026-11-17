@@ -1230,7 +1230,7 @@
       "parent_issue": 21,
       "milestone": "M2",
       "title": "Agenda/ay və ev/sahib filtrləri",
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "EVE-013.1"
       ],
