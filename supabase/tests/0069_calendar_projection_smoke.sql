@@ -78,19 +78,25 @@ set local request.jwt.claims = '{"sub":"f9000000-0000-0000-0000-000000000002","s
 do $$
 declare
   v_calendar jsonb;
-  v_options record;
+  v_option_count integer;
+  v_owner_name text;
+  v_property_name text;
+  v_area text;
   v_reservation_before jsonb;
   v_expired_hold_before jsonb;
   v_blocks_before jsonb;
   v_failed boolean;
 begin
-  select * into v_options from api.list_calendar_property_options(null,100)
+  select count(*),max(owner_display_name)::text,max(name),max(area)
+    into v_option_count,v_owner_name,v_property_name,v_area
+  from api.list_calendar_property_options(null,100)
   where property_id='f9300000-0000-4000-8000-000000000001';
-  if v_options.owner_display_name<>'Calendar owner A'
-     or v_options.name<>'Calendar A' or v_options.area<>'Baku'
+  if v_option_count<>1 or v_owner_name is distinct from 'Calendar owner A'
+     or v_property_name is distinct from 'Calendar A' or v_area is distinct from 'Baku'
      or exists(select 1 from api.list_calendar_property_options(null,100)
        where property_id='f9300000-0000-4000-8000-000000000002') then
-    raise exception 'owner option projection leaked or omitted scoped display name';
+    raise exception 'owner option projection mismatch: count %, owner %, name %, area %',
+      v_option_count,v_owner_name,v_property_name,v_area;
   end if;
 
   v_reservation_before := api.get_reservation('f9400000-0000-4000-8000-000000000001');
