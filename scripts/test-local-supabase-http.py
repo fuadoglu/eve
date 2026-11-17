@@ -122,7 +122,9 @@ def safe_error_detail(status, data):
     return f"{status}:{type(data).__name__}:{str(data)[:160]}"
 
 
-def rpc(name, actor, key, arguments, *, role="authenticated", bearer=None):
+def rpc(name, actor, key, arguments, *, role="authenticated", bearer=None, session_id=None):
+    if bearer is None:
+        bearer = jwt(actor, key, role, session_id=session_id)
     status, body = request("/rest/v1/rpc/" + name, actor=actor, key=key,
                            role=role, bearer=bearer, payload=arguments)
     return status, json.loads(body)
@@ -169,6 +171,14 @@ def main():
         sql(f"delete from app_private.profiles where user_id in ('{session_a}','{session_b}'); "
             f"delete from auth.sessions where user_id in ('{session_a}','{session_b}'); "
             f"delete from auth.users where id in ('{session_a}','{session_b}');")
+
+    calendar_session_id = str(uuid.uuid4())
+    sql(f"insert into auth.users(id) values ('{OWNER_A}') on conflict (id) do nothing; "
+        f"insert into auth.sessions(id,user_id,created_at) values ('{calendar_session_id}','{OWNER_A}',now());")
+    atexit.register(lambda: sql(
+        f"delete from auth.sessions where id='{calendar_session_id}'; "
+        f"delete from auth.users where id='{OWNER_A}' and not exists "
+        f"(select 1 from auth.sessions where user_id='{OWNER_A}');"))
 
     capability = lambda property_id, name: {
         "p_property_id": property_id, "p_capability": name,
@@ -287,11 +297,13 @@ def main():
            and all(set(row) == {"property_id", "owner_account_id", "name", "area",
                                 "readiness", "version"} for row in data), str(status))
     status, options = rpc("list_calendar_property_options", OWNER_A, key,
-                          {"p_after_id": None, "p_page_size": 100})
+                          {"p_after_id": None, "p_page_size": 100},
+                          session_id=calendar_session_id)
     verify("AT04 calendar owner-name projection is scoped", status == 200
            and {row["property_id"] for row in options} == {PROPERTY_A1, PROPERTY_A2}
            and all(set(row) == {"property_id", "owner_account_id", "owner_display_name", "name", "area"}
-                   and row["owner_display_name"] == "Sahib" for row in options), str(status))
+                   and row["owner_display_name"] == "Sahib" for row in options),
+           safe_error_detail(status, options))
     status, data = rpc("list_visible_property_summaries", OWNER_A, key,
                        {"p_after_id": PROPERTY_A1, "p_page_size": 100})
     verify("AT04 owner cursor page remains tenant-scoped",
@@ -299,7 +311,8 @@ def main():
            and PROPERTY_B1 not in {row["property_id"] for row in data}, str(status))
     status, calendar = rpc("get_calendar", OWNER_A, key,
                            {"p_from": "2027-06-01", "p_to": "2027-07-01",
-                            "p_property_ids": [PROPERTY_A2]})
+                            "p_property_ids": [PROPERTY_A2]},
+                           session_id=calendar_session_id)
     verify("AT04 calendar RPC accepts UUID-array scope", status == 200
            and calendar["from"] == "2027-06-01" and calendar["to"] == "2027-07-01"
            and len(calendar["reservations"]) == 1
@@ -307,7 +320,8 @@ def main():
            and calendar["blocks"] == [], str(status))
     status, denied = rpc("get_calendar", OWNER_A, key,
                          {"p_from": "2027-06-01", "p_to": "2027-07-01",
-                          "p_property_ids": [PROPERTY_A2, PROPERTY_B1]})
+                          "p_property_ids": [PROPERTY_A2, PROPERTY_B1]},
+                         session_id=calendar_session_id)
     verify("AT04 mixed calendar scope rejected atomically", status in (400, 404)
            and isinstance(denied, dict) and denied.get("code") == "P0002", str(status))
     status, _ = request("/rest/v1/rpc/list_visible_property_summaries",
