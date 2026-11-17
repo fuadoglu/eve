@@ -323,12 +323,13 @@ set local request.jwt.claim.role='service_role';
 select api.apply_verified_billing_order_for_server('{order_id}');
 \\echo BILLING_ORDER_APPLIED
 """
-    first = subprocess.Popen(
-        psql_args(), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-        text=True, bufsize=1,
-    )
+    first: subprocess.Popen[str] | None = None
     second: subprocess.Popen[str] | None = None
     try:
+        first = subprocess.Popen(
+            psql_args(), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            text=True, bufsize=1,
+        )
         assert first.stdin and first.stdout and first.stderr
         first.stdin.write(apply_sql)
         first.stdin.flush()
@@ -393,6 +394,164 @@ select api.apply_verified_billing_order_for_server('{order_id}');
             commit;
             """
         )
+
+
+def run_realtor_settlement_balance_race() -> None:
+    """Two settlements using one aggregate version produce one commit and one stale conflict."""
+    owner_user, session_id, account, property_id, contact_id, reservation_id, placement_id = (
+        str(uuid.uuid4()) for _ in range(7)
+    )
+    cleanup = f"""
+        begin;
+        set local session_replication_role=replica;
+        delete from app_private.realtor_settlements where reservation_id='{reservation_id}';
+        delete from app_private.rent_entries where reservation_id='{reservation_id}';
+        delete from app_private.realtor_accounts where reservation_id='{reservation_id}';
+        delete from app_private.reservation_placements where reservation_id='{reservation_id}';
+        delete from app_private.reservations where id='{reservation_id}';
+        delete from app_private.contact_properties where property_id='{property_id}';
+        delete from app_private.contacts where id='{contact_id}';
+        delete from app_private.subscriptions where property_id='{property_id}';
+        delete from app_private.trial_claims where property_id='{property_id}';
+        delete from app_private.audit_events where property_id='{property_id}';
+        delete from app_private.properties where id='{property_id}';
+        delete from app_private.owner_accounts where id='{account}';
+        delete from auth.sessions where id='{session_id}';
+        delete from auth.users where id='{owner_user}';
+        commit;
+        """
+    psql(
+        f"""
+        begin;
+        insert into auth.users(id) values ('{owner_user}');
+        insert into auth.sessions(id,user_id,created_at) values ('{session_id}','{owner_user}',statement_timestamp());
+        insert into app_private.owner_accounts(id,owner_user_id) values ('{account}','{owner_user}');
+        insert into app_private.properties(id,owner_account_id,name,area)
+        values ('{property_id}','{account}','Settlement race fixture','Synthetic');
+        insert into app_private.subscriptions(owner_account_id,property_id,state,current_end)
+        values ('{account}','{property_id}','trialing',statement_timestamp()+interval '7 days');
+        insert into app_private.contacts(id,owner_account_id,name,phone,service_type)
+        values ('{contact_id}','{account}','Synthetic realtor','+994501112233','realtor');
+        insert into app_private.contact_properties(owner_account_id,property_id,contact_id)
+        values ('{account}','{property_id}','{contact_id}');
+        set constraints all deferred;
+        insert into app_private.reservations(id,owner_account_id,property_id,current_placement_id,guest_name,
+          check_in,check_out,check_in_time,check_out_time,guest_count,state,total_minor)
+        values ('{reservation_id}','{account}','{property_id}','{placement_id}','Settlement race guest',
+          '2040-08-01','2040-08-03','15:00','11:00',1,'confirmed',10000);
+        insert into app_private.reservation_placements(id,owner_account_id,property_id,reservation_id,placement_no,
+          check_in_snapshot,check_out_snapshot,effective_from,created_by)
+        values ('{placement_id}','{account}','{property_id}','{reservation_id}',1,
+          '2040-08-01','2040-08-03',statement_timestamp(),'{owner_user}');
+        insert into app_private.realtor_accounts(owner_account_id,reservation_id,contact_id,commission_kind,
+          fixed_minor,percentage_basis_points,basis_minor,earned_minor)
+        values ('{account}','{reservation_id}','{contact_id}','fixed',3000,null,10000,3000);
+        set constraints all immediate;
+        commit;
+        """
+    )
+    claims = f'{{"sub":"{owner_user}","session_id":"{session_id}","iat":1800000000}}'
+    try:
+        psql(
+            f"""
+            begin;
+            set local role authenticated;
+            set local request.jwt.claims='{claims}';
+            select api.create_rent_entry('{reservation_id}',
+              '{{"kind":"rent_receipt","amount_minor":10000,"custodian":"realtor","contact_id":"{contact_id}"}}',
+              'settlement-race-rent-{reservation_id}');
+            commit;
+            """
+        )
+    except Exception:
+        psql(cleanup)
+        raise
+
+    settlement_sql = f"""
+begin;
+set local role authenticated;
+set local request.jwt.claims='{claims}';
+select api.record_realtor_settlement('{reservation_id}',
+  '{{"expected_version":2,"contact_id":"{contact_id}","kind":"realtor_to_owner","amount_minor":7000}}',
+  '{{idempotency_key}}');
+\\echo REALTOR_SETTLEMENT_RECORDED
+"""
+    first: subprocess.Popen[str] | None = None
+    second: subprocess.Popen[str] | None = None
+    try:
+        first = subprocess.Popen(
+            psql_args(), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            text=True, bufsize=1,
+        )
+        assert first.stdin and first.stdout and first.stderr
+        first.stdin.write(settlement_sql.replace(
+            "{idempotency_key}", f"settlement-race-a-{reservation_id}", 1
+        ))
+        first.stdin.flush()
+        marker_seen, first_output = wait_for_marker(first.stdout, "REALTOR_SETTLEMENT_RECORDED")
+        if not marker_seen:
+            raise RuntimeError(f"first realtor settlement did not reach uncommitted write: {first_output.strip()}")
+
+        second = subprocess.Popen(
+            psql_args(), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            text=True, bufsize=1,
+        )
+        assert second.stdin
+        second.stdin.write(settlement_sql.replace(
+            "{idempotency_key}", f"settlement-race-b-{reservation_id}", 1
+        ))
+        second.stdin.close()
+        wait_for_lock_waiters(reservation_id, 1)
+        first.stdin.write("commit;\n")
+        first.stdin.close()
+        first_stdout = first.stdout.read()
+        first_stderr = first.stderr.read()
+        first_code = first.wait(timeout=20)
+        second_stdout = second.stdout.read() if second.stdout else ""
+        second_stderr = second.stderr.read() if second.stderr else ""
+        second_code = second.wait(timeout=20)
+        if first_code != 0 or "REALTOR_SETTLEMENT_RECORDED" not in first_output:
+            raise RuntimeError(
+                f"winning realtor settlement failed: exit={first_code}, stderr={first_stderr.strip()}, "
+                f"stdout={(first_output + first_stdout).strip()}"
+            )
+        if second_code == 0 or "stale_realtor_balance" not in second_stderr:
+            raise RuntimeError(
+                "concurrent stale settlement did not conflict: "
+                f"exit={second_code}, stdout={second_stdout.strip()}, stderr={second_stderr.strip()}"
+            )
+
+        outcome = psql(
+            f"""
+            begin;
+            set local role authenticated;
+            set local request.jwt.claims='{claims}';
+            select (api.get_realtor_balance('{reservation_id}')->>'version')||':'||
+              (api.get_realtor_balance('{reservation_id}')->>'collected_minor')||':'||
+              (api.get_realtor_balance('{reservation_id}')->>'transferred_minor')||':'||
+              (api.get_realtor_balance('{reservation_id}')->>'commission_minor')||':'||
+              (api.get_realtor_balance('{reservation_id}')->>'owner_due_minor')||':'||
+              (api.get_realtor_balance('{reservation_id}')->>'realtor_due_minor');
+            commit;
+            """
+        ).stdout.strip()
+        events = psql(
+            f"select count(*) from app_private.realtor_settlements where reservation_id='{reservation_id}';"
+        ).stdout.strip()
+        if outcome != "3:10000:7000:3000:0:0" or events != "1":
+            raise RuntimeError(
+                f"realtor balance race invariant mismatch: balance={outcome}, committed_settlements={events}"
+            )
+    finally:
+        for process in (first, second):
+            if process is not None and process.poll() is None:
+                process.terminate()
+                try:
+                    process.wait(timeout=3)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    process.wait(timeout=3)
+        psql(cleanup)
 
 
 def run_first_trial_race(owner_user: str) -> None:
@@ -569,6 +728,7 @@ commit;
         )
         run_first_trial_race(trial_owner)
         run_verified_billing_order_race()
+        run_realtor_settlement_balance_race()
     finally:
         psql(cleanup)
         psql(
@@ -587,6 +747,7 @@ commit;
     print("PASS hold-expiry retry: repeated catch-up is idempotent")
     print("PASS first-trial concurrency: 2 concurrent property creates, 1 trial claim, 1 trialing, 1 draft")
     print("PASS billing concurrency: concurrent verified callbacks create one paid period and replay the winner")
+    print("PASS realtor settlement concurrency: one same-version transfer commits, one gets stale balance conflict")
     print("LIMIT synthetic PostgreSQL only; no booking-create/idempotency API, public departure query, hosted DB, or production evidence")
     return 0
 
