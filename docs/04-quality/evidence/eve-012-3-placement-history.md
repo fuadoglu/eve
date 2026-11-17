@@ -49,7 +49,7 @@ Final local evidence on the merged implementation: reservation unit suite 37/37;
 
 ## Explicitly open
 
-- EVE-012.3 component acceptance is closed by PR #122, its independent reviews, final PR CI, and merged-main CI. Parent issue #20 is closed separately after the status/ledger closeout PR is merged.
+- EVE-012.3 component acceptance is closed by PR #122, its independent reviews, final PR CI, and merged-main CI. Parent issue #20 was closed after status/ledger closeout PR #123 merged and its main CI passed.
 
 ## Scope limits
 
