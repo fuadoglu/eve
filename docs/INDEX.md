@@ -55,6 +55,7 @@ Sənəd bazası: 2026-11-10, Asia/Baku. Dil: Azərbaycan dili. Status: **icra ü
 | [Prototip brauzer sübutu](04-quality/evidence/eve-002-1-2-browser.md) | EVE-002.1/.2 üçün 360 px Chrome, klaviatura və flow yoxlaması |
 | [Rent/deposit/refund ledger sübutu](04-quality/evidence/eve-014-1-rent-ledger.md) | EVE-014.1 immutable ledger, CI PostgreSQL/Supabase və review nəticəsi |
 | [Pul sheet sübutu](04-quality/evidence/eve-014-2-money-sheet.md) | EVE-014.2 F05 UI, server balance, refund source limit və test sərhədləri |
+| [Refund/depozit acceptance sübutu](04-quality/evidence/eve-014-3-refund-acceptance.md) | EVE-014.3 AT11–12 refund replay/limit, integer qəpik və deposit/inspection sərhədi |
 | [Payriff adapter sərhədi sübutu](04-quality/evidence/eve-027-1-payriff-adapter.md) | EVE-027.1 daxili checkout adapteri; provider wire contract və sandbox açıq qalır |
 | [Dəqiq form axınları](02-design/FLOW-SPEC.md) | Sahə, default, düymə, xəta və fallback |
 | [OpenAPI 3.1 JSON](03-engineering/openapi.json) | Tam request/response müqaviləsi |
