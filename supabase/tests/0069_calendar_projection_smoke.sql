@@ -18,11 +18,13 @@ end $$;
 insert into auth.users(id) values
   ('f9000000-0000-0000-0000-000000000001'),
   ('f9000000-0000-0000-0000-000000000002'),
-  ('f9000000-0000-0000-0000-000000000003');
+  ('f9000000-0000-0000-0000-000000000003'),
+  ('f9000000-0000-0000-0000-000000000004');
 insert into auth.sessions(id,user_id,created_at) values
   ('f9100000-0000-0000-0000-000000000001','f9000000-0000-0000-0000-000000000001',now()-interval '1 hour'),
   ('f9100000-0000-0000-0000-000000000002','f9000000-0000-0000-0000-000000000002',now()-interval '1 hour'),
-  ('f9100000-0000-0000-0000-000000000003','f9000000-0000-0000-0000-000000000003',now()-interval '1 hour');
+  ('f9100000-0000-0000-0000-000000000003','f9000000-0000-0000-0000-000000000003',now()-interval '1 hour'),
+  ('f9100000-0000-0000-0000-000000000004','f9000000-0000-0000-0000-000000000004',now()-interval '1 hour');
 insert into app_private.profiles(user_id,display_name) values
   ('f9000000-0000-0000-0000-000000000001','Calendar owner A'),
   ('f9000000-0000-0000-0000-000000000002','Calendar manager'),
@@ -90,6 +92,14 @@ declare
   v_blocks_before jsonb;
   v_failed boolean;
 begin
+  perform set_config('request.jwt.claims',
+    '{"sub":"f9000000-0000-0000-0000-000000000004","session_id":"f9100000-0000-0000-0000-000000000004","iat":1800000000}',true);
+  if exists(select 1 from api.list_calendar_property_options(null,100)) then
+    raise exception 'calendar property options returned data to an actor without property membership';
+  end if;
+
+  perform set_config('request.jwt.claims',
+    '{"sub":"f9000000-0000-0000-0000-000000000002","session_id":"f9100000-0000-0000-0000-000000000002","iat":1800000000}',true);
   select count(*),max(owner_display_name)::text,max(name),max(area)
     into v_option_count,v_owner_name,v_property_name,v_area
   from api.list_calendar_property_options(null,100)
