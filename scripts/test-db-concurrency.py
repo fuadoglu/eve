@@ -476,12 +476,13 @@ select api.record_realtor_settlement('{reservation_id}',
   '{{idempotency_key}}');
 \\echo REALTOR_SETTLEMENT_RECORDED
 """
-    first = subprocess.Popen(
-        psql_args(), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-        text=True, bufsize=1,
-    )
+    first: subprocess.Popen[str] | None = None
     second: subprocess.Popen[str] | None = None
     try:
+        first = subprocess.Popen(
+            psql_args(), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            text=True, bufsize=1,
+        )
         assert first.stdin and first.stdout and first.stderr
         first.stdin.write(settlement_sql.replace(
             "{idempotency_key}", f"settlement-race-a-{reservation_id}", 1

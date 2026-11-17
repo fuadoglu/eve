@@ -23,10 +23,10 @@ The test covers the EVE-015.3 acceptance in `docs/05-delivery/work-packages.json
 
 ## Implementation and verification
 
-- `supabase/tests/0072_realtor_settlement_smoke.sql` — added exact AT13 initial due assertion and the alternative full-transfer case with rent-entry count comparison. Execution pending CI PostgreSQL 17.
-- `scripts/test-db-concurrency.py` — added a synthetic isolated owner/reservation fixture and synchronized two-session settlement race. Python syntax and `git diff --check` pass. Execution pending PostgreSQL 17 CI.
+- `supabase/tests/0072_realtor_settlement_smoke.sql` — added exact AT13 initial due assertion and the alternative full-transfer case with rent-entry count comparison. PostgreSQL 17 execution passed in CI run #44177467308.
+- `scripts/test-db-concurrency.py` — added a synthetic isolated owner/reservation fixture and synchronized two-session settlement race. Python syntax and `git diff --check` pass; the race passed in PostgreSQL 17 CI run #44177467308.
 - Local runtime: Node `v24.5.0` is below the repository-pinned Node `24.22.2`; pinned pnpm `12.18.0` is unavailable in this worktree runtime. Local Docker was not reported by the attempted version command. No local database result is claimed.
-- Independent read-only review found no AT13/D44 acceptance blocker and identified fixture cleanup edge cases. Setup is transactional; cleanup now covers receipt failures and subprocess execution, including failure to start the first race process. The reviewer did not run tests.
+- Independent read-only review found no AT13/D44 acceptance blocker and identified fixture cleanup edge cases. Setup is transactional; cleanup now covers receipt failures and subprocess execution, including failure to start either race process. The reviewer did not run tests.
 - `node scripts/docs-check.mjs` — PASS; `node scripts/verify-contracts.mjs` — PASS; Python schema validator — PASS (207 schemas, 14 positive and 23 negative examples); `node scripts/test-prototype.mjs` — PASS (71 synthetic assertions); `python3 -m py_compile scripts/test-db-concurrency.py` — PASS; `git diff --check` — PASS.
 - PR-head CI [#44177467308](https://github.com/fuadoglu/eve/actions/runs/44177467308) passed `docs`, PostgreSQL 17 `sql_schema` (including migration 032, SQL smoke 0072, and `scripts/test-db-concurrency.py`), and fresh synthetic `supabase_local`.
 - The two earlier CI attempts exposed a JSON formatting `KeyError` and a literal `\\n` in the test harness. Both were corrected; the final-head CI run above passed.
