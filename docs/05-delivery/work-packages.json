@@ -1129,7 +1129,7 @@
       "parent_issue": 20,
       "milestone": "M2",
       "title": "Placement tarixçə və permission regressiyası",
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "EVE-012.2"
       ],
