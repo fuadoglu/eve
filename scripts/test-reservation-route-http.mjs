@@ -218,7 +218,7 @@ try {
   assert.equal(conflictResponse.status(), 409);
 
   await page.goto(`${baseUrl}/calendar`, { waitUntil: "networkidle" });
-  await page.locator(".monthGrid").waitFor();
+  await page.getByRole("group", { name: /təqvimi/i }).waitFor();
   const calendarLoad = page.waitForResponse((response) =>
     response.url().startsWith(`${baseUrl}/api/v1/calendar?`) && response.request().method() === "GET");
   await page.getByRole("button", { name: "Növbəti ay" }).click();
@@ -227,12 +227,12 @@ try {
   const calendarBody = await calendarResponse.json();
   assert.equal(calendarBody.data.reservations.some((reservation) => reservation.id === firstEnvelope.data.id), true);
   await page.getByRole("button", { name: "Agenda" }).click();
-  await page.locator(".entryCard strong").getByText("Synthetic guest", { exact: true }).waitFor();
+  await page.getByText("Synthetic guest", { exact: true }).waitFor();
   const agendaAudit = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
   assert.deepEqual(agendaAudit.violations.map((violation) => violation.id), [],
     `populated calendar agenda axe violations: ${agendaAudit.violations.map((violation) => `${violation.id}:${violation.nodes.length}`).join(",")}`);
   await page.getByRole("button", { name: "Ay" }).click();
-  const markedDay = page.locator('.dayCell[aria-label*="1 qeyd"]').first();
+  const markedDay = page.getByRole("button", { name: /1 qeyd/ }).first();
   await markedDay.waitFor();
   const markedDayName = await markedDay.getAttribute("aria-label");
   assert.ok(markedDayName?.includes("1 qeyd"), "reservation day must expose an accessible count in its name");
@@ -255,8 +255,8 @@ try {
     const metrics = await page.evaluate(() => ({
       documentWidth: document.documentElement.scrollWidth,
       bodyWidth: document.body.scrollWidth,
-      smallestDay: Math.min(...[...document.querySelectorAll(".dayCell")].map((node) => node.getBoundingClientRect().width)),
-      smallestDayHeight: Math.min(...[...document.querySelectorAll(".dayCell")].map((node) => node.getBoundingClientRect().height)),
+      smallestDay: Math.min(...[...document.querySelectorAll('[role="group"][aria-label*="təqvimi"] button')].map((node) => node.getBoundingClientRect().width)),
+      smallestDayHeight: Math.min(...[...document.querySelectorAll('[role="group"][aria-label*="təqvimi"] button')].map((node) => node.getBoundingClientRect().height)),
     }));
     assert.ok(metrics.documentWidth <= width && metrics.bodyWidth <= width,
       `calendar horizontal overflow at ${width}px: ${JSON.stringify(metrics)}`);
