@@ -83,6 +83,10 @@ begin
     'settlement-rent-receipt-0001');
   if (api.get_realtor_balance('fa500000-0000-4000-8000-000000000001')->>'version')::int<>3 then
     raise exception 'realtor receipt did not increment aggregate version'; end if;
+  b:=api.get_realtor_balance('fa500000-0000-4000-8000-000000000001');
+  if (b->>'collected_minor')::bigint<>10000 or (b->>'commission_minor')::bigint<>3000
+    or (b->>'owner_due_minor')::bigint<>7000 or (b->>'realtor_due_minor')::bigint<>0 then
+    raise exception 'AT13 10000 collected / 3000 earned direction mismatch: %',b; end if;
   refund:=api.create_rent_entry('fa500000-0000-4000-8000-000000000001',jsonb_build_object(
     'kind','rent_refund','amount_minor',1,'custodian','realtor','contact_id','fa400000-0000-0000-0000-000000000001',
     'original_id',receipt->>'id'),'settlement-rent-refund-0001');
@@ -146,6 +150,47 @@ begin
   select count(*) into after_receipts from api.list_reservation_rent_entries(
     'fa500000-0000-4000-8000-000000000001',null,null,100);
   if before_receipts<>after_receipts then raise exception 'settlement created a rent entry'; end if;
+end $$;
+
+-- AT13 alternative: transferring all collected rent leaves only the commission due to the realtor.
+reset role;
+insert into app_private.reservations(id,owner_account_id,property_id,current_placement_id,guest_name,check_in,check_out,
+  check_in_time,check_out_time,guest_count,state,total_minor)
+values ('fa500000-0000-4000-8000-000000000002','fa200000-0000-0000-0000-000000000001',
+  'fa300000-0000-4000-8000-000000000001','fa600000-0000-0000-0000-000000000002','Alternative synthetic guest',
+  '2099-03-05','2099-03-08','15:00','11:00',1,'confirmed',10000);
+insert into app_private.reservation_placements(id,owner_account_id,property_id,reservation_id,placement_no,
+  check_in_snapshot,check_out_snapshot,effective_from,created_by)
+values ('fa600000-0000-0000-0000-000000000002','fa200000-0000-0000-0000-000000000001',
+  'fa300000-0000-4000-8000-000000000001','fa500000-0000-4000-8000-000000000002',1,
+  '2099-03-05','2099-03-08',now(),'fa000000-0000-0000-0000-000000000001');
+insert into app_private.realtor_accounts(owner_account_id,reservation_id,contact_id,commission_kind,
+  fixed_minor,percentage_basis_points,basis_minor,earned_minor)
+values ('fa200000-0000-0000-0000-000000000001','fa500000-0000-4000-8000-000000000002',
+  'fa400000-0000-0000-0000-000000000001','fixed',3000,null,10000,3000);
+set local role authenticated;
+set local request.jwt.claims='{"sub":"fa000000-0000-0000-0000-000000000001","session_id":"fa100000-0000-0000-0000-000000000001","iat":1800000000}';
+do $$ declare receipt jsonb; settlement jsonb; b jsonb; before_entries bigint; after_entries bigint; begin
+  receipt:=api.create_rent_entry('fa500000-0000-4000-8000-000000000002',
+    '{"kind":"rent_receipt","amount_minor":10000,"custodian":"realtor","contact_id":"fa400000-0000-0000-0000-000000000001"}',
+    'settlement-alternative-rent-0001');
+  b:=api.get_realtor_balance('fa500000-0000-4000-8000-000000000002');
+  if (b->>'version')::int<>2 or (b->>'owner_due_minor')::bigint<>7000
+    or (b->>'realtor_due_minor')::bigint<>0 then raise exception 'AT13 alternative initial balance mismatch: %',b; end if;
+  select count(*) into before_entries from api.list_reservation_rent_entries(
+    'fa500000-0000-4000-8000-000000000002',null,null,100);
+  settlement:=api.record_realtor_settlement('fa500000-0000-4000-8000-000000000002',
+    '{"expected_version":2,"contact_id":"fa400000-0000-0000-0000-000000000001","kind":"realtor_to_owner","amount_minor":10000}',
+    'settlement-alternative-transfer-001');
+  b:=api.get_realtor_balance('fa500000-0000-4000-8000-000000000002');
+  select count(*) into after_entries from api.list_reservation_rent_entries(
+    'fa500000-0000-4000-8000-000000000002',null,null,100);
+  if (b->>'version')::int<>3 or (b->>'collected_minor')::bigint<>10000
+    or (b->>'owner_due_minor')::bigint<>0 or (b->>'realtor_due_minor')::bigint<>3000
+    or before_entries<>after_entries then
+    raise exception 'AT13 full transfer direction or no-double-income mismatch: balance=%, rent_entries=%→%',
+      b,before_entries,after_entries;
+  end if;
 end $$;
 
 set local request.jwt.claims='{"sub":"fa000000-0000-0000-0000-000000000002","session_id":"fa100000-0000-0000-0000-000000000002","iat":1800000000}';

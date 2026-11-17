@@ -1458,7 +1458,7 @@
       "parent_issue": 23,
       "milestone": "M3",
       "title": "Net istiqamət və double-income sınağı",
-      "status": "backlog",
+      "status": "in_progress",
       "depends_on": [
         "EVE-015.2"
       ],
@@ -1477,7 +1477,7 @@
         "Siyahıdakı normativ davranış üçün happy-path və ən az bir mənfi ssenari sübutludur.",
         "Sənəd taskında validator, kod taskında real aid test nəticəsi; skipped passed deyil."
       ],
-      "verification": "M1-də təsdiqlənmiş aid script + tests/evidence; sənəd müqavilələri üçün node scripts/docs-check.mjs və node scripts/verify-contracts.mjs.",
+      "verification": "PostgreSQL 17 SQL smoke for both AT13 directions/no-double-income; two-session PostgreSQL settlement race in scripts/test-db-concurrency.py; CI sql_schema job; node scripts/docs-check.mjs, node scripts/verify-contracts.mjs, and Python schema validation.",
       "reviewer_role": "integration_reviewer",
       "out_of_scope": "Parent taskdan kənar modul/refaktor, provider faktının uydurulması, production publish.",
       "done_rule": "Owned fayllar, qəbul sübutu, müstəqil review və merged commit birlikdə olmalıdır.",
