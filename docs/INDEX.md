@@ -53,6 +53,7 @@ Sənəd bazası: 2026-11-10, Asia/Baku. Dil: Azərbaycan dili. Status: **icra ü
 | [Upload intent/quota component sübutu](04-quality/evidence/eve-022-1-upload-intent.md) | EVE-022.1 DB reservation, quota, idempotency və server adapter sərhədi |
 | [Hosted migration-history yoxlaması](04-quality/evidence/eve-hosted-migration-check-2026-11-14.md) | Təzə Supabase test layihəsində 001–021 migration apply və remote history uyğunluğu; production sübutu deyil |
 | [Prototip brauzer sübutu](04-quality/evidence/eve-002-1-2-browser.md) | EVE-002.1/.2 üçün 360 px Chrome, klaviatura və flow yoxlaması |
+| [Payriff adapter sərhədi sübutu](04-quality/evidence/eve-027-1-payriff-adapter.md) | EVE-027.1 daxili checkout adapteri; provider wire contract və sandbox açıq qalır |
 | [Dəqiq form axınları](02-design/FLOW-SPEC.md) | Sahə, default, düymə, xəta və fallback |
 | [OpenAPI 3.1 JSON](03-engineering/openapi.json) | Tam request/response müqaviləsi |
 | [Maşın data lüğəti](03-engineering/data-dictionary.json) | Sütun-sütun schema və invariantlar |
