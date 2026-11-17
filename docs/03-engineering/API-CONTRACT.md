@@ -135,7 +135,7 @@ Draft guide blokları media_id saxlayır; public/scoped oxuma cavabları Rendere
 | GET /reservations/{id}/money | listRentEntries | rent.read / read_only | — → RentEntryPage |
 | POST /reservations/{id}/money | createRentEntry | rent.write / active | RentEntryCreate → RentEntry |
 | GET /reservations/{id}/realtor-balance | getRealtorBalance | rent.read / read_only | — → RealtorBalance |
-| POST /reservations/{id}/realtor-settlements | recordRealtorSettlement | finance.manage / active | SettlementInput → RealtorSettlement |
+| POST /reservations/{id}/realtor-settlements | recordRealtorSettlement | finance.manage / active | SettlementInput → RealtorSettlement; `expected_version` matches `RealtorBalance.version`, result returns `balance_version` |
 | GET /properties/{id}/finance | getFinanceSummary | finance.read / read_only | — → FinanceSummary |
 | GET /expenses | listExpenses | finance.read / read_only | — → ExpensePage |
 | POST /expenses | createExpense | expense.propose / active | ExpenseCreate → Expense |
@@ -217,8 +217,12 @@ Draft guide blokları media_id saxlayır; public/scoped oxuma cavabları Rendere
 | GET /s/{token}/media/{id}/access | getScopedMediaAccess | link.media.read / existing_link_window | — → MediaAccess |
 | GET /media/{id}/content | readAuthenticatedMediaContent | media.read / read_only | — → validated private bytes |
 | GET /s/{token}/media/{id}/content | readScopedMediaContent | link.media.read / existing_link_window | — → scoped validated private bytes |
-| GET /public/guide-indexes/{slug} | readPublicGuideIndex | public.guide.read / published_safety_or_active | — → PublicGuideIndex |
 | POST /link-session | exchangeScopedLink | anonymous.link_exchange / existing_link_window | LinkSessionInput → LinkSessionResult |
+| GET /public/guide-indexes/{slug} | readPublicGuideIndex | public.guide.read / published_safety_or_active | — → PublicGuideIndex |
+
+### Realtor balance və settlement (D44)
+
+`GET /reservations/{id}/realtor-balance` `RealtorBalance.version` sahəsində `realtor_accounts.version` qaytarır. Settlement POST-un `expected_version`-i həmin versiyaya bərabər olmalıdır; uğurlu nəticə `balance_version` qaytarır. `commission_offset` append-only non-cash event-dir, rent receipt yaratmır. Eyni actor/idempotency key/canonical payload replay-i əvvəlki nəticəni qaytarır (stale version check-dən əvvəl); eyni key-in dəyişmiş payload-u conflict-dir. Hesablamanın C/T/E/P/O tərifləri və məhdudiyyətləri D44-dədir.
 
 ## Maşın yoxlamasının qəbul şərtləri
 

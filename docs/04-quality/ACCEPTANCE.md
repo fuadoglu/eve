@@ -18,7 +18,7 @@ Status: **full tətbiq qəbulu tamamlanmayıb; qismən lokal/inteqrasiya testlə
 | AT10 | Tarix/ev dəyişmə və erkən çıxış price/occupancy/task ilə atomik; stale version 409; completed task itmir |
 | AT11 | 300 AZN quote+100 receipt=200 debt; refund və artıq ödəniş görünür; integer rounding |
 | AT12 | Deposit rent income deyil; zədə formu avtomatik tutulma yaratmır; refund original limit-i aşmır |
-| AT13 | Realtor 100 collected/30 fee → 70 owner due; transfer yeni rent receipt yaratmır |
+| AT13 | Realtor 100 collected/30 earned commission → 70 owner due; transfer + explicit offset neti sıfırlayır, full transfer alternativində realtor 30 due; settlement yeni rent receipt yaratmır |
 | AT14 | Proposed expense təsdiqsiz hesabatda xərclənmiş sayılmır; allocation cəmi və cross-owner qadağası |
 | AT15 | WhatsApp GET/prefetch task accept etmir; installed/missing fallback; “göndərildi” yalan statusu yoxdur |
 | AT16 | Accept/report/confirm vəziyyətləri; scoped expense; ikiqat completion cleaning dublikatı yaratmır |

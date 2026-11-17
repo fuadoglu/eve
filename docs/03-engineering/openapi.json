@@ -11174,7 +11174,8 @@
           "expected_version": {
             "type": "integer",
             "minimum": 1,
-            "maximum": 9007199254740991
+            "maximum": 9007199254740991,
+            "description": "Must equal RealtorBalance.version, backed by realtor_accounts.version for this reservation (D44)."
           },
           "contact_id": {
             "type": "string",
@@ -11197,10 +11198,6 @@
           "occurred_at": {
             "type": "string",
             "format": "date-time"
-          },
-          "note": {
-            "type": "string",
-            "maxLength": 1000
           }
         },
         "required": [
@@ -11244,16 +11241,13 @@
             "type": "string",
             "format": "date-time"
           },
-          "version": {
+          "balance_version": {
             "type": "integer",
             "minimum": 1,
-            "maximum": 9007199254740991
+            "maximum": 9007199254740991,
+            "description": "Resulting realtor_accounts.version after this settlement; the append-only event itself has no row version (D44)."
           },
           "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updated_at": {
             "type": "string",
             "format": "date-time"
           }
@@ -11265,15 +11259,20 @@
           "kind",
           "amount_minor",
           "occurred_at",
-          "version",
-          "created_at",
-          "updated_at"
+          "balance_version",
+          "created_at"
         ]
       },
       "RealtorBalance": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991,
+            "description": "realtor_accounts.version used by SettlementInput.expected_version (D44)."
+          },
           "contact_id": {
             "type": "string",
             "format": "uuid"
@@ -11282,40 +11281,41 @@
             "type": "integer",
             "minimum": 0,
             "maximum": 9007199254740991,
-            "description": "AZN qəpik. IEEE-754 safe integer sərhədi; hesablamalar serverdə integer ilə."
+            "description": "C: realtor-custody rent receipts less source-linked rent refunds/reversals, AZN qəpik."
           },
           "transferred_minor": {
             "type": "integer",
             "minimum": 0,
             "maximum": 9007199254740991,
-            "description": "AZN qəpik. IEEE-754 safe integer sərhədi; hesablamalar serverdə integer ilə."
+            "description": "T: realtor_to_owner cash transfers, AZN qəpik."
           },
           "commission_minor": {
             "type": "integer",
             "minimum": 0,
             "maximum": 9007199254740991,
-            "description": "AZN qəpik. IEEE-754 safe integer sərhədi; hesablamalar serverdə integer ilə."
+            "description": "E: stored earned commission after authorized review, AZN qəpik."
           },
           "commission_paid_minor": {
             "type": "integer",
             "minimum": 0,
             "maximum": 9007199254740991,
-            "description": "AZN qəpik. IEEE-754 safe integer sərhədi; hesablamalar serverdə integer ilə."
+            "description": "AZN qəpik; owner_to_realtor cash payments + explicit commission offsets."
           },
           "owner_due_minor": {
             "type": "integer",
             "minimum": 0,
             "maximum": 9007199254740991,
-            "description": "AZN qəpik. IEEE-754 safe integer sərhədi; hesablamalar serverdə integer ilə."
+            "description": "AZN qəpik; max(0, held rent − unpaid earned commission); only one due direction is positive (D44)."
           },
           "realtor_due_minor": {
             "type": "integer",
             "minimum": 0,
             "maximum": 9007199254740991,
-            "description": "AZN qəpik. IEEE-754 safe integer sərhədi; hesablamalar serverdə integer ilə."
+            "description": "AZN qəpik; max(0, unpaid earned commission − held rent); only one due direction is positive (D44)."
           }
         },
         "required": [
+          "version",
           "contact_id",
           "collected_minor",
           "transferred_minor",
