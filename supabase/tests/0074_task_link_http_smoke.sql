@@ -3,6 +3,9 @@ begin;
 insert into auth.users(id) values
   ('f0000000-0000-0000-0000-000000000074'),
   ('f0000000-0000-0000-0000-000000000075') on conflict(id) do nothing;
+insert into auth.sessions(id,user_id) values
+  ('f5000000-0000-0000-0000-000000000074','f0000000-0000-0000-0000-000000000074'),
+  ('f5000000-0000-0000-0000-000000000075','f0000000-0000-0000-0000-000000000075');
 insert into app_private.owner_accounts(id,owner_user_id) values
   ('f1000000-0000-0000-0000-000000000074','f0000000-0000-0000-0000-000000000074'),
   ('f1000000-0000-0000-0000-000000000075','f0000000-0000-0000-0000-000000000075');
@@ -17,38 +20,63 @@ insert into app_private.tasks(id,owner_account_id,property_id,title,due_at,state
   ('f3000000-0000-0000-0000-000000000075','f1000000-0000-0000-0000-000000000075','f2000000-0000-0000-0000-000000000075','Foreign task',now()+interval '8 days','open',1);
 
 do $$ begin
-  if has_function_privilege('anon','api.create_task_link(uuid,text,text,text,timestamptz)','EXECUTE')
+  if has_function_privilege('anon','api.create_task_link(uuid,uuid,uuid,text,text,text,timestamptz)','EXECUTE')
+    or has_function_privilege('authenticated','api.create_task_link(uuid,uuid,uuid,text,text,text,timestamptz)','EXECUTE')
+    or has_function_privilege('authenticated','api.revoke_task_link(uuid,uuid,uuid)','EXECUTE')
     or has_function_privilege('anon','api.read_scoped_task_for_server(text)','EXECUTE')
     or has_function_privilege('anon','api.transition_scoped_task_for_server(text,integer,text,text,text,text,uuid[])','EXECUTE')
     or has_function_privilege('authenticated','api.read_scoped_task_for_server(text)','EXECUTE')
     or has_function_privilege('authenticated','api.transition_scoped_task_for_server(text,integer,text,text,text,text,uuid[])','EXECUTE')
-    or has_function_privilege('service_role','api.create_task_link(uuid,text,text,text,timestamptz)','EXECUTE') then
+    or not has_function_privilege('service_role','api.create_task_link(uuid,uuid,uuid,text,text,text,timestamptz)','EXECUTE')
+    or not has_function_privilege('service_role','api.revoke_task_link(uuid,uuid,uuid)','EXECUTE') then
     raise exception 'task link RPC grants are broader than intended';
   end if;
 end $$;
 
 set local role authenticated;
-set local request.jwt.claim.sub='f0000000-0000-0000-0000-000000000074';
+do $$ begin
+  begin
+    perform api.create_task_link('f0000000-0000-0000-0000-000000000074',
+      'f5000000-0000-0000-0000-000000000074','f3000000-0000-0000-0000-000000000074',
+      repeat('9',64),repeat('9',64),repeat('9',64),null);
+    raise exception 'direct authenticated link creation worked';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+reset role;
+set local request.jwt.claim.role='service_role';
+set local role service_role;
 do $$ declare first_link jsonb; replay_link jsonb;
 begin
-  first_link := api.create_task_link('f3000000-0000-0000-0000-000000000074',
+  first_link := api.create_task_link('f0000000-0000-0000-0000-000000000074',
+    'f5000000-0000-0000-0000-000000000074','f3000000-0000-0000-0000-000000000074',
     repeat('a',64),repeat('b',64),repeat('c',64),null);
-  replay_link := api.create_task_link('f3000000-0000-0000-0000-000000000074',
+  replay_link := api.create_task_link('f0000000-0000-0000-0000-000000000074',
+    'f5000000-0000-0000-0000-000000000074','f3000000-0000-0000-0000-000000000074',
     repeat('a',64),repeat('b',64),repeat('c',64),null);
   if first_link->>'link_id'<>replay_link->>'link_id' or replay_link->>'replayed'<>'true' then
     raise exception 'task link idempotent replay failed';
   end if;
   perform set_config('test.task_link_id',first_link->>'link_id',true);
   begin
-    perform api.create_task_link('f3000000-0000-0000-0000-000000000074',
+    perform api.create_task_link('f0000000-0000-0000-0000-000000000074',
+      'f5000000-0000-0000-0000-000000000074','f3000000-0000-0000-0000-000000000074',
       repeat('a',64),repeat('b',64),repeat('d',64),null);
     raise exception 'same request key accepted changed payload';
   exception when unique_violation then null;
   end;
   begin
-    perform api.create_task_link('f3000000-0000-0000-0000-000000000075',
+    perform api.create_task_link('f0000000-0000-0000-0000-000000000074',
+      'f5000000-0000-0000-0000-000000000074','f3000000-0000-0000-0000-000000000075',
       repeat('e',64),repeat('f',64),repeat('1',64),null);
     raise exception 'cross-owner task link created';
+  exception when insufficient_privilege then null;
+  end;
+  begin
+    perform api.create_task_link('f0000000-0000-0000-0000-000000000074',
+      'f5000000-0000-0000-0000-000000000099','f3000000-0000-0000-0000-000000000074',
+      repeat('e',64),repeat('f',64),repeat('1',64),null);
+    raise exception 'revoked or absent session created link';
   exception when insufficient_privilege then null;
   end;
 end $$;
@@ -79,21 +107,23 @@ begin
 end $$;
 reset role;
 
-set local request.jwt.claim.role='authenticated';
-set local request.jwt.claim.sub='f0000000-0000-0000-0000-000000000075';
-set local role authenticated;
+set local request.jwt.claim.role='service_role';
+set local request.jwt.claim.sub='';
+set local role service_role;
 do $$ begin
   begin
-    perform api.revoke_task_link(current_setting('test.task_link_id')::uuid);
+    perform api.revoke_task_link('f0000000-0000-0000-0000-000000000075',
+      'f5000000-0000-0000-0000-000000000075',current_setting('test.task_link_id')::uuid);
     raise exception 'foreign owner revoked task link';
   exception when insufficient_privilege then null;
   end;
 end $$;
 reset role;
-
-set local request.jwt.claim.sub='f0000000-0000-0000-0000-000000000074';
-set local role authenticated;
-select api.revoke_task_link(current_setting('test.task_link_id')::uuid);
+set local request.jwt.claim.sub='';
+set local request.jwt.claim.role='service_role';
+set local role service_role;
+select api.revoke_task_link('f0000000-0000-0000-0000-000000000074',
+  'f5000000-0000-0000-0000-000000000074',current_setting('test.task_link_id')::uuid);
 reset role;
 set local request.jwt.claim.sub='';
 set local request.jwt.claim.role='service_role';

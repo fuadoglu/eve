@@ -2,6 +2,8 @@
 -- Raw bearer tokens stay in the server response only. The database stores hashes.
 
 grant app_executor to current_user with set true, inherit false;
+-- Re-check the exact Supabase session after the server verifies its user token.
+grant execute on function api.is_my_session_active() to app_executor;
 
 alter table app_private.access_links
   add column idempotency_key_hash varchar(64),
@@ -26,15 +28,25 @@ create policy access_links_task_create_internal on app_private.access_links
 
 grant create on schema api to app_executor;
 create function api.create_task_link(
-  p_task_id uuid,p_token_hash text,p_idempotency_key_hash text,
+  p_actor_user_id uuid,p_session_id uuid,p_task_id uuid,p_token_hash text,p_idempotency_key_hash text,
   p_request_hash text,p_expires_at timestamptz default null
 )
 returns jsonb language plpgsql volatile security definer set search_path = '' as $$
-declare v_actor uuid := app_private.current_actor_id();
+declare v_actor uuid;
   v_task app_private.tasks%rowtype; v_existing app_private.access_links%rowtype;
   v_now timestamptz := statement_timestamp(); v_expiry timestamptz;
 begin
-  if v_actor is null then raise exception using errcode='42501',message='task_manager_required'; end if;
+  if current_setting('request.jwt.claim.role',true) is distinct from 'service_role'
+    or p_actor_user_id is null or p_session_id is null then
+    raise exception using errcode='42501',message='server_adapter_required';
+  end if;
+  perform pg_catalog.set_config('request.jwt.claim.sub',p_actor_user_id::text,true);
+  perform pg_catalog.set_config('request.jwt.claims',
+    jsonb_build_object('sub',p_actor_user_id,'session_id',p_session_id,'role','authenticated')::text,true);
+  if api.is_my_session_active() is distinct from true then
+    raise exception using errcode='42501',message='active_session_required';
+  end if;
+  v_actor := app_private.current_actor_id();
   if p_task_id is null or p_token_hash is null or p_token_hash !~ '^[0-9a-f]{64}$'
     or p_idempotency_key_hash is null or p_idempotency_key_hash !~ '^[0-9a-f]{64}$'
     or p_request_hash is null or p_request_hash !~ '^[0-9a-f]{64}$' then
@@ -71,16 +83,26 @@ begin
   return jsonb_build_object('link_id',v_existing.id,'expires_at',v_existing.expires_at,'replayed',false);
 end;
 $$;
-revoke all on function api.create_task_link(uuid,text,text,text,timestamptz) from public,anon,authenticated,service_role;
-grant execute on function api.create_task_link(uuid,text,text,text,timestamptz) to authenticated;
-alter function api.create_task_link(uuid,text,text,text,timestamptz) owner to app_executor;
+revoke all on function api.create_task_link(uuid,uuid,uuid,text,text,text,timestamptz) from public,anon,authenticated,service_role;
+grant execute on function api.create_task_link(uuid,uuid,uuid,text,text,text,timestamptz) to service_role;
+alter function api.create_task_link(uuid,uuid,uuid,text,text,text,timestamptz) owner to app_executor;
 
-create function api.revoke_task_link(p_link_id uuid)
+create function api.revoke_task_link(p_actor_user_id uuid,p_session_id uuid,p_link_id uuid)
 returns jsonb language plpgsql volatile security definer set search_path = '' as $$
 declare v_link app_private.access_links%rowtype;
 begin
-  if p_link_id is null or app_private.current_actor_id() is null then
-    raise exception using errcode='42501',message='owner_required';
+  if current_setting('request.jwt.claim.role',true) is distinct from 'service_role'
+    or p_actor_user_id is null or p_session_id is null then
+    raise exception using errcode='42501',message='server_adapter_required';
+  end if;
+  perform pg_catalog.set_config('request.jwt.claim.sub',p_actor_user_id::text,true);
+  perform pg_catalog.set_config('request.jwt.claims',
+    jsonb_build_object('sub',p_actor_user_id,'session_id',p_session_id,'role','authenticated')::text,true);
+  if api.is_my_session_active() is distinct from true then
+    raise exception using errcode='42501',message='active_session_required';
+  end if;
+  if p_link_id is null then
+    raise exception using errcode='22023',message='link_id_required';
   end if;
   select * into v_link from app_private.access_links
     where id=p_link_id and kind='task' for update;
@@ -95,9 +117,9 @@ begin
   return jsonb_build_object('accepted',true);
 end;
 $$;
-revoke all on function api.revoke_task_link(uuid) from public,anon,authenticated,service_role;
-grant execute on function api.revoke_task_link(uuid) to authenticated;
-alter function api.revoke_task_link(uuid) owner to app_executor;
+revoke all on function api.revoke_task_link(uuid,uuid,uuid) from public,anon,authenticated,service_role;
+grant execute on function api.revoke_task_link(uuid,uuid,uuid) to service_role;
+alter function api.revoke_task_link(uuid,uuid,uuid) owner to app_executor;
 
 -- app_executor is internal and NOLOGIN. The bridge has no anonymous grant.
 grant select on app_private.properties to app_executor;
@@ -152,6 +174,9 @@ begin
   if current_setting('request.jwt.claim.role',true) is distinct from 'service_role' then
     raise exception using errcode='42501',message='server_adapter_required';
   end if;
+  -- This bridge acts as a scoped bearer, never as a previously checked user.
+  perform pg_catalog.set_config('request.jwt.claim.sub','',true);
+  perform pg_catalog.set_config('request.jwt.claims','',true);
   if p_link_token_hash is null or p_link_token_hash !~ '^[0-9a-f]{64}$' then
     raise exception using errcode='P0002',message='task_link_not_found';
   end if;

@@ -4,6 +4,8 @@ import test from "node:test";
 import { handleCreateTaskLink, handleReadScopedTask, handleRevokeTaskLink,
   handleTransitionScopedTask, TaskLinkApiError } from "../../../src/modules/operations/task-link-http.ts";
 
+process.env.APP_BASE_URL = "https://eve.example";
+
 const token = "a".repeat(43);
 const tokenHash = createHash("sha256").update(token).digest("hex");
 const taskId = "f3000000-0000-4000-8000-000000000021";
@@ -60,6 +62,16 @@ test("task share returns only acknowledged link and no sent claim", async () => 
   assert.equal(data.delivery_state, "not_tracked");
   assert.equal(data.url, `https://eve.example/s/${token}`);
   assert.ok(!JSON.stringify(data).includes("göndərildi"));
+});
+
+test("share-link refuses a forged request host and never builds an attacker URL", async () => {
+  let writes = 0;
+  const request = new Request(`https://attacker.example/api/v1/tasks/${taskId}/share-link`, { method: "POST",
+    headers: { Origin: "https://attacker.example", "Content-Type": "application/json", "Idempotency-Key": "task-share-key-00002" },
+    body: "{}" });
+  const response = await handleCreateTaskLink(request, taskId, async () => { writes++; return null; });
+  assert.equal(response.status, 403);
+  assert.equal(writes, 0);
 });
 
 test("owner revoke is idempotent at HTTP boundary and rejects foreign origin", async () => {

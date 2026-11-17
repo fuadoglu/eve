@@ -10,15 +10,19 @@ import { deriveTaskLinkToken, sha256 } from "./task-link-token.ts";
 
 type RpcError = { code?: string } | null;
 type ApiClient = { schema(name: "api"): { rpc(name: string, args?: Record<string, unknown>): Promise<{ data: unknown; error: RpcError }> } };
-type UserClient = ApiClient & { auth: { getUser(): Promise<{ data: { user: { id: string } | null }; error: { status?: number } | null }> } };
+type UserClient = ApiClient & { auth: {
+  getUser(): Promise<{ data: { user: { id: string } | null }; error: { status?: number } | null }>;
+  getSession(): Promise<{ data: { session: { access_token: string } | null }; error: { status?: number } | null }>;
+} };
 
 export async function createTaskShareLink(taskId: string, expiresAt: string | null, key: string): Promise<unknown> {
-  const { client, actorId } = await authenticatedClient();
+  const { actorId, sessionId } = await authenticatedClient();
   const canonicalTaskId = taskId.toLowerCase();
   const token = deriveToken(actorId.toLowerCase(), canonicalTaskId, key);
   const hash = sha256(token);
   const requestHash = sha256(JSON.stringify({ task_id: canonicalTaskId, expires_at: expiresAt }));
-  const result = await rpc(client, "create_task_link", {
+  const result = await rpc(serverClient(), "create_task_link", {
+    p_actor_user_id: actorId, p_session_id: sessionId,
     p_task_id: canonicalTaskId, p_token_hash: hash,
     p_idempotency_key_hash: sha256(key), p_request_hash: requestHash,
     p_expires_at: expiresAt,
@@ -31,8 +35,10 @@ export async function createTaskShareLink(taskId: string, expiresAt: string | nu
 }
 
 export async function revokeTaskShareLink(linkId: string): Promise<unknown> {
-  const { client } = await authenticatedClient();
-  const result = await rpc(client, "revoke_task_link", { p_link_id: linkId });
+  const { actorId, sessionId } = await authenticatedClient();
+  const result = await rpc(serverClient(), "revoke_task_link", {
+    p_actor_user_id: actorId, p_session_id: sessionId, p_link_id: linkId,
+  });
   if (!isRecord(result) || result.accepted !== true) throw new TaskLinkApiError("PROVIDER_UNAVAILABLE");
   return result;
 }
@@ -52,7 +58,7 @@ export async function transitionScopedTask(tokenHash: string, input: {
   });
 }
 
-async function authenticatedClient(): Promise<{ client: UserClient; actorId: string }> {
+async function authenticatedClient(): Promise<{ actorId: string; sessionId: string }> {
   const { url, publishableKey } = getSupabasePublicConfig();
   const jar = await cookies();
   const secure = process.env.NODE_ENV === "production";
@@ -67,7 +73,12 @@ async function authenticatedClient(): Promise<{ client: UserClient; actorId: str
   try { user = await client.auth.getUser(); } catch { throw new TaskLinkApiError("PROVIDER_UNAVAILABLE"); }
   if (user.error || !user.data.user) throw new TaskLinkApiError("UNAUTHENTICATED");
   if (await rpc(client, "is_my_session_active") !== true) throw new TaskLinkApiError("UNAUTHENTICATED");
-  return { client, actorId: user.data.user.id };
+  let session;
+  try { session = await client.auth.getSession(); } catch { throw new TaskLinkApiError("PROVIDER_UNAVAILABLE"); }
+  if (session.error || !session.data.session) throw new TaskLinkApiError("UNAUTHENTICATED");
+  const sessionId = sessionIdFromJwt(session.data.session.access_token, user.data.user.id);
+  if (!sessionId) throw new TaskLinkApiError("UNAUTHENTICATED");
+  return { actorId: user.data.user.id, sessionId };
 }
 
 function serverClient(): ApiClient {
@@ -95,6 +106,17 @@ function deriveToken(actorId: string, taskId: string, key: string): string {
   const secret = process.env.EVE_SCOPED_LINK_HMAC_KEY;
   if (!secret || !/^[0-9a-f]{64}$/.test(secret)) throw new TaskLinkApiError("PROVIDER_UNAVAILABLE");
   return deriveTaskLinkToken(secret, actorId, taskId, key);
+}
+function sessionIdFromJwt(jwt: string, actorId: string): string | null {
+  if (typeof jwt !== "string" || jwt.length > 10000) return null;
+  const parts = jwt.split(".");
+  if (parts.length !== 3 || !/^[A-Za-z0-9_-]+$/.test(parts[1])) return null;
+  try {
+    const claims: unknown = JSON.parse(Buffer.from(parts[1], "base64url").toString("utf8"));
+    if (!isRecord(claims) || claims.sub !== actorId || claims.role !== "authenticated"
+      || !isUuid(claims.session_id)) return null;
+    return claims.session_id;
+  } catch { return null; }
 }
 function isUuid(value: unknown): value is string {
   return typeof value === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);

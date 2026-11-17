@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { getAppBaseUrl } from "../../lib/env/supabase-public.ts";
 
 export class TaskLinkApiError extends Error {
   readonly code: string;
@@ -23,7 +24,7 @@ export async function handleCreateTaskLink(request: Request, taskId: string, cre
     const value = await create(taskId, expires ?? null, parsed.key);
     if (!isRecord(value) || !isUuid(value.link_id) || typeof value.expires_at !== "string"
       || typeof value.token !== "string" || !isToken(value.token)) throw new TaskLinkApiError("PROVIDER_UNAVAILABLE");
-    const url = new URL(`/s/${encodeURIComponent(value.token)}`, request.url).toString();
+    const url = new URL(`/s/${encodeURIComponent(value.token)}`, getAppBaseUrl().url).toString();
     const message = "Tapşırığı Eve-də açın.";
     const whatsapp = `https://wa.me/?text=${encodeURIComponent(`${message}\n${url}`)}`;
     return json(201, { link_id: value.link_id, url, expires_at: value.expires_at,
@@ -77,8 +78,13 @@ async function parseMutation(request: Request, allowed: string[]): Promise<
   { ok: true; body: Record<string, unknown>; key: string } | { ok: false; response: Response }
 > {
   const origin = request.headers.get("origin");
-  try { if (!origin || new URL(origin).origin !== new URL(request.url).origin) return { ok: false, response: fail(403, "FORBIDDEN") }; }
-  catch { return { ok: false, response: fail(403, "FORBIDDEN") }; }
+  let canonical: string;
+  try { canonical = getAppBaseUrl().url; }
+  catch { return { ok: false, response: fail(503, "PROVIDER_UNAVAILABLE") }; }
+  try {
+    if (!origin || new URL(origin).origin !== canonical || new URL(request.url).origin !== canonical)
+      return { ok: false, response: fail(403, "FORBIDDEN") };
+  } catch { return { ok: false, response: fail(403, "FORBIDDEN") }; }
   const key = request.headers.get("idempotency-key") ?? "";
   if (!/^[A-Za-z0-9_-]{16,128}$/.test(key)) return { ok: false, response: fail(400, "VALIDATION_ERROR") };
   if (request.headers.get("content-type")?.split(";")[0]?.trim().toLowerCase() !== "application/json")
