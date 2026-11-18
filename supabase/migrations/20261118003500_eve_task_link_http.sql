@@ -124,7 +124,16 @@ alter function api.revoke_task_link(uuid,uuid,uuid) owner to app_executor;
 -- app_executor is internal and NOLOGIN. The bridge has no anonymous grant.
 grant select on app_private.properties to app_executor;
 create policy properties_task_link_internal_read on app_private.properties
-  for select to app_executor using (true);
+  for select to app_executor using (
+    current_setting('request.jwt.claim.role',true)='service_role'
+    and exists(select 1 from app_private.access_links l
+      where l.property_id=properties.id
+        and l.owner_account_id=properties.owner_account_id
+        and l.kind='task'
+        and l.token_hash=current_setting('eve.scoped_task_token_hash',true)
+        and l.revoked_at is null and l.expires_at>statement_timestamp()
+        and l.scopes ? 'task.read')
+  );
 create function api.read_scoped_task_for_server(p_link_token_hash text)
 returns jsonb language plpgsql volatile security definer set search_path = '' as $$
 declare v_link app_private.access_links%rowtype; v_task app_private.tasks%rowtype;
@@ -145,6 +154,7 @@ begin
   if not (v_link.scopes ? 'task.read') then
     raise exception using errcode='P0002',message='task_link_not_found';
   end if;
+  perform pg_catalog.set_config('eve.scoped_task_token_hash',p_link_token_hash,true);
   select * into v_task from app_private.tasks
     where id=v_link.task_id and property_id=v_link.property_id
       and owner_account_id=v_link.owner_account_id;
