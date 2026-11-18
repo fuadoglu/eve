@@ -1,6 +1,6 @@
 # EVE-019.3 — inventory copy/import parser və DB acceptance sübutu
 
-Tarix: 2026-11-18. Branch: `feat/EVE-019-3-import-parser-final`. Status: **in progress; PR CI və müstəqil review gözləyir**. Bu paket scope-u tam AT35, tam import route/UI və production qəbulu deyil.
+Tarix: 2026-11-18. Implementation branch: `feat/EVE-019-3-import-parser-final`. Status: **done for the bounded EVE-019.3 component/DB acceptance scope**. This package does not close full AT35, the complete import route/UI, or production acceptance.
 
 ## Scope və davranış
 
@@ -25,9 +25,9 @@ Runtime: Node.js 24.22.2 və pnpm 12.18.0 (`/tmp/eve0193-toolchain`, repository 
 
 ## DB/CI və müstəqil review
 
-`supabase/tests/0073_inventory_copy_import_smoke.sql`-a 5,001 row rejection, source row number, private bucket privacy/policy və anon/authenticated Storage write denial əlavə edildi. `sql_schema` Storage fixture-ə `eve-private-import` bucket əlavə olunub. CI-yə migration 033, sonrakı private-import migrations 037/038, parser suite və smoke 0073 daxil edilib. Cari host-da Docker/PostgreSQL yoxdur, ona görə migration/smoke localda işlədilməyib. Bunun əvəzinə PR #150 CI run [#44264914510](https://github.com/fuadoglu/eve/actions/runs/44264914510) `docs`, PostgreSQL 17 `sql_schema` və fresh `supabase_local` job-larının üçünü də **pass** etdi; `0073_inventory_copy_import_smoke.sql`, 0062 allowlist-ləri və HTTP storage boundary sınaqları CI-də işlədildi. Bu hosted CI/synthetic local stack sübutudur, Eve staging/production DB sübutu deyil.
+`supabase/tests/0073_inventory_copy_import_smoke.sql`-a 5,001 row rejection, source row number, private bucket privacy/policy və anon/authenticated Storage write denial əlavə edildi. `sql_schema` Storage fixture-ə `eve-private-import` bucket əlavə olunub. CI-yə migration 033, sonrakı private-import migrations 037/038, parser suite və smoke 0073 daxil edilib. Cari host-da Docker/PostgreSQL yoxdur, ona görə migration/smoke localda işlədilməyib. PR #150 final-head CI run [#44265499728](https://github.com/fuadoglu/eve/actions/runs/44265499728) `docs`, PostgreSQL 17 `sql_schema` və fresh `supabase_local` job-larının üçünü də **pass** etdi; `0073_inventory_copy_import_smoke.sql`, 0062 allowlist-ləri və HTTP storage boundary sınaqları CI-də işlədildi. PR squash-merge commit-i `f0c2de4594f0d15df80690e262f28539e94aba1f` üçün merged-main CI [#44266420385](https://github.com/fuadoglu/eve/actions/runs/44266420385) də 2026-11-18-də `docs`, PostgreSQL 17 `sql_schema` və fresh `supabase_local` job-larının üçünü **success** ilə tamamladı. Bu hosted CI/synthetic local stack sübutudur, Eve staging/production DB sübutu deyil.
 
-Müstəqil read-only integration review PR head `a31a8c339deae656f930e4f52b4596398adbde09`-da tamamlandı; ilkin tapıntılar (sql_schema bucket seed və ZIP adversarial coverage) düzəldildi, follow-up review əlavə P0/P1 blocker tapmadı. Review agenti sınaqları özü işlətməyib; test sübutu yuxarıdakı local/CI nəticələridir. Squash merge və merged-main CI hələ gözlənir.
+Müstəqil read-only integration review PR head `a31a8c339deae656f930e4f52b4596398adbde09`-da tamamlandı; ilkin tapıntılar (sql_schema bucket seed və ZIP adversarial coverage) düzəldildi, follow-up review əlavə P0/P1 blocker tapmadı. Review agenti sınaqları özü işlətməyib; test sübutu yuxarıdakı local/CI nəticələridir. PR [#150](https://github.com/fuadoglu/eve/pull/150) `f0c2de4594f0d15df80690e262f28539e94aba1f` commit-i ilə squash-merge edilib. EVE-019.3 work-package statusu bounded component/DB acceptance üçün `done`-a keçir; merged-main CI də keçib.
 
 ## Qəbul sərhədləri və risk
 
