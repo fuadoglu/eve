@@ -58,6 +58,9 @@ begin
                         'api.reconcile_verified_billing_event_for_server(uuid,text,text,bigint,text)'::regprocedure,
                         'api.claim_due_outbox(integer,integer,integer)'::regprocedure,
                         'api.complete_outbox(uuid,uuid)'::regprocedure,
+                        'api.retry_outbox(uuid,uuid,text,integer)'::regprocedure,
+                        'api.claim_due_outbox(integer,integer,integer)'::regprocedure,
+                        'api.complete_outbox(uuid,uuid)'::regprocedure,
                         'api.retry_outbox(uuid,uuid,text,integer)'::regprocedure)
       or p.prokind <> 'f'
       or (p.oid = 'api.is_my_session_active()'::regprocedure and p.proowner <> 'app_session_reader'::regrole)
