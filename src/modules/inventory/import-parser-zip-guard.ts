@@ -42,7 +42,7 @@ export function guardInventoryXlsxZip(bytes: Uint8Array): void {
       || (flags & 0x41) !== 0 || ![0, 8].includes(method)) throw new InventoryImportParseError("unsafe_xlsx");
     const nameBytes = bytes.subarray(at + 46, at + 46 + nameLength);
     const name = decodeName(nameBytes, (flags & 0x800) !== 0);
-    if (!name || !/^[A-Za-z0-9_./-]+$/.test(name) || name.startsWith("/")
+    if (!name || !/^[A-Za-z0-9_./\[\]-]+$/.test(name) || name.startsWith("/")
       || name.split("/").includes("..") || names.has(name.toLowerCase())
       || /(^|\/)(vbaProject\.bin|externalLinks|embeddings)(\/|$)/i.test(name)) {
       throw new InventoryImportParseError("unsafe_xlsx");
