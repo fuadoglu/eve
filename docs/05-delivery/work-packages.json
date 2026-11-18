@@ -1663,7 +1663,7 @@
       "parent_issue": 25,
       "milestone": "M3",
       "title": "Prefetch/revoke/scope mənfi sınağı",
-      "status": "backlog",
+      "status": "done",
       "depends_on": [
         "EVE-017.2"
       ],
