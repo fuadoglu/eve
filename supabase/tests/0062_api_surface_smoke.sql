@@ -55,7 +55,10 @@ begin
       'api.list_reservation_rent_entries(uuid,timestamptz,uuid,integer)'::regprocedure,
       'api.get_realtor_balance(uuid)'::regprocedure,
       'api.record_realtor_settlement(uuid,jsonb,text)'::regprocedure,
-      'api.reconcile_verified_billing_event_for_server(uuid,text,text,bigint,text)'::regprocedure)
+                        'api.reconcile_verified_billing_event_for_server(uuid,text,text,bigint,text)'::regprocedure,
+                        'api.claim_due_outbox(integer,integer,integer)'::regprocedure,
+                        'api.complete_outbox(uuid,uuid)'::regprocedure,
+                        'api.retry_outbox(uuid,uuid,text,integer)'::regprocedure)
       or p.prokind <> 'f'
       or (p.oid = 'api.is_my_session_active()'::regprocedure and p.proowner <> 'app_session_reader'::regrole)
       or (p.oid = 'api.revoke_my_sessions()'::regprocedure and p.proowner <> 'app_executor'::regrole)
@@ -87,7 +90,7 @@ begin
       'api.transition_scoped_task_for_server(text,integer,text,text,text,text,uuid[],jsonb)'::regprocedure,
       'api.exchange_scoped_link_for_server(text)'::regprocedure,
       'api.apply_verified_billing_order_for_server(uuid)'::regprocedure,
-      'api.reconcile_verified_billing_event_for_server(uuid,text,text,bigint,text)'::regprocedure)
+                    'api.reconcile_verified_billing_event_for_server(uuid,text,text,bigint,text)'::regprocedure)
           and p.provolatile <> 's')
       or (p.oid in ('api.revoke_my_sessions()'::regprocedure,
                     'api.create_property(text,text,text)'::regprocedure,
@@ -114,7 +117,10 @@ begin
       'api.transition_scoped_task_for_server(text,integer,text,text,text,text,uuid[],jsonb)'::regprocedure,
       'api.exchange_scoped_link_for_server(text)'::regprocedure,
       'api.apply_verified_billing_order_for_server(uuid)'::regprocedure,
-      'api.reconcile_verified_billing_event_for_server(uuid,text,text,bigint,text)'::regprocedure)
+                    'api.reconcile_verified_billing_event_for_server(uuid,text,text,bigint,text)'::regprocedure,
+                    'api.claim_due_outbox(integer,integer,integer)'::regprocedure,
+                    'api.complete_outbox(uuid,uuid)'::regprocedure,
+                    'api.retry_outbox(uuid,uuid,text,integer)'::regprocedure)
           and p.provolatile <> 'v')
       or not (coalesce(p.proconfig, array[]::text[]) @> array['search_path=""']::text[])
       or has_function_privilege('anon',p.oid,'EXECUTE')
@@ -130,7 +136,10 @@ begin
       'api.transition_scoped_task_for_server(text,integer,text,text,text,text,uuid[],jsonb)'::regprocedure,
       'api.exchange_scoped_link_for_server(text)'::regprocedure,
       'api.apply_verified_billing_order_for_server(uuid)'::regprocedure,
-      'api.reconcile_verified_billing_event_for_server(uuid,text,text,bigint,text)'::regprocedure))
+                   'api.reconcile_verified_billing_event_for_server(uuid,text,text,bigint,text)'::regprocedure,
+                   'api.claim_due_outbox(integer,integer,integer)'::regprocedure,
+                   'api.complete_outbox(uuid,uuid)'::regprocedure,
+                   'api.retry_outbox(uuid,uuid,text,integer)'::regprocedure))
       or has_function_privilege('authenticated',p.oid,'EXECUTE') is distinct from
         (p.oid not in ('api.create_task_link(uuid,uuid,uuid,text,text,text,timestamptz)'::regprocedure,
       'api.revoke_task_link(uuid,uuid,uuid)'::regprocedure,
@@ -142,7 +151,10 @@ begin
                        'api.get_media_scoped_source_for_server(text,uuid)'::regprocedure,
                        'api.exchange_scoped_link_for_server(text)'::regprocedure,
       'api.apply_verified_billing_order_for_server(uuid)'::regprocedure,
-      'api.reconcile_verified_billing_event_for_server(uuid,text,text,bigint,text)'::regprocedure)));
+      'api.reconcile_verified_billing_event_for_server(uuid,text,text,bigint,text)'::regprocedure,
+      'api.claim_due_outbox(integer,integer,integer)'::regprocedure,
+      'api.complete_outbox(uuid,uuid)'::regprocedure,
+      'api.retry_outbox(uuid,uuid,text,integer)'::regprocedure)));
   if mismatch_count <> 0 then
     raise exception 'unsafe or unexpected api function: %', mismatch_count;
   end if;
@@ -150,7 +162,7 @@ begin
   select count(*) into mismatch_count
   from pg_proc p
   where p.pronamespace='api'::regnamespace;
-  if mismatch_count <> 43 then
+  if mismatch_count <> 46 then
     raise exception 'api RPC inventory changed: %', mismatch_count;
   end if;
 
