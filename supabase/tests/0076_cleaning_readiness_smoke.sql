@@ -81,7 +81,7 @@ insert into app_private.reservation_placements(id,owner_account_id,property_id,r
    1,current_date-1,current_date+1,now(),'a1810000-0000-0000-0000-000000000001');
 insert into app_private.contacts(id,owner_account_id,name,phone,service_type)
   values ('a181d000-0000-0000-0000-000000000002','a1811000-0000-0000-0000-000000000001',
-   'Cleaner','+994501112233','cleaning');
+   'Cleaner','+994501112233','cleaner');
 insert into app_private.tasks(id,owner_account_id,property_id,reservation_id,placement_id,
   kind,title,description,due_at,assignee_contact_id,state,reported_done_at,confirmed_at,confirmed_by,
   required_for_readiness,version) values
