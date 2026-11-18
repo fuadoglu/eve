@@ -375,7 +375,7 @@ def main():
 
     buckets = ("eve-public-property", "eve-public-guide", "eve-private-guest",
                "eve-private-receipt", "eve-private-inspection", "eve-private-task",
-               "eve-private-inventory")
+               "eve-private-inventory", "eve-private-import")
     try:
         for bucket in buckets:
             name = "local-boundary-" + uuid.uuid4().hex + ".txt"

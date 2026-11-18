@@ -142,10 +142,10 @@ export function validateImportPreview(value: unknown): ImportPreviewDto {
       || !isImportPreviewState(value.state)
       || typeof value.preview_hash !== "string"
       || !/^[a-f0-9]{64}$/.test(value.preview_hash)
-      || !isIntegerInRange(value.row_count, 0, 1_000_000)
+      || !isIntegerInRange(value.row_count, 0, 5_000)
       || !Array.isArray(value.errors)
       || value.errors.length > 1_000
-      || !isIntegerInRange(value.error_count, 0, 10_000)
+      || !isIntegerInRange(value.error_count, 0, 5_000)
       || value.error_count > value.row_count
       || value.errors.length !== Math.min(value.error_count, 1_000)
       || typeof value.errors_truncated !== "boolean"

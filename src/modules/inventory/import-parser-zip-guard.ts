@@ -1,10 +1,8 @@
 import { inflateRawSync } from "node:zlib";
 import { INVENTORY_IMPORT_MAX_BYTES, InventoryImportParseError } from "./import-parser-csv.ts";
+import { INVENTORY_IMPORT_LIMITS } from "./import-parser-limits.ts";
 
-const MAX_ENTRIES = 128;
-const MAX_ENTRY_UNCOMPRESSED = 16 * 1024 * 1024;
-const MAX_TOTAL_UNCOMPRESSED = 32 * 1024 * 1024;
-const MAX_COMPRESSION_RATIO = 300;
+const { maxEntries, maxEntryUncompressedBytes, maxTotalUncompressedBytes, maxCompressionRatio } = INVENTORY_IMPORT_LIMITS.xlsx;
 
 type Entry = { name: string; crc: number; compressed: number; uncompressed: number;
   offset: number; method: number; flags: number };
@@ -21,7 +19,7 @@ export function guardInventoryXlsxZip(bytes: Uint8Array): void {
     if (u32(at) === 0x06054b50 && at + 22 + u16(at + 20) === bytes.length) { eocd = at; break; }
   }
   if (eocd < 0 || u16(eocd + 4) !== 0 || u16(eocd + 6) !== 0
-    || u16(eocd + 8) !== u16(eocd + 10) || u16(eocd + 10) > MAX_ENTRIES
+    || u16(eocd + 8) !== u16(eocd + 10) || u16(eocd + 10) > maxEntries
     || u16(eocd + 10) === 0) throw new InventoryImportParseError("invalid_xlsx");
   const directorySize = u32(eocd + 12);
   const directoryOffset = u32(eocd + 16);
@@ -49,12 +47,12 @@ export function guardInventoryXlsxZip(bytes: Uint8Array): void {
     }
     names.add(name.toLowerCase());
     if (name.endsWith("/") && (compressed !== 0 || uncompressed !== 0)) throw new InventoryImportParseError("unsafe_xlsx");
-    if (uncompressed > MAX_ENTRY_UNCOMPRESSED || (compressed === 0 && uncompressed !== 0)
-      || (compressed > 0 && uncompressed / compressed > MAX_COMPRESSION_RATIO)) {
+    if (uncompressed > maxEntryUncompressedBytes || (compressed === 0 && uncompressed !== 0)
+      || (compressed > 0 && uncompressed / compressed > maxCompressionRatio)) {
       throw new InventoryImportParseError("unsafe_xlsx");
     }
     total += uncompressed;
-    if (total > MAX_TOTAL_UNCOMPRESSED) throw new InventoryImportParseError("unsafe_xlsx");
+    if (total > maxTotalUncompressedBytes) throw new InventoryImportParseError("unsafe_xlsx");
     // Unix symlink entries can redirect a consumer that extracts by name.
     const unixMode = u16(at + 40) >>> 12;
     if (u16(at + 4) >>> 8 === 3 && unixMode === 0xa) throw new InventoryImportParseError("unsafe_xlsx");

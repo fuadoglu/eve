@@ -70,17 +70,17 @@ begin
   end;
 
   v_invalid := app_private.preview_inventory_rows(v_source,v_hash,
-    '[{"source_row_key":"bad-1","room_name":"Mətbəx","name":"Qaşıq","quantity":"oops"}]'::jsonb);
+    '[{"source_row_number":2,"source_row_key":"bad-1","room_name":"Mətbəx","name":"Qaşıq","quantity":"oops"}]'::jsonb);
   if v_invalid->>'state'<>'invalid'
      or v_invalid->'errors'->0->>'field'<>'quantity'
-     or (v_invalid->'errors'->0->>'row')::integer<>1 then
+     or (v_invalid->'errors'->0->>'row')::integer<>2 then
     raise exception 'row-specific import preview error missing: %',v_invalid;
   end if;
   if (select j.preview->'rows' from app_private.import_jobs j
       where j.id=(v_invalid->>'id')::uuid)<>'[]'::jsonb then
     raise exception 'invalid raw import rows were retained';
   end if;
-  select jsonb_agg(jsonb_build_object('source_row_key','overflow-'||n,
+  select jsonb_agg(jsonb_build_object('source_row_number',n+1,'source_row_key','overflow-'||n,
     'room_name','Mətbəx','name','Qaşıq-'||n,'quantity','bad') order by n)
     into v_many_rows from generate_series(1,1001) n;
   v_invalid := app_private.preview_inventory_rows(v_source,v_hash,v_many_rows);
@@ -90,12 +90,12 @@ begin
      or (v_invalid->>'errors_truncated')::boolean is not true then
     raise exception 'overflow errors misreported: %',v_invalid;
   end if;
-  select jsonb_agg(jsonb_build_object('source_row_key','limit-'||n,
+  select jsonb_agg(jsonb_build_object('source_row_number',n+1,'source_row_key','limit-'||n,
     'room_name','Mətbəx','name','Qaşıq-'||n,'quantity','1') order by n)
-    into v_many_rows from generate_series(1,10001) n;
+    into v_many_rows from generate_series(1,5001) n;
   begin
     perform app_private.preview_inventory_rows(v_source,v_hash,v_many_rows);
-    raise exception '10001-row import accepted';
+    raise exception '5001-row import accepted';
   exception when invalid_parameter_value then null;
   end;
   begin
@@ -105,7 +105,7 @@ begin
   end;
 
   v_valid := app_private.preview_inventory_rows(v_source,v_hash,
-    '[{"source_row_key":"source-1","room_name":"Mətbəx","name":"Qaşıq","quantity":"4","unit":"piece"}]'::jsonb);
+    '[{"source_row_number":2,"source_row_key":"source-1","room_name":"Mətbəx","name":"Qaşıq","quantity":"4","unit":"piece"}]'::jsonb);
   if v_valid->>'state'<>'preview_ready' or jsonb_array_length(v_valid->'errors')<>0 then
     raise exception 'valid import preview rejected: %',v_valid;
   end if;
@@ -132,7 +132,7 @@ begin
     raise exception 'same-job replay duplicated item';
   end if;
   v_preview := app_private.preview_inventory_rows(v_source,v_hash,
-    '[{"source_row_key":"source-1","room_name":"Mətbəx","name":"Qaşıq","quantity":"4"}]'::jsonb);
+    '[{"source_row_number":2,"source_row_key":"source-1","room_name":"Mətbəx","name":"Qaşıq","quantity":"4"}]'::jsonb);
   if v_preview->>'state'<>'preview_ready' then
     raise exception 'independent batch reused source row key was rejected: %',v_preview; end if;
   begin
@@ -141,7 +141,7 @@ begin
   exception when unique_violation then null;
   end;
   v_preview := app_private.preview_inventory_rows(v_source,repeat('b',64),
-    '[{"source_row_key":"source-1","room_name":"Mətbəx","name":"Çəngəl","quantity":"2"}]'::jsonb);
+    '[{"source_row_number":2,"source_row_key":"source-1","room_name":"Mətbəx","name":"Çəngəl","quantity":"2"}]'::jsonb);
   if v_preview->>'state'<>'preview_ready' then
     raise exception 'independent batch with same row key rejected: %',v_preview; end if;
   perform app_private.commit_inventory_rows((v_preview->>'id')::uuid,1,v_preview->>'preview_hash');
@@ -164,7 +164,7 @@ begin
   end;
   begin
     perform app_private.preview_inventory_rows(v_source,v_hash,
-      '[{"source_row_key":"foreign-1","room_name":"Mətbəx","name":"Çəngəl","quantity":"2"}]'::jsonb);
+      '[{"source_row_number":2,"source_row_key":"foreign-1","room_name":"Mətbəx","name":"Çəngəl","quantity":"2"}]'::jsonb);
     raise exception 'cross-tenant import preview accepted';
   exception when no_data_found then null;
   end;
@@ -207,6 +207,38 @@ begin
     raise exception 'raw import rows leaked to Data API roles';
   end if;
 end $$;
+
+do $$
+begin
+  if not exists (select 1 from pg_policy where polrelid='storage.objects'::regclass
+      and polname='eve_import_media_direct_deny' and not polpermissive
+      and polroles @> array['anon'::regrole::oid,'authenticated'::regrole::oid])
+     or not exists (select 1 from storage.buckets where id='eve-private-import' and not public) then
+    raise exception 'private import Storage bucket boundary missing';
+  end if;
+end $$;
+begin;
+set local role authenticated;
+do $$ begin
+  begin
+    insert into storage.objects(id,bucket_id,name)
+    values ('c0000000-1930-0001-0000-000000000001','eve-private-import','direct-client.txt');
+    raise exception 'authenticated import bucket upload unexpectedly succeeded';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+rollback;
+begin;
+set local role anon;
+do $$ begin
+  begin
+    insert into storage.objects(id,bucket_id,name)
+    values ('c0000000-1930-0001-0000-000000000002','eve-private-import','direct-anon.txt');
+    raise exception 'anon import bucket upload unexpectedly succeeded';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+rollback;
 
 delete from auth.sessions where user_id in
   ('aaaaaaaa-1930-0001-0000-000000000001','aaaaaaaa-1930-0001-0000-000000000002');

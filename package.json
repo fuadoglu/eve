@@ -21,6 +21,7 @@
     "test:billing": "node --conditions=react-server --experimental-strip-types --test tests/unit/billing/*.test.ts",
     "test:finance": "node --conditions=react-server --experimental-strip-types --test tests/unit/finance/*.test.ts",
     "test:today": "node --conditions=react-server --experimental-strip-types --test tests/unit/today/*.test.ts",
+    "test:inventory": "node --conditions=react-server --experimental-strip-types --test tests/unit/inventory/*.test.ts",
     "test:ui": "node scripts/test-mobile-shell.mjs"
   },
   "dependencies": {

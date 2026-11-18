@@ -18,8 +18,21 @@ test("XLSX parses the inventory template and normalizes blank optional cells", a
     sheet.addRow(["A-2", "Mətbəx", "Stəkan", 6, null, null]);
   });
   assert.deepEqual(await parseInventoryXlsx(bytes), [
-    { source_row_key: "A-1", room_name: "Yataq", name: "Lampa", quantity: "2", unit: "piece", condition: "ok" },
-    { source_row_key: "A-2", room_name: "Mətbəx", name: "Stəkan", quantity: "6" },
+    { source_row_number: 2, source_row_key: "A-1", room_name: "Yataq", name: "Lampa", quantity: "2", unit: "piece", condition: "ok" },
+    { source_row_number: 3, source_row_key: "A-2", room_name: "Mətbəx", name: "Stəkan", quantity: "6" },
+  ]);
+});
+
+test("XLSX preserves the source worksheet row after a blank row", async () => {
+  const bytes = await workbookBytes((sheet) => {
+    sheet.addRow([...INVENTORY_IMPORT_HEADERS]);
+    sheet.addRow(["A-1", "Yataq", "Lampa", 2, "piece", "ok"]);
+    sheet.getRow(3);
+    sheet.getRow(4).values = ["A-2", "Mətbəx", "", "bad", "piece", "ok"];
+  });
+  assert.deepEqual(await parseInventoryXlsx(bytes), [
+    { source_row_number: 2, source_row_key: "A-1", room_name: "Yataq", name: "Lampa", quantity: "2", unit: "piece", condition: "ok" },
+    { source_row_number: 4, source_row_key: "A-2", room_name: "Mətbəx", name: "", quantity: "bad", unit: "piece", condition: "ok" },
   ]);
 });
 

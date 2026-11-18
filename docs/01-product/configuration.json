@@ -294,7 +294,97 @@
       "rationale": "Preview və transactional batch üçün ilkin hədd",
       "requirement": "R15",
       "acceptance": "AT35",
-      "mutable": true
+      "mutable": false
+    },
+    {
+      "key": "imports.max_file_bytes",
+      "value": 10485760,
+      "unit": "byte",
+      "scope": "server",
+      "rationale": "10 MiB parser ceiling bounds untrusted CSV/XLSX input before decoding",
+      "requirement": "R15",
+      "acceptance": "AT35",
+      "mutable": false
+    },
+    {
+      "key": "imports.max_columns",
+      "value": 6,
+      "unit": "sütun",
+      "scope": "server",
+      "rationale": "Versioned inventory template has exactly six columns",
+      "requirement": "R15",
+      "acceptance": "AT35",
+      "mutable": false
+    },
+    {
+      "key": "imports.max_cell_characters",
+      "value": 2000,
+      "unit": "UTF-16 code unit",
+      "scope": "server",
+      "rationale": "Bounds individual text cells before normalization and DB preview",
+      "requirement": "R15",
+      "acceptance": "AT35",
+      "mutable": false
+    },
+    {
+      "key": "imports.preview_error_limit",
+      "value": 1000,
+      "unit": "xəta",
+      "scope": "server",
+      "rationale": "Caps returned row-error details while preserving total error_count",
+      "requirement": "R15",
+      "acceptance": "AT35",
+      "mutable": false
+    },
+    {
+      "key": "imports.xlsx.max_entries",
+      "value": 128,
+      "unit": "ZIP entry",
+      "scope": "server",
+      "rationale": "Bounds OOXML archive directory work before workbook parsing",
+      "requirement": "R15",
+      "acceptance": "AT35",
+      "mutable": false
+    },
+    {
+      "key": "imports.xlsx.max_entry_uncompressed_bytes",
+      "value": 16777216,
+      "unit": "byte",
+      "scope": "server",
+      "rationale": "Bounds a single inflated OOXML entry",
+      "requirement": "R15",
+      "acceptance": "AT35",
+      "mutable": false
+    },
+    {
+      "key": "imports.xlsx.max_total_uncompressed_bytes",
+      "value": 33554432,
+      "unit": "byte",
+      "scope": "server",
+      "rationale": "Bounds aggregate inflated OOXML bytes",
+      "requirement": "R15",
+      "acceptance": "AT35",
+      "mutable": false
+    },
+    {
+      "key": "imports.xlsx.max_compression_ratio",
+      "value": 300,
+      "unit": "nisbət",
+      "scope": "server",
+      "rationale": "Rejects unusually compressed OOXML entries before library parsing",
+      "requirement": "R15",
+      "acceptance": "AT35",
+      "mutable": false
+    },
+    {
+      "key": "imports.xlsx.max_worksheets",
+      "value": 1,
+      "unit": "worksheet",
+      "scope": "server",
+      "rationale": "The documented inventory template is a single worksheet",
+      "requirement": "R15",
+      "acceptance": "AT35",
+      "mutable": false
     },
     {
       "key": "public.cache_availability_seconds",

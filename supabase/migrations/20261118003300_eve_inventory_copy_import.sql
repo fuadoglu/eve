@@ -122,6 +122,8 @@ alter table app_private.import_rows
   drop constraint import_rows_owner_account_id_source_row_key_key;
 alter table app_private.import_rows
   add constraint import_rows_batch_source_row_key_key unique(import_job_id,source_row_key);
+alter table app_private.import_jobs
+  add constraint import_jobs_row_count_limit check (row_count between 0 and 5000);
 grant select,insert,update on app_private.import_jobs to app_executor;
 grant select,insert on app_private.import_rows to app_executor;
 create policy import_jobs_inventory_read on app_private.import_jobs
@@ -167,6 +169,8 @@ declare
   v_duplicates text[];
   v_row jsonb;
   v_index integer;
+  v_source_row_text text;
+  v_source_row_number integer;
   v_key text;
   v_name text;
   v_room text;
@@ -175,7 +179,7 @@ declare
 begin
   if p_file_hash is null or p_file_hash !~ '^[a-f0-9]{64}$'
      or p_rows is null or jsonb_typeof(p_rows)<>'array'
-     or jsonb_array_length(p_rows)<1 or jsonb_array_length(p_rows)>10000 then
+     or jsonb_array_length(p_rows)<1 or jsonb_array_length(p_rows)>5000 then
     raise exception using errcode='22023',message='invalid_inventory_import_input';
   end if;
   v_owner := app_private.inventory_write_owner(p_property_id);
@@ -193,6 +197,12 @@ begin
   loop
     v_error_field := null;
     v_error_message := null;
+    v_source_row_text := v_row->>'source_row_number';
+    v_source_row_number := null;
+    if jsonb_typeof(v_row->'source_row_number')='number'
+       and v_source_row_text ~ '^[1-9][0-9]{0,7}$' then
+      v_source_row_number := v_source_row_text::integer;
+    end if;
     v_key := v_row->>'source_row_key';
     v_room := v_row->>'room_name';
     v_name := v_row->>'name';
@@ -200,8 +210,11 @@ begin
     if jsonb_typeof(v_row)<>'object' then
       v_error_field := 'row'; v_error_message := 'invalid_row';
     elsif exists (select 1 from jsonb_object_keys(v_row) k
-      where k not in ('source_row_key','room_name','name','quantity','unit','condition')) then
+      where k not in ('source_row_number','source_row_key','room_name','name','quantity','unit','condition')) then
       v_error_field := 'row'; v_error_message := 'unknown_field';
+    elsif v_source_row_number is null or v_source_row_number<2
+       or v_source_row_number>10485760 then
+      v_error_field := 'source_row_number'; v_error_message := 'invalid_source_row_number';
     elsif v_key is null or length(v_key)<1 or length(v_key)>160
        or v_key ~ '[[:cntrl:]]' then
       v_error_field := 'source_row_key'; v_error_message := 'invalid_source_row_key';
@@ -224,7 +237,7 @@ begin
       v_error_count := v_error_count+1;
       if v_error_count<=1000 then
         v_errors := v_errors || jsonb_build_array(jsonb_build_object(
-          'row',v_index,'field',v_error_field,'message',v_error_message));
+          'row',coalesce(v_source_row_number,v_index+1),'field',v_error_field,'message',v_error_message));
       end if;
     end if;
   end loop;
@@ -238,7 +251,7 @@ begin
     case when v_error_count=0 then 'preview_ready'::app_private.import_state
       else 'invalid'::app_private.import_state end,
     p_file_hash,v_hash,jsonb_build_object('property_id',p_property_id,
-      'rows',case when v_error_count=0 then p_rows else '[]'::jsonb end,
+     'rows',case when v_error_count=0 then p_rows else '[]'::jsonb end,
       'errors',v_errors,'error_count',v_error_count,'errors_truncated',v_error_count>1000),
     jsonb_array_length(p_rows)
   ) returning * into v_job;
@@ -262,6 +275,7 @@ declare
   v_property uuid;
   v_row jsonb;
   v_index integer;
+  v_source_row_number integer;
   v_room_id uuid;
   v_item_id uuid;
   v_key text;
@@ -301,6 +315,7 @@ begin
     from jsonb_array_elements(v_job.preview->'rows') with ordinality x(value,ordinality)
   loop
     v_key := v_row->>'source_row_key';
+    v_source_row_number := (v_row->>'source_row_number')::integer;
     if exists (select 1 from app_private.import_rows ir
       where ir.import_job_id=v_job.id and ir.source_row_key=v_key) then
       raise exception using errcode='23505',message='inventory_import_source_duplicate';
@@ -329,7 +344,7 @@ begin
     ) returning id into v_item_id;
     insert into app_private.import_rows(
       owner_account_id,property_id,import_job_id,source_row_key,row_number,created_inventory_item_id
-    ) values (v_owner,v_property,v_job.id,v_key,v_index,v_item_id);
+    ) values (v_owner,v_property,v_job.id,v_key,v_source_row_number,v_item_id);
     v_room_id := null;
   end loop;
   update app_private.import_jobs set state='completed',committed_at=statement_timestamp(),
