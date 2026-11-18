@@ -46,6 +46,15 @@ do $$ begin
   exception when unique_violation then null;
   end;
 end $$;
+insert into app_private.inspection_days(id,owner_account_id,property_id,local_date)
+  values ('a1813000-0000-0000-0000-000000000002','a1811000-0000-0000-0000-000000000001',
+   'a1812000-0000-0000-0000-000000000002',current_date);
+insert into app_private.inspection_events(id,owner_account_id,property_id,day_id,handover_key,
+  reservation_id,placement_id,event_kind,due_at) values
+  ('a1814000-0000-0000-0000-000000000002','a1811000-0000-0000-0000-000000000001',
+   'a1812000-0000-0000-0000-000000000002','a1813000-0000-0000-0000-000000000002',
+   'reservation:a181a000-0000-0000-0000-000000000001:checkout:a181b000-0000-0000-0000-000000000001',
+   'a181a000-0000-0000-0000-000000000001','a181b000-0000-0000-0000-000000000001','check_out',now());
 update app_private.reservations set state='completed',actual_check_out_at=now()
   where id='a181a000-0000-0000-0000-000000000001';
 do $$ begin
