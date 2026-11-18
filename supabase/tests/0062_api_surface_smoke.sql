@@ -41,6 +41,10 @@ begin
       'api.get_media_finalize_source_for_server(uuid,uuid,text)'::regprocedure,
       'api.get_media_actor_source_for_server(uuid,uuid)'::regprocedure,
       'api.get_media_scoped_source_for_server(text,uuid)'::regprocedure,
+      'api.create_task_link(uuid,uuid,uuid,text,text,text,timestamptz)'::regprocedure,
+      'api.revoke_task_link(uuid,uuid,uuid)'::regprocedure,
+      'api.read_scoped_task_for_server(text)'::regprocedure,
+      'api.transition_scoped_task_for_server(text,integer,text,text,text,text,uuid[],jsonb)'::regprocedure,
       'api.exchange_scoped_link_for_server(text)'::regprocedure,
       'api.apply_verified_billing_order_for_server(uuid)'::regprocedure,
       'api.get_today(date,uuid)'::regprocedure,
@@ -75,6 +79,10 @@ begin
       'api.finalize_media_upload_for_server(uuid,uuid,text,bigint,integer,text,text)'::regprocedure,
       'api.get_media_finalize_source_for_server(uuid,uuid,text)'::regprocedure,
       'api.get_media_actor_source_for_server(uuid,uuid)'::regprocedure,
+      'api.create_task_link(uuid,uuid,uuid,text,text,text,timestamptz)'::regprocedure,
+      'api.revoke_task_link(uuid,uuid,uuid)'::regprocedure,
+      'api.read_scoped_task_for_server(text)'::regprocedure,
+      'api.transition_scoped_task_for_server(text,integer,text,text,text,text,uuid[],jsonb)'::regprocedure,
       'api.exchange_scoped_link_for_server(text)'::regprocedure,
       'api.apply_verified_billing_order_for_server(uuid)'::regprocedure,
       'api.reconcile_verified_billing_event_for_server(uuid,text,text,bigint,text)'::regprocedure)
@@ -97,6 +105,10 @@ begin
       'api.finalize_media_upload_for_server(uuid,uuid,text,bigint,integer,text,text)'::regprocedure,
       'api.get_media_finalize_source_for_server(uuid,uuid,text)'::regprocedure,
       'api.get_media_actor_source_for_server(uuid,uuid)'::regprocedure,
+      'api.create_task_link(uuid,uuid,uuid,text,text,text,timestamptz)'::regprocedure,
+      'api.revoke_task_link(uuid,uuid,uuid)'::regprocedure,
+      'api.read_scoped_task_for_server(text)'::regprocedure,
+      'api.transition_scoped_task_for_server(text,integer,text,text,text,text,uuid[],jsonb)'::regprocedure,
       'api.exchange_scoped_link_for_server(text)'::regprocedure,
       'api.apply_verified_billing_order_for_server(uuid)'::regprocedure,
       'api.reconcile_verified_billing_event_for_server(uuid,text,text,bigint,text)'::regprocedure)
@@ -109,11 +121,19 @@ begin
                    'api.get_media_finalize_source_for_server(uuid,uuid,text)'::regprocedure,
                    'api.get_media_actor_source_for_server(uuid,uuid)'::regprocedure,
                    'api.get_media_scoped_source_for_server(text,uuid)'::regprocedure,
-                   'api.exchange_scoped_link_for_server(text)'::regprocedure,
+                   'api.create_task_link(uuid,uuid,uuid,text,text,text,timestamptz)'::regprocedure,
+      'api.revoke_task_link(uuid,uuid,uuid)'::regprocedure,
+      'api.read_scoped_task_for_server(text)'::regprocedure,
+      'api.transition_scoped_task_for_server(text,integer,text,text,text,text,uuid[],jsonb)'::regprocedure,
+      'api.exchange_scoped_link_for_server(text)'::regprocedure,
       'api.apply_verified_billing_order_for_server(uuid)'::regprocedure,
       'api.reconcile_verified_billing_event_for_server(uuid,text,text,bigint,text)'::regprocedure))
       or has_function_privilege('authenticated',p.oid,'EXECUTE') is distinct from
-        (p.oid not in ('api.finalize_media_upload_for_server(uuid,uuid,text,bigint,integer,text,text)'::regprocedure,
+        (p.oid not in ('api.create_task_link(uuid,uuid,uuid,text,text,text,timestamptz)'::regprocedure,
+      'api.revoke_task_link(uuid,uuid,uuid)'::regprocedure,
+      'api.read_scoped_task_for_server(text)'::regprocedure,
+      'api.transition_scoped_task_for_server(text,integer,text,text,text,text,uuid[],jsonb)'::regprocedure,
+      'api.finalize_media_upload_for_server(uuid,uuid,text,bigint,integer,text,text)'::regprocedure,
                        'api.get_media_finalize_source_for_server(uuid,uuid,text)'::regprocedure,
                        'api.get_media_actor_source_for_server(uuid,uuid)'::regprocedure,
                        'api.get_media_scoped_source_for_server(text,uuid)'::regprocedure,
@@ -127,7 +147,7 @@ begin
   select count(*) into mismatch_count
   from pg_proc p
   where p.pronamespace='api'::regnamespace;
-  if mismatch_count <> 38 then
+  if mismatch_count <> 42 then
     raise exception 'api RPC inventory changed: %', mismatch_count;
   end if;
 

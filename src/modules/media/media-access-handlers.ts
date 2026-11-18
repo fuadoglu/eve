@@ -52,7 +52,9 @@ export async function handleLinkSession(request: Request, exchange: ExchangeToke
     const maxAge = Math.max(1, Math.floor((expiryMs - now) / 1000));
     const secure = new URL(request.url).protocol === "https:" ? "; Secure" : "";
     const headers = privateHeaders();
-    const cookiePath = `/api/v1/s/${encodeURIComponent(body.token)}/`;
+    // The cookie contains only a hash; the raw bearer must not reappear in a
+    // Set-Cookie path. Each scoped route compares this hash with its token.
+    const cookiePath = "/api/v1/s/";
     headers.set("Set-Cookie", `eve_scope=${tokenHash}; Path=${cookiePath}; Max-Age=${maxAge}; HttpOnly; SameSite=Strict${secure}`);
     return new Response(JSON.stringify({ data: { resource_type: link.resource_type, expires_at: link.expires_at },
       meta: { request_id: crypto.randomUUID() } }), { status: 200, headers });

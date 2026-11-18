@@ -12355,7 +12355,7 @@
           },
           "title": {
             "type": "string",
-            "maxLength": 160,
+            "maxLength": 180,
             "minLength": 1
           },
           "due_at": {
