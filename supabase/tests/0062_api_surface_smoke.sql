@@ -58,9 +58,6 @@ begin
                         'api.reconcile_verified_billing_event_for_server(uuid,text,text,bigint,text)'::regprocedure,
                         'api.claim_due_outbox(integer,integer,integer)'::regprocedure,
                         'api.complete_outbox(uuid,uuid)'::regprocedure,
-                        'api.retry_outbox(uuid,uuid,text,integer)'::regprocedure,
-                        'api.claim_due_outbox(integer,integer,integer)'::regprocedure,
-                        'api.complete_outbox(uuid,uuid)'::regprocedure,
                         'api.retry_outbox(uuid,uuid,text,integer)'::regprocedure)
       or p.prokind <> 'f'
       or (p.oid = 'api.is_my_session_active()'::regprocedure and p.proowner <> 'app_session_reader'::regrole)
@@ -93,7 +90,10 @@ begin
       'api.transition_scoped_task_for_server(text,integer,text,text,text,text,uuid[],jsonb)'::regprocedure,
       'api.exchange_scoped_link_for_server(text)'::regprocedure,
       'api.apply_verified_billing_order_for_server(uuid)'::regprocedure,
-                    'api.reconcile_verified_billing_event_for_server(uuid,text,text,bigint,text)'::regprocedure)
+                    'api.reconcile_verified_billing_event_for_server(uuid,text,text,bigint,text)'::regprocedure,
+                    'api.claim_due_outbox(integer,integer,integer)'::regprocedure,
+                    'api.complete_outbox(uuid,uuid)'::regprocedure,
+                    'api.retry_outbox(uuid,uuid,text,integer)'::regprocedure)
           and p.provolatile <> 's')
       or (p.oid in ('api.revoke_my_sessions()'::regprocedure,
                     'api.create_property(text,text,text)'::regprocedure,
