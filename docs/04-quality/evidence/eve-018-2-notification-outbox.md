@@ -1,6 +1,6 @@
 # EVE-018.2 — Outbox worker primitives
 
-Tarix: 2026-11-18 (Asia/Baku). Status: **in_progress**; package is not counted Done before PR merge and merged-main CI.
+Tarix: 2026-11-18 (Asia/Baku). Status: **done for the EVE-018.2 worker-dispatch component scope**. Parent EVE-018 and full AT16/AT36 remain open.
 
 ## Scope
 
@@ -18,8 +18,10 @@ The producer event queue is not a notification inbox. It does not implement reci
 | `scripts/validate-schemas.py` | Passed: 207 schemas, 14 positive and 23 negative examples |
 | `node scripts/test-prototype.mjs` | Passed: 71 VM/fake-DOM assertions; no browser/device claim |
 | `git diff --check` | Passed |
-| Full-chain PostgreSQL 17 CI and fresh Supabase-local integration | Pending PR CI |
+| PR #154 final-head CI `#44282539247` | Passed: `docs`, PostgreSQL 17 `sql_schema`, fresh synthetic `supabase_local` |
+| Merged-main CI `#44283917555` | Passed: `docs`, PostgreSQL 17 `sql_schema`, fresh synthetic `supabase_local` |
+| Independent read-only QA review, final head `6595a437f9ddc232e63f8cb614861006e0621bf5` | No remaining blocker reported; reviewer did not run tests |
 
 ## Boundaries
 
-This local SQL result used a minimal synthetic PostgreSQL 16 harness with the core schema and access-policy migrations, not the full application migration chain. Docker was unavailable locally. CI is required to prove the migration in sequence after migration 039 and in a fresh Supabase stack. No hosted Eve database, staging scheduler, SMTP, push provider, or production resource was changed or tested.
+This local SQL result used a minimal synthetic PostgreSQL 16 harness with the core schema and access-policy migrations, not the full application migration chain. Full-chain migration order after migration 039 and a fresh Supabase stack passed in the two CI runs above. No hosted Eve database, staging scheduler, SMTP, push provider, or production resource was changed or tested. This component result does not prove hosted scheduling, notification fan-out, email/Web Push delivery, or full AT16/AT36.
