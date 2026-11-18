@@ -1732,6 +1732,7 @@
       "owned_path_candidates": [
         "supabase/migrations/20261118004000_eve_notification_outbox_worker.sql",
         "supabase/tests/0077_notification_outbox_worker_smoke.sql",
+        "supabase/tests/0062_rls_coverage_smoke.sql",
         ".github/workflows/ci.yml",
         "scripts/verify-contracts.mjs",
         "docs/01-product/DECISIONS.md",

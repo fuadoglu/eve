@@ -25,7 +25,7 @@ begin
         'TRUNCATE,REFERENCES,TRIGGER')
       or has_table_privilege('app_executor',c.oid,'DELETE') is distinct from (c.relname='realtor_accounts')
       or has_table_privilege('app_executor',c.oid,'UPDATE') is distinct from
-        (c.relname in ('manager_invites','property_memberships','idempotency_keys','tasks','access_links','media_assets','link_session_rate_limits','reservations','reservation_placements','occupancy','realtor_accounts','import_jobs'))
+        (c.relname in ('manager_invites','property_memberships','idempotency_keys','tasks','access_links','media_assets','link_session_rate_limits','reservations','reservation_placements','occupancy','realtor_accounts','import_jobs','outbox'))
       or has_table_privilege('app_executor',c.oid,'INSERT') is distinct from
         (c.relname in ('owner_accounts','properties','trial_claims','subscriptions','rooms','inventory_items','media_bindings','media_assets','manager_invites','invite_properties','property_memberships','manager_invite_accept_context','reservations','reservation_placements','occupancy','rent_entries','realtor_accounts','realtor_settlements','outbox','audit_events','idempotency_keys','task_transition_events','task_transition_media','link_session_rate_limits','tasks','access_links','reservation_attribution_transfers','inspection_days','inspection_events','expenses','expense_allocations','import_jobs','import_rows'))
       or has_table_privilege('app_executor',c.oid,'SELECT') is distinct from
@@ -34,7 +34,7 @@ begin
           'manual_blocks','contacts','contact_properties','rent_entries','subscriptions','rooms','inventory_items','media_assets','media_bindings','idempotency_keys',
           'manager_invites','invite_properties','tasks','access_links','inspection_submissions',
           'inspection_snapshot_rooms','inspection_room_answers','task_transition_events','task_transition_media',
-          'expenses','expense_allocations','inspection_answers','inspection_events','inspection_days','guides','guide_versions','link_session_rate_limits','realtor_accounts','realtor_settlements','reservation_attribution_transfers','import_jobs','import_rows')));
+          'expenses','expense_allocations','inspection_answers','inspection_events','inspection_days','guides','guide_versions','link_session_rate_limits','realtor_accounts','realtor_settlements','reservation_attribution_transfers','import_jobs','import_rows','notification_preferences','outbox')));
   if bad_count <> 0 then
     raise exception 'private RLS/grant allowlist mismatch: % tables',bad_count;
   end if;
@@ -227,8 +227,20 @@ begin
   select count(*) into table_count
   from pg_policy p join pg_class c on c.oid=p.polrelid
   where c.relnamespace='app_private'::regnamespace;
-  if table_count <> 166 then
+  if table_count <> 169 then
     raise exception 'unexpected private table policies: %',table_count;
+  end if;
+  if (select count(*) from (values
+        ('notification_preferences','notification_preferences_scheduler_read','r'),
+        ('outbox','outbox_scheduler_read','r'),
+        ('outbox','outbox_scheduler_update','w')
+      ) as expected(table_name,policy_name,command)
+      join pg_class c on c.relname=expected.table_name
+        and c.relnamespace='app_private'::regnamespace
+      join pg_policy p on p.polrelid=c.oid and p.polname=expected.policy_name
+        and p.polcmd=expected.command
+        and p.polroles=array['app_executor'::regrole::oid]) <> 3 then
+    raise exception 'outbox scheduler policies missing or mis-scoped';
   end if;
   if (select count(*) from (values
         ('access_links','access_links_task_create_internal','a'),
