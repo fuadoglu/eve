@@ -1843,7 +1843,7 @@
       "parent_issue": 27,
       "milestone": "M4",
       "title": "Duplicate/import tenant testləri",
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "EVE-019.2"
       ],
