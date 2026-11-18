@@ -25,9 +25,9 @@ Runtime: Node.js 24.22.2 və pnpm 12.18.0 (`/tmp/eve0193-toolchain`, repository 
 
 ## DB/CI və müstəqil review
 
-`supabase/tests/0073_inventory_copy_import_smoke.sql`-a 5,001 row rejection, source row number, private bucket privacy/policy və anon/authenticated Storage write denial əlavə edildi. `sql_schema` Storage fixture-ə `eve-private-import` bucket əlavə olunub. CI-yə migration 033, sonrakı private-import migrations 037/038, parser suite və smoke 0073 daxil edilib. Cari host-da Docker/PostgreSQL yoxdur; buna görə dəyişdirilmiş migration/smoke **bu checkout-da hələ icra edilməyib**. PR PostgreSQL 17 `sql_schema` və fresh `supabase_local` job-ları həmin DB dəyişikliklərinin real gate-idir; nəticə alınmadan DB smoke “passed” sayılmır.
+`supabase/tests/0073_inventory_copy_import_smoke.sql`-a 5,001 row rejection, source row number, private bucket privacy/policy və anon/authenticated Storage write denial əlavə edildi. `sql_schema` Storage fixture-ə `eve-private-import` bucket əlavə olunub. CI-yə migration 033, sonrakı private-import migrations 037/038, parser suite və smoke 0073 daxil edilib. Cari host-da Docker/PostgreSQL yoxdur, ona görə migration/smoke localda işlədilməyib. Bunun əvəzinə PR #150 CI run [#44264914510](https://github.com/fuadoglu/eve/actions/runs/44264914510) `docs`, PostgreSQL 17 `sql_schema` və fresh `supabase_local` job-larının üçünü də **pass** etdi; `0073_inventory_copy_import_smoke.sql`, 0062 allowlist-ləri və HTTP storage boundary sınaqları CI-də işlədildi. Bu hosted CI/synthetic local stack sübutudur, Eve staging/production DB sübutu deyil.
 
-Müstəqil read-only integration review branch-in cari diff-i üçün istənib; nəticə və düzəlişlər alınmadan review gate açıqdır.
+Müstəqil read-only integration review PR head `a31a8c339deae656f930e4f52b4596398adbde09`-da tamamlandı; ilkin tapıntılar (sql_schema bucket seed və ZIP adversarial coverage) düzəldildi, follow-up review əlavə P0/P1 blocker tapmadı. Review agenti sınaqları özü işlətməyib; test sübutu yuxarıdakı local/CI nəticələridir. Squash merge və merged-main CI hələ gözlənir.
 
 ## Qəbul sərhədləri və risk
 
