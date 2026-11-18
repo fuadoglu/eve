@@ -151,7 +151,7 @@ jobs:
             ('eve-public-property',false), ('eve-public-guide',false),
             ('eve-private-guest',false), ('eve-private-receipt',false),
             ('eve-private-inspection',false), ('eve-private-task',false),
-            ('eve-private-inventory',false),
+            ('eve-private-inventory',false), ('eve-private-import',false),
             ('unrelated-bucket',false);
           SQL
       - name: Storage boundary migration tətbiq et

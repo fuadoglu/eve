@@ -13,7 +13,7 @@ Tarix: 2026-11-18. Branch: `feat/EVE-019-3-import-parser-final`. Status: **in pr
 
 Runtime: Node.js 24.22.2 və pnpm 12.18.0 (`/tmp/eve0193-toolchain`, repository xaricində).
 
-- `pnpm test:inventory` — **11/11 keçdi**; CSV/XLSX positive/negative, row number, ZIP/file/row limits, formula/extra workbook, contract DTO.
+- `pnpm test:inventory` — **14/14 keçdi**; CSV/XLSX positive/negative, source row number, row/file/cell bounds, ZIP compression-ratio/entry/inflated-size caps, traversal path/XML entity rejection, formula/extra workbook və contract DTO.
 - `pnpm typecheck` — **keçdi**.
 - `pnpm build` — **keçdi**; Next.js production build.
 - `node scripts/docs-check.mjs` — **keçdi**, 93 Markdown faylı.
@@ -25,7 +25,7 @@ Runtime: Node.js 24.22.2 və pnpm 12.18.0 (`/tmp/eve0193-toolchain`, repository 
 
 ## DB/CI və müstəqil review
 
-`supabase/tests/0073_inventory_copy_import_smoke.sql`-a 5,001 row rejection, source row number, private bucket privacy/policy və anon/authenticated Storage write denial əlavə edildi. CI-yə migration 033, sonrakı private-import migrations 037/038, parser suite və smoke 0073 daxil edilib. Cari host-da Docker/PostgreSQL yoxdur; buna görə dəyişdirilmiş migration/smoke **bu checkout-da hələ icra edilməyib**. PR PostgreSQL 17 `sql_schema` və fresh `supabase_local` job-ları həmin DB dəyişikliklərinin real gate-idir; nəticə alınmadan DB smoke “passed” sayılmır.
+`supabase/tests/0073_inventory_copy_import_smoke.sql`-a 5,001 row rejection, source row number, private bucket privacy/policy və anon/authenticated Storage write denial əlavə edildi. `sql_schema` Storage fixture-ə `eve-private-import` bucket əlavə olunub. CI-yə migration 033, sonrakı private-import migrations 037/038, parser suite və smoke 0073 daxil edilib. Cari host-da Docker/PostgreSQL yoxdur; buna görə dəyişdirilmiş migration/smoke **bu checkout-da hələ icra edilməyib**. PR PostgreSQL 17 `sql_schema` və fresh `supabase_local` job-ları həmin DB dəyişikliklərinin real gate-idir; nəticə alınmadan DB smoke “passed” sayılmır.
 
 Müstəqil read-only integration review branch-in cari diff-i üçün istənib; nəticə və düzəlişlər alınmadan review gate açıqdır.
 
