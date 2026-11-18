@@ -1693,7 +1693,7 @@
       "parent_issue": 26,
       "milestone": "M3",
       "title": "Reservation cleaning upsert/readiness",
-      "status": "backlog",
+      "status": "in_progress",
       "depends_on": [
         "EVE-012.3",
         "EVE-017.3"

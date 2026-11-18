@@ -28,7 +28,7 @@ accepted, revoked və expired terminaldır. Yanlış email/token neytral 404-dü
 | hold / confirmed | Ləğv et | cancelled | Alınan pul varsa saxlanılan/qaytarılacaq məbləğ açıq təsdiq edilir; refund fiziki baş verməyibsə qaytarılıb yazılmır |
 | confirmed | Giriş etdi | checked_in | Aktiv hüquq, cari versiya; faktiki giriş vaxtı və audit |
 | confirmed | Qonaq gəlmədi | no_show | Plan giriş vaxtı keçib; pul qərarı ayrıca, occupancy azad edilir |
-| checked_in | Çıxış etdi | completed | Faktiki çıxış, təmizlik/yoxlama işi idempotent yenilənir; gələcək günlər yalnız ayrıca təsdiqlə açılır |
+| checked_in | Çıxış etdi | completed | Faktiki çıxış, təmizlik/yoxlama işi idempotent yenilənir və readiness eyni transaction-da hesablanır; gələcək günlər yalnız ayrıca təsdiqlə açılır |
 | hold / confirmed / checked_in | Tarixi dəyiş | Eyni | Yeni interval və qiymət razılaşması, qalıq, gələcək task və occupancy birlikdə yenilənir |
 | hold / confirmed / checked_in | Evi dəyiş | Eyni | Yalnız eyni sahib, hər iki evdə icazə/aktivlik və toqquşma yoxlaması; yeni immutable placement, qeyri-pul attribution transfer, köhnə tamamlanmış tarixçə dəyişmir |
 
@@ -46,6 +46,8 @@ Completed-dən yalnız `release_remaining_days` əməliyyatı mümkündür: fakt
 | open / accepted / reported_done | Ləğv et | cancelled | Səlahiyyətli şəxs; keçid yazmaq üçün bağlanır, tarixçə saxlanır |
 
 İşin tamamlanması xərcin təsdiqi və ya ödənilməsi demək deyil. Expired abunədə əvvəl verilmiş iş yalnız mövcud keçidin yazı müddətində nəticə qəbul edə bilər; yeni iş yaradıla bilməz.
+
+D47 readiness qaydası: `cleaning_pending` hər hansı aktiv readiness-required task completed olmayanda, yaxud onun linked inspection event-i üzrə completed submission və snapshot otaqlarının hamısına explicit cavab olmayanda qalır. Bütün tələb olunan task və yoxlama şərtləri ödənəndə `ready` olur. `cancelled` task bloklamır; mövcud `attention_required` açıq təsdiq olmadan saxlanır. Reservation checkout eyni placement-də olan mövcud cleaning task-ını, completed olsa belə, həmin kimlik/təlimat/assignee və transition history ilə saxlayıb readiness-required edir və yeni checkout inspection event-inə bağlayır. Checkout üçün task yoxdursa yeni task yaradılır. Əvvəlki completion yeni inspection submission və snapshot otaqlarının hamısının cavabı olmadan readiness-i açmır. Task/inspection yazıları readiness-i eyni transaction-da yeniləyir. `readiness_retry_required` tam command retry siqnalıdır.
 
 ## İnventar yoxlaması
 
