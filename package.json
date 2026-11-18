@@ -21,11 +21,13 @@
     "test:billing": "node --conditions=react-server --experimental-strip-types --test tests/unit/billing/*.test.ts",
     "test:finance": "node --conditions=react-server --experimental-strip-types --test tests/unit/finance/*.test.ts",
     "test:today": "node --conditions=react-server --experimental-strip-types --test tests/unit/today/*.test.ts",
+    "test:inventory": "node --conditions=react-server --experimental-strip-types --test tests/unit/inventory/*.test.ts",
     "test:ui": "node scripts/test-mobile-shell.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",
     "@supabase/supabase-js": "2.119.0",
+    "exceljs": "4.4.0",
     "lucide-react": "0.468.0",
     "next": "16.4.6",
     "react": "19.3.1",

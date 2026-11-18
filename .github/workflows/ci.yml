@@ -57,6 +57,8 @@ jobs:
         run: pnpm test:finance
       - name: Today projection contract unit sınaqları
         run: pnpm test:today
+      - name: Inventory parser və contract unit sınaqları
+        run: pnpm test:inventory
       - name: TypeScript yoxlaması
         run: pnpm typecheck
       - name: Production build
@@ -149,7 +151,7 @@ jobs:
             ('eve-public-property',false), ('eve-public-guide',false),
             ('eve-private-guest',false), ('eve-private-receipt',false),
             ('eve-private-inspection',false), ('eve-private-task',false),
-            ('eve-private-inventory',false),
+            ('eve-private-inventory',false), ('eve-private-import',false),
             ('unrelated-bucket',false);
           SQL
       - name: Storage boundary migration tətbiq et
@@ -334,6 +336,8 @@ jobs:
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261118003200_eve_realtor_settlement.sql
       - name: Realtor settlement tenant, version, idempotency and no-double-income smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0072_realtor_settlement_smoke.sql
+      - name: Inventory copy/import migration
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261118003300_eve_inventory_copy_import.sql
       - name: Expense proposal and allocation migration
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261118003400_eve_expense_proposal_allocation.sql
       - name: Expense allocation, scope, and replay smoke
@@ -341,9 +345,13 @@ jobs:
       - name: Task link and scoped expense migrations
         run: |
           docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261118003500_eve_task_link_http.sql
+          docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261118003700_eve_private_import_enum.sql
+          docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261118003800_eve_private_import_bucket.sql
           docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261118003900_eve_scoped_task_expense.sql
       - name: Task link revoke, scoped expense, and replay smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0074_task_link_http_smoke.sql
+      - name: Inventory copy/import tenant and idempotency smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0073_inventory_copy_import_smoke.sql
       - name: Calendar interval query p95 synthetic smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0070_calendar_interval_performance.sql
       - name: 56 cədvəlin RLS və grant coverage smoke
@@ -435,6 +443,8 @@ jobs:
             < supabase/tests/0075_expense_proposal_allocation_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
             < supabase/tests/0074_task_link_http_smoke.sql
+          docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
+            < supabase/tests/0073_inventory_copy_import_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
             < supabase/tests/0062_rls_coverage_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \

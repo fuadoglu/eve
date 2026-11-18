@@ -2297,7 +2297,8 @@
       "schema": "MediaAsset",
       "api_field": "classification",
       "db_enum": "media_classification",
-      "mode": "exact"
+      "mode": "subset",
+      "note": "private_import yalnız server-side import source üçündür; API media və UploadInput DTO-larında açıqlanmır (D46)."
     },
     {
       "schema": "MediaAsset",
@@ -2309,7 +2310,8 @@
       "schema": "UploadInput",
       "api_field": "classification",
       "db_enum": "media_classification",
-      "mode": "exact"
+      "mode": "subset",
+      "note": "private_import yalnız server-side import source üçündür; API media və UploadInput DTO-larında açıqlanmır (D46)."
     },
     {
       "schema": "BillingOrder",
@@ -3471,6 +3473,16 @@
       "schema": "TaskTransitionInput",
       "api_field": "note",
       "rule": "EVE-017.1: report_done üçün ayrıca completion report, request_rework üçün səbəb tarixçəsinə yazılır; tasks.description təlimatına yazılmır. Digər action-larda state machine qaydası əsasdır."
+    },
+    {
+      "schema": "ImportPreview",
+      "api_field": "error_count",
+      "rule": "Normallaşdırılmış import preview JSON-dan DB funksiyasının hesabladığı tam xəta sayı; configuration.json limits."
+    },
+    {
+      "schema": "ImportPreview",
+      "api_field": "errors_truncated",
+      "rule": "error_count imports.preview_error_limit-dən çox olduqda true; DB preview projection."
     }
   ]
 }

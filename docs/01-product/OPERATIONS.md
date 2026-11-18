@@ -66,3 +66,5 @@ Problem sahibi/meneceri xəbərdar edir, avtomatik depozit tutulması və invent
 ## İdxal / ixrac
 
 CSV və XLSX üçün hazır şablon: rezervasiya və inventar. Preview + sətir səhvləri + təsdiq; xətalı fayl səssiz qismən import edilmir. Batch ID və source row key ilə təkrar import dublikat yaratmır. Tarix formatı və ev uyğunluğu açıqdır; formula/csv injection export-da zərərsizləşdirilir. Import mövcud qeydləri overwrite etmir. Böyük fayl batch ilə işlənir, tenant kvotası var.
+
+İnventar parseri yalnız versiyalanmış altı sütunlu şablonu qəbul edir: maksimum 10 MiB, 5,000 data sətiri və 2,000 UTF-16 code unit hər xana. XLSX bir worksheet, ən çox 128 ZIP entry, 16 MiB bir entry, 32 MiB açılmış cəm və 300:1 sıxılma nisbəti ilə məhdudlaşır. Preview xətasının sətir nömrəsi ilkin CSV record/XLSX worksheet nömrəsidir və header sətri də sayılır; boş XLSX sətirləri sonrakı səhvlərin nömrəsini dəyişmir. Dəqiq versiyalanmış limitlər [configuration.json](configuration.json)-dadır.

@@ -25,16 +25,16 @@ begin
         'TRUNCATE,REFERENCES,TRIGGER')
       or has_table_privilege('app_executor',c.oid,'DELETE') is distinct from (c.relname='realtor_accounts')
       or has_table_privilege('app_executor',c.oid,'UPDATE') is distinct from
-        (c.relname in ('manager_invites','property_memberships','idempotency_keys','tasks','access_links','media_assets','link_session_rate_limits','reservations','reservation_placements','occupancy','realtor_accounts'))
+        (c.relname in ('manager_invites','property_memberships','idempotency_keys','tasks','access_links','media_assets','link_session_rate_limits','reservations','reservation_placements','occupancy','realtor_accounts','import_jobs'))
       or has_table_privilege('app_executor',c.oid,'INSERT') is distinct from
-        (c.relname in ('owner_accounts','properties','trial_claims','subscriptions','rooms','inventory_items','media_bindings','media_assets','manager_invites','invite_properties','property_memberships','manager_invite_accept_context','reservations','reservation_placements','occupancy','rent_entries','realtor_accounts','realtor_settlements','outbox','audit_events','idempotency_keys','task_transition_events','task_transition_media','link_session_rate_limits','tasks','access_links','reservation_attribution_transfers','inspection_days','inspection_events','expenses','expense_allocations'))
+        (c.relname in ('owner_accounts','properties','trial_claims','subscriptions','rooms','inventory_items','media_bindings','media_assets','manager_invites','invite_properties','property_memberships','manager_invite_accept_context','reservations','reservation_placements','occupancy','rent_entries','realtor_accounts','realtor_settlements','outbox','audit_events','idempotency_keys','task_transition_events','task_transition_media','link_session_rate_limits','tasks','access_links','reservation_attribution_transfers','inspection_days','inspection_events','expenses','expense_allocations','import_jobs','import_rows'))
       or has_table_privilege('app_executor',c.oid,'SELECT') is distinct from
         (c.relname in ('profiles','owner_accounts','properties','occupancy',
           'property_memberships','reservations','reservation_placements',
           'manual_blocks','contacts','contact_properties','rent_entries','subscriptions','rooms','inventory_items','media_assets','media_bindings','idempotency_keys',
           'manager_invites','invite_properties','tasks','access_links','inspection_submissions',
           'inspection_snapshot_rooms','inspection_room_answers','task_transition_events','task_transition_media',
-          'expenses','expense_allocations','inspection_answers','inspection_events','inspection_days','guides','guide_versions','link_session_rate_limits','realtor_accounts','realtor_settlements','reservation_attribution_transfers')));
+          'expenses','expense_allocations','inspection_answers','inspection_events','inspection_days','guides','guide_versions','link_session_rate_limits','realtor_accounts','realtor_settlements','reservation_attribution_transfers','import_jobs','import_rows')));
   if bad_count <> 0 then
     raise exception 'private RLS/grant allowlist mismatch: % tables',bad_count;
   end if;
@@ -147,6 +147,8 @@ begin
     ('invite_properties','invite_properties_matching_email_read'),
     ('rooms','rooms_inventory_read'),
     ('inventory_items','inventory_items_inventory_read'),
+    ('import_jobs','import_jobs_inventory_read'),
+    ('import_rows','import_rows_inventory_read'),
     ('media_assets','media_assets_inventory_read'),
     ('media_assets','media_assets_upload_quota_read'),
     ('media_bindings','media_bindings_inventory_read'),
@@ -225,7 +227,7 @@ begin
   select count(*) into table_count
   from pg_policy p join pg_class c on c.oid=p.polrelid
   where c.relnamespace='app_private'::regnamespace;
-  if table_count <> 161 then
+  if table_count <> 166 then
     raise exception 'unexpected private table policies: %',table_count;
   end if;
   if (select count(*) from (values
@@ -260,7 +262,8 @@ begin
         'realtor_settlement_command_insert',
         'outbox_reservation_create','audit_events_reservation_create','task_transition_events_internal_insert','task_transition_media_internal_insert','outbox_task_transition_create',
         'placements_at10_insert','occupancy_at10_insert','at10_idempotency_insert','at10_task_event_insert','at10_rent_insert',
-        'at10_audit_insert','at10_outbox_insert','at10_inspection_day_insert','at10_inspection_event_insert')) <> 26
+        'at10_audit_insert','at10_outbox_insert','at10_inspection_day_insert','at10_inspection_event_insert',
+        'import_jobs_inventory_insert','import_rows_inventory_insert')) <> 28
      or not exists (select 1 from pg_policy where polrelid='app_private.idempotency_keys'::regclass
        and polname='idempotency_keys_reservation_update' and polcmd='w'
        and polroles=array['app_executor'::regrole::oid])
@@ -327,6 +330,12 @@ begin
       and polroles=array['app_executor'::regrole::oid])
      or not exists (select 1 from pg_policy where polrelid='app_private.property_memberships'::regclass
       and polname='property_memberships_invite_create' and polcmd='a'
+      and polroles=array['app_executor'::regrole::oid])
+     or not exists (select 1 from pg_policy where polrelid='app_private.import_jobs'::regclass
+      and polname='import_jobs_inventory_insert' and polcmd='a'
+      and polroles=array['app_executor'::regrole::oid])
+     or not exists (select 1 from pg_policy where polrelid='app_private.import_rows'::regclass
+      and polname='import_rows_inventory_insert' and polcmd='a'
       and polroles=array['app_executor'::regrole::oid]) then
     raise exception 'owner/inventory/invite scoped insert policies missing';
   end if;
@@ -338,6 +347,9 @@ begin
       and polroles=array['app_executor'::regrole::oid])
      or not exists (select 1 from pg_policy where polrelid='app_private.property_memberships'::regclass
       and polname='property_memberships_invite_reactivate' and polcmd='w'
+      and polroles=array['app_executor'::regrole::oid])
+     or not exists (select 1 from pg_policy where polrelid='app_private.import_jobs'::regclass
+      and polname='import_jobs_inventory_update' and polcmd='w'
       and polroles=array['app_executor'::regrole::oid])
      or not exists (select 1 from pg_policy where polrelid='app_private.tasks'::regclass
       and polname='tasks_transition_internal_update' and polcmd='w'

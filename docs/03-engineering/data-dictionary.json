@@ -170,7 +170,8 @@
         "private_receipt",
         "private_inspection",
         "private_task",
-        "private_inventory"
+        "private_inventory",
+        "private_import"
       ]
     },
     "media_state": {
@@ -8233,7 +8234,7 @@
         },
         {
           "name": "media_bucket_classification",
-          "expression": "(classification='public_property' AND bucket='eve-public-property') OR (classification='public_guide' AND bucket='eve-public-guide') OR (classification='private_guest' AND bucket='eve-private-guest') OR (classification='private_receipt' AND bucket='eve-private-receipt') OR (classification='private_inspection' AND bucket='eve-private-inspection') OR (classification='private_task' AND bucket='eve-private-task') OR (classification='private_inventory' AND bucket='eve-private-inventory')",
+          "expression": "(classification='public_property' AND bucket='eve-public-property') OR (classification='public_guide' AND bucket='eve-public-guide') OR (classification='private_guest' AND bucket='eve-private-guest') OR (classification='private_receipt' AND bucket='eve-private-receipt') OR (classification='private_inspection' AND bucket='eve-private-inspection') OR (classification='private_task' AND bucket='eve-private-task') OR (classification='private_inventory' AND bucket='eve-private-inventory') OR (classification='private_import' AND bucket='eve-private-import')",
           "enforcement": "CHECK"
         },
         {
@@ -10465,7 +10466,7 @@
           "type": "jsonb",
           "nullable": true,
           "default": null,
-          "description": "Sətir say və səhvləri",
+          "description": "Normallaşdırılmış preview; səhvlər source file row number, error_count və truncation bayrağını saxlayır",
           "validation": [
             "object:preview_result"
           ]
@@ -10475,9 +10476,9 @@
           "type": "integer",
           "nullable": false,
           "default": 0,
-          "description": "Sətir sayı",
+          "description": "İdxal data sətir sayı; maksimum imports.max_rows (header daxil deyil)",
           "validation": [
-            "row_count >= 0"
+            "row_count BETWEEN 0 AND 5000"
           ]
         },
         {
@@ -10568,7 +10569,13 @@
           "deferrable": false
         }
       ],
-      "checks": [],
+      "checks": [
+        {
+          "name": "import_jobs_row_count_limit",
+          "expression": "row_count BETWEEN 0 AND 5000",
+          "enforcement": "CHECK"
+        }
+      ],
       "indexes": [
         {
           "columns": [
@@ -10645,7 +10652,7 @@
           "type": "integer",
           "nullable": false,
           "default": null,
-          "description": "Sətir nömrəsi",
+          "description": "Source fayldakı CSV record-un başlanğıc fiziki sətri və ya XLSX worksheet sətri; header daxil edilir",
           "validation": [
             "row_number >= 1"
           ]
@@ -10691,7 +10698,7 @@
       "unique": [
         {
           "columns": [
-            "owner_account_id",
+            "import_job_id",
             "source_row_key"
           ],
           "predicate": null
@@ -11134,7 +11141,7 @@
     }
   ],
   "storage": {
-    "decision": "D33+D34",
+    "decision": "D33+D34+D46",
     "all_buckets_private": true,
     "bucket_by_classification": {
       "public_property": "eve-public-property",
@@ -11143,7 +11150,8 @@
       "private_receipt": "eve-private-receipt",
       "private_inspection": "eve-private-inspection",
       "private_task": "eve-private-task",
-      "private_inventory": "eve-private-inventory"
+      "private_inventory": "eve-private-inventory",
+      "private_import": "eve-private-import"
     }
   },
   "access_boundary": {
