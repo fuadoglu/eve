@@ -12355,7 +12355,7 @@
           },
           "title": {
             "type": "string",
-            "maxLength": 160,
+            "maxLength": 180,
             "minLength": 1
           },
           "due_at": {
@@ -15316,7 +15316,7 @@
           "row_count": {
             "type": "integer",
             "minimum": 0,
-            "maximum": 1000000
+            "maximum": 5000
           },
           "errors": {
             "type": "array",
@@ -15326,7 +15326,8 @@
               "properties": {
                 "row": {
                   "type": "integer",
-                  "minimum": 1
+                  "minimum": 1,
+                  "description": "CSV record-un başlanğıc fiziki sətri və ya XLSX worksheet sətir nömrəsi; header sətiri daxil edilir."
                 },
                 "field": {
                   "type": "string",
@@ -15357,6 +15358,14 @@
           "updated_at": {
             "type": "string",
             "format": "date-time"
+          },
+          "error_count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5000
+          },
+          "errors_truncated": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -15369,7 +15378,9 @@
           "errors",
           "version",
           "created_at",
-          "updated_at"
+          "updated_at",
+          "error_count",
+          "errors_truncated"
         ]
       },
       "ImportCommitInput": {

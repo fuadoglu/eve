@@ -197,6 +197,28 @@ for(const m of state.machines){
 }
 unique(config.policies.map(p=>p.key),'Configuration keys');
 for(const p of config.policies)assert(reqs.has(p.requirement)&&tests.has(p.acceptance)&&p.rationale&&p.unit&&typeof p.mutable==='boolean',`${p.key}: config metadata`);
+const configValue=key=>config.policies.find(p=>p.key===key)?.value;
+const importLimitSource=fs.readFileSync(path.join(root,'src/modules/inventory/import-parser-limits.ts'),'utf8');
+const sourceLimit=name=>{
+  const match=new RegExp(`\\b${name}:\\s*([0-9_]+)`).exec(importLimitSource);
+  return match?Number(match[1].replaceAll('_','')):undefined;
+};
+const importLimits={
+  maxFileBytes:'imports.max_file_bytes',maxRows:'imports.max_rows',maxColumns:'imports.max_columns',
+  maxCellCharacters:'imports.max_cell_characters',previewErrorLimit:'imports.preview_error_limit',
+  maxEntries:'imports.xlsx.max_entries',maxEntryUncompressedBytes:'imports.xlsx.max_entry_uncompressed_bytes',
+  maxTotalUncompressedBytes:'imports.xlsx.max_total_uncompressed_bytes',
+  maxCompressionRatio:'imports.xlsx.max_compression_ratio',maxWorksheets:'imports.xlsx.max_worksheets'
+};
+for(const [name,key] of Object.entries(importLimits))
+  assert(sourceLimit(name)===configValue(key),`${key}: source guard differs from configuration.json`);
+const importPreview=api.components.schemas.ImportPreview?.properties||{};
+assert(importPreview.row_count?.maximum===configValue('imports.max_rows'),'ImportPreview.row_count maximum differs from imports.max_rows');
+assert(importPreview.error_count?.maximum===configValue('imports.max_rows'),'ImportPreview.error_count maximum differs from imports.max_rows');
+assert(importPreview.errors?.maxItems===configValue('imports.preview_error_limit'),'ImportPreview.errors maxItems differs from imports.preview_error_limit');
+const importJobs=db.tables.find(t=>t.name==='import_jobs');
+const importRowCount=importJobs?.columns.find(c=>c.name==='row_count');
+assert(importRowCount?.validation?.some(v=>v.includes(`0 AND ${configValue('imports.max_rows')}`)),'import_jobs.row_count DB limit differs from imports.max_rows');
 const packages=new Map(work.packages.map(p=>[p.id,p]));
 unique(work.packages.map(p=>p.id),'Work packages');
 assert(packages.size===90,'Exactly 90 packages expected');

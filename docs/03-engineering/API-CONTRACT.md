@@ -74,6 +74,8 @@ rent_receipt, rent_refund, deposit_receipt, deposit_return, deposit_to_rent/depo
 
 Snapshot otaq/əşya siyahısının həmin andakı dəyişməz nüsxəsidir. Verən/alan ayrı submission-dır. saveAnswers yalnız öz tərəfinin draft-ını versiya ilə dəyişir. complete bütün otaqların explicit ok/problems/unable cavabını yoxlayır; tamamlanmış cavabı overwrite etmir. Correction yeni revision yaradır. Fayllar həmin tokenin property/event tərəfinə bağlıdır.
 
+Inventar `POST /imports/preview` axınında media source yalnız `private_import` classification / `eve-private-import` bucket-dən gəlir; browser Storage-a birbaşa oxuya və yaza bilməz. Parser sərhədləri D46 və `configuration.json` ilə eynidir. `ImportPreview.errors[].row` ilkin CSV record və ya XLSX worksheet sətiridir (header daxil), `error_count` isə bütün xətaların sayıdır; yalnız ilk `imports.preview_error_limit` detalı qaytarılır və qalanı `errors_truncated=true` ilə bildirilir. Import mövcud əşyanı overwrite etmir; stale preview hash/version və replay serverdə yoxlanır.
+
 ### Payriff
 
 PayriffInbound providerin final xarici payload schema-sı deyil: EXT05 açıq olduğundan onun istisnası additionalProperties=true ilə ayrıca işarələnib. Bütün digər domain object-lər allowlist-dir. Endpoint adapter müqaviləsi təsdiqlənənədək production-da disabled qalır. Hadisəni qəbul etmək payment/entitlement uğuru deyil. Merchant/order/amount/currency/status serverdən yoxlanır; browser success URL paid təyin etmir. İmza sahəsi və native status enum-u uydurulmur.
