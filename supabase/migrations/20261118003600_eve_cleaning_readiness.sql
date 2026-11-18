@@ -10,11 +10,16 @@ declare
   v_pending boolean;
   v_next app_private.readiness;
 begin
-  -- Serialize changes to different tasks for the same property before reading them.
-  select p.readiness into v_previous
-    from app_private.properties p
-    where p.id=p_property_id and p.owner_account_id=p_owner_account_id
-    for update;
+  -- Reservation move/checkout may hold the property before a task. If this
+  -- transaction holds a task first, fail promptly and retry the full command.
+  begin
+    select p.readiness into v_previous
+      from app_private.properties p
+      where p.id=p_property_id and p.owner_account_id=p_owner_account_id
+      for update nowait;
+  exception when lock_not_available then
+    raise exception using errcode='40001',message='readiness_retry_required';
+  end;
   if not found then
     raise exception using errcode='23503', message='readiness_property_not_found';
   end if;
@@ -89,6 +94,57 @@ revoke all on function app_private.task_readiness_changed()
 create trigger task_readiness_after_write
 after insert or update or delete on app_private.tasks
 for each row execute function app_private.task_readiness_changed();
+
+-- A completed task can still wait for its linked inspection submission or a
+-- late room answer. These writes must update readiness in the same transaction.
+create function app_private.inspection_readiness_changed()
+returns trigger language plpgsql security definer set search_path = '' as $$
+declare
+  v_event_ids uuid[] := array[]::uuid[];
+  v_event_id uuid;
+  v_property record;
+begin
+  if tg_table_name='inspection_submissions' then
+    if tg_op in ('DELETE','UPDATE') then
+      v_event_ids := array_append(v_event_ids,old.event_id);
+    end if;
+    if tg_op in ('INSERT','UPDATE') then
+      v_event_ids := array_append(v_event_ids,new.event_id);
+    end if;
+  else
+    if tg_op in ('DELETE','UPDATE') then
+      select s.event_id into v_event_id from app_private.inspection_submissions s
+        where s.id=old.submission_id;
+      if v_event_id is not null then v_event_ids := array_append(v_event_ids,v_event_id); end if;
+    end if;
+    if tg_op in ('INSERT','UPDATE') then
+      select s.event_id into v_event_id from app_private.inspection_submissions s
+        where s.id=new.submission_id;
+      if v_event_id is not null then v_event_ids := array_append(v_event_ids,v_event_id); end if;
+    end if;
+  end if;
+  for v_property in
+    select distinct t.property_id,t.owner_account_id
+    from app_private.tasks t
+    where t.required_for_readiness and t.inspection_event_id=any(v_event_ids)
+    order by t.property_id,t.owner_account_id
+  loop
+    perform app_private.recompute_property_readiness(
+      v_property.property_id,v_property.owner_account_id);
+  end loop;
+  if tg_op='DELETE' then return old; end if;
+  return new;
+end;
+$$;
+revoke all on function app_private.inspection_readiness_changed()
+  from public,anon,authenticated,service_role,app_executor;
+
+create trigger inspection_submission_readiness_after_write
+after insert or update or delete on app_private.inspection_submissions
+for each row execute function app_private.inspection_readiness_changed();
+create trigger inspection_room_answer_readiness_after_write
+after insert or update or delete on app_private.inspection_room_answers
+for each row execute function app_private.inspection_readiness_changed();
 
 -- Checkout may reuse a future cleaning task created before this migration.
 -- Make that unfinished task readiness-required without changing its identity,

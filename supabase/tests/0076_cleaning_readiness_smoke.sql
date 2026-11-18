@@ -105,8 +105,6 @@ insert into app_private.inspection_submissions(id,owner_account_id,property_id,e
    'a1812000-0000-0000-0000-000000000001','a1814000-0000-0000-0000-000000000001',
    'a1815000-0000-0000-0000-000000000001','giver','a1810000-0000-0000-0000-000000000001',
    'completed',now());
-select app_private.recompute_property_readiness('a1812000-0000-0000-0000-000000000001',
-  'a1811000-0000-0000-0000-000000000001');
 do $$ begin
   if (select readiness from app_private.properties where id='a1812000-0000-0000-0000-000000000001')<>'cleaning_pending' then
     raise exception 'missing room answer allowed ready state';
@@ -115,11 +113,29 @@ end $$;
 insert into app_private.inspection_room_answers(owner_account_id,property_id,submission_id,snapshot_room_id,result,confirmed_at)
  values ('a1811000-0000-0000-0000-000000000001','a1812000-0000-0000-0000-000000000001',
    'a1819000-0000-0000-0000-000000000001','a1816000-0000-0000-0000-000000000001','ok',now());
-select app_private.recompute_property_readiness('a1812000-0000-0000-0000-000000000001',
-  'a1811000-0000-0000-0000-000000000001');
 do $$ begin
   if (select readiness from app_private.properties where id='a1812000-0000-0000-0000-000000000001')<>'ready' then
     raise exception 'completed inspection and all required tasks did not mark ready';
+  end if;
+end $$;
+
+-- Removing an answer after completion must reopen the readiness gate; adding
+-- it back must clear the gate without an explicit helper call.
+delete from app_private.inspection_room_answers
+  where submission_id='a1819000-0000-0000-0000-000000000001';
+do $$ begin
+  if (select readiness from app_private.properties
+      where id='a1812000-0000-0000-0000-000000000001')<>'cleaning_pending' then
+    raise exception 'answer deletion failed to reopen readiness';
+  end if;
+end $$;
+insert into app_private.inspection_room_answers(owner_account_id,property_id,submission_id,snapshot_room_id,result,confirmed_at)
+ values ('a1811000-0000-0000-0000-000000000001','a1812000-0000-0000-0000-000000000001',
+   'a1819000-0000-0000-0000-000000000001','a1816000-0000-0000-0000-000000000001','ok',now());
+do $$ begin
+  if (select readiness from app_private.properties
+      where id='a1812000-0000-0000-0000-000000000001')<>'ready' then
+    raise exception 'answer restoration failed to clear readiness';
   end if;
 end $$;
 

@@ -47,6 +47,8 @@ Completed-dən yalnız `release_remaining_days` əməliyyatı mümkündür: fakt
 
 İşin tamamlanması xərcin təsdiqi və ya ödənilməsi demək deyil. Expired abunədə əvvəl verilmiş iş yalnız mövcud keçidin yazı müddətində nəticə qəbul edə bilər; yeni iş yaradıla bilməz.
 
+D47 readiness qaydası: `cleaning_pending` hər hansı aktiv readiness-required task completed olmayanda, yaxud onun linked inspection event-i üzrə completed submission və snapshot otaqlarının hamısına explicit cavab olmayanda qalır. Bütün tələb olunan task və yoxlama şərtləri ödənəndə `ready` olur. `cancelled` task bloklamır; mövcud `attention_required` açıq təsdiq olmadan saxlanır. Reservation checkout eyni placement-də əvvəl yaradılmış aktiv cleaning task-ını readiness-required edir; task yenidən yaradılmır və kimliyi/təlimatı/assignee-si dəyişmir. Task/inspection yazıları readiness-i eyni transaction-da yeniləyir. `readiness_retry_required` tam command retry siqnalıdır.
+
 ## İnventar yoxlaması
 
 | Vəziyyət | Əməliyyat | Nəticə |
