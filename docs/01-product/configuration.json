@@ -244,6 +244,36 @@
       "mutable": true
     },
     {
+      "key": "jobs.outbox_tick_minutes",
+      "value": 1,
+      "unit": "dəqiqə",
+      "scope": "scheduler",
+      "rationale": "Due outbox row-larını qısa intervalda idempotent claim etmək; bu dəyər hosted cron aktivliyinin sübutu deyil",
+      "requirement": "R16",
+      "acceptance": "AT36",
+      "mutable": true
+    },
+    {
+      "key": "jobs.outbox_batch_size",
+      "value": 25,
+      "unit": "row",
+      "scope": "scheduler",
+      "rationale": "Hər tick üçün məhdud DB/worker yükü",
+      "requirement": "R16",
+      "acceptance": "AT36",
+      "mutable": true
+    },
+    {
+      "key": "jobs.outbox_lease_seconds",
+      "value": 300,
+      "unit": "saniyə",
+      "scope": "server",
+      "rationale": "Worker dayanarsa row-un sonradan təhlükəsiz yenidən claim olunması",
+      "requirement": "R16",
+      "acceptance": "AT36",
+      "mutable": true
+    },
+    {
       "key": "notifications.quiet_start",
       "value": "22:00",
       "unit": "Asia/Baku",

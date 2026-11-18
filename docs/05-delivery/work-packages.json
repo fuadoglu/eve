@@ -1724,14 +1724,25 @@
       "parent_issue": 26,
       "milestone": "M3",
       "title": "Outbox/cron/dedupe və quiet hours",
-      "status": "backlog",
+      "status": "in_progress",
       "depends_on": [
         "EVE-018.1"
       ],
       "role": "domain_engineer",
       "owned_path_candidates": [
-        "src/modules/finance/",
-        "src/modules/operations/"
+        "supabase/migrations/20261118004000_eve_notification_outbox_worker.sql",
+        "supabase/tests/0077_notification_outbox_worker_smoke.sql",
+        "supabase/tests/0062_api_surface_smoke.sql",
+        "supabase/tests/0062_rls_coverage_smoke.sql",
+        ".github/workflows/ci.yml",
+        "scripts/verify-contracts.mjs",
+        "docs/01-product/DECISIONS.md",
+        "docs/01-product/configuration.json",
+        "docs/01-product/state-machines.json",
+        "docs/03-engineering/INTEGRATIONS.md",
+        "docs/03-engineering/data-dictionary.json",
+        "docs/04-quality/evidence/eve-018-2-notification-outbox.md",
+        "docs/05-delivery/STATUS.md"
       ],
       "ownership_rule": "İnteqrator konkret faylları Ready zamanı ayırır; schema/API/lockfile ortaq yazılmır.",
       "deliverable": "Outbox/cron/dedupe və quiet hours üçün task scope-u daxilində konkret fayllar və davranış sübutu.",

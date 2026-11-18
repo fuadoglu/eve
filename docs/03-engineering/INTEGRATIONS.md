@@ -49,7 +49,7 @@ QR generated URL sabitdir, PNG/SVG/PDF export; çap nümunəsi 25 mm və 35 mm �
 
 Email transactional fallback; Web Push istifadəçi icazəsi və cihaz dəstəyi ilə. Permission ilk ekranda soruşulmur, fayda izahından sonra istifadəçi seçir. Push uğursuzluqda kritik məlumat “Bu gün”də qalır.
 
-Outbox dedupe: recipient+kind+resource+scheduled_time. Quiet hours default 22:00–08:00 Asia/Baku; sabahkı plan səhər xülasəsində. Eyni hadisə təkrar bildiriş yaratmır. Sahib/menecer öz notification seçimlərini idarə edir, hər sahiblə bağlı data paylaşılmır.
+Outbox producer dedupe-si hazırkı komponentdə qlobal event `dedupe_key`-i ilədir və biznes yazısı ilə eyni transaction-da commit olunur; bu, gələcək kanal/alıcı səviyyəli `recipient+kind+resource+scheduled_time` dedupe-sini əvəz etmir. Trusted scheduler `jobs.outbox_tick_minutes` intervalında `jobs.outbox_batch_size` limitli server-only claim RPC-ni çağırır; row `jobs.outbox_lease_seconds` müddətinə lease edilir. Recipient-i olan row quiet window-da növbədə qalır; default 22:00–08:00 `Asia/Baku`, quiet end-də yenidən due olur. Səhər xülasəsi və kanal göndərişi ayrıca worker davranışıdır, bu DB primitive-i onları göndərmir. Sahib/menecer öz notification seçimlərini idarə edir, hər sahiblə bağlı data paylaşılmır.
 
 ## Provider dəyişmə sərhədi
 
