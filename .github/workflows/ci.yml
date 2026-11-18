@@ -349,12 +349,15 @@ jobs:
           docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261118003700_eve_private_import_enum.sql
           docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261118003800_eve_private_import_bucket.sql
           docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261118003900_eve_scoped_task_expense.sql
+          docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/migrations/20261118004000_eve_notification_outbox_worker.sql
       - name: Task link revoke, scoped expense, and replay smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0074_task_link_http_smoke.sql
       - name: Inventory copy/import tenant and idempotency smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0073_inventory_copy_import_smoke.sql
       - name: Cleaning readiness, checkout reuse and inspection lifecycle smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0076_cleaning_readiness_smoke.sql
+      - name: Notification outbox lease, dedupe, quiet hours and authorization smoke
+        run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0077_notification_outbox_worker_smoke.sql
       - name: Calendar interval query p95 synthetic smoke
         run: docker exec -i '${{ job.services.postgres.id }}' psql -U postgres -d eve_schema_test -v ON_ERROR_STOP=1 < supabase/tests/0070_calendar_interval_performance.sql
       - name: 56 cədvəlin RLS və grant coverage smoke
@@ -450,6 +453,8 @@ jobs:
             < supabase/tests/0073_inventory_copy_import_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
             < supabase/tests/0076_cleaning_readiness_smoke.sql
+          docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
+            < supabase/tests/0077_notification_outbox_worker_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
             < supabase/tests/0062_rls_coverage_smoke.sql
           docker exec -i supabase_db_eve psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \

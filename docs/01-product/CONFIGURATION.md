@@ -21,6 +21,8 @@ Fayl seçilməzdən ölçü həddi görünür; server faktiki ölçünü də yox
 
 Rate limit: retry vaxtı göstərilir, email mövcudluğu açıqlanmır. Keçidin müddəti bitəndə digər şəxsin nömrəsi yox, “Yeni keçid istəyin” neytral mesajı görünür. Bildiriş icazəsi yoxdursa əsas iş “Bu gün” ekranında qalır.
 
+Outbox scheduler tick-i dəqiqədə bir dəfə çağırmaq üçün konfiqurasiya olunur; hər çağırış maksimum 25 row claim edir. Lease 300 saniyədir. Bu rəqəmlər server/scheduler ilkin limitləridir; Supabase Cron-un mühitdə aktiv olması ayrıca yoxlanır. Worker 8 cəhdə qədər `2^(attempts-1)` dəqiqə gözləyir, sonra işi `failed` edir.
+
 ## Üstünlük və versiyalama
 
 Config > env ad-hoc override deyil: hər mühitdə hansı versiyanın işlədiyi məlum olmalıdır. Server qiyməti authoritative-dir; browser qiymət/küota/TTL dəyişdirə bilməz. Provider planı seçilmiş session limitini dəstəkləmirsə bu xarici gate-dir, faktiki ayar sübutu olmadan aktiv sayılmır.

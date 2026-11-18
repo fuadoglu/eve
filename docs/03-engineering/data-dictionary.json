@@ -9621,7 +9621,7 @@
     },
     {
       "name": "outbox",
-      "description": "Commitlə birlikdə yazılan bildiriş/job niyyəti",
+      "description": "Commitlə birlikdə yazılan, event key üzrə dedupe olunan bildiriş/job niyyəti; recipient/channel fan-out ayrıca qatdır",
       "requirements": [
         "R16"
       ],
@@ -9652,7 +9652,7 @@
           "type": "varchar(255)",
           "nullable": false,
           "default": null,
-          "description": "Təkrar göndəriş açarı",
+          "description": "Producer event idempotency/dedupe açarı; recipient/channel göndəriş dedupe-si deyil",
           "validation": [
             "char_length(dedupe_key) <= 255"
           ]
@@ -9728,6 +9728,14 @@
           "validation": []
         },
         {
+          "name": "lease_token",
+          "type": "uuid",
+          "nullable": true,
+          "default": null,
+          "description": "Yalnız cari worker lease-inin ack/retry edə bilməsi üçün generation token",
+          "validation": []
+        },
+        {
           "name": "last_error_code",
           "type": "varchar(100)",
           "nullable": true,
@@ -9789,7 +9797,13 @@
           "deferrable": false
         }
       ],
-      "checks": [],
+      "checks": [
+        {
+          "name": "outbox_worker_lease_state",
+          "expression": "state='processing' iff locked_until and lease_token are non-null; all other states clear both lease fields",
+          "enforcement": "CHECK"
+        }
+      ],
       "indexes": [
         {
           "columns": [
@@ -10192,7 +10206,7 @@
           "default": "Asia/Baku",
           "description": "Vaxt zonası",
           "validation": [
-            "char_length(timezone) <= 80"
+            "timezone = 'Asia/Baku'"
           ]
         },
         {
@@ -10249,7 +10263,13 @@
           "deferrable": false
         }
       ],
-      "checks": [],
+      "checks": [
+        {
+          "name": "notification_preferences_timezone_baku",
+          "expression": "timezone='Asia/Baku'",
+          "enforcement": "CHECK"
+        }
+      ],
       "indexes": [],
       "rls": {
         "enabled": true,

@@ -1143,6 +1143,100 @@
           "idempotent": true
         }
       ]
+    },
+    {
+      "name": "notification_outbox",
+      "states": [
+        "pending",
+        "processing",
+        "completed",
+        "failed"
+      ],
+      "terminal_states": [
+        "completed",
+        "failed"
+      ],
+      "transitions": [
+        {
+          "id": "notification_outbox.claim",
+          "action": "claim",
+          "from_states": [
+            "pending",
+            "processing"
+          ],
+          "to_state": "processing",
+          "capability": "system.notification_worker",
+          "preconditions": [
+            "due_or_lease_expired",
+            "recipient_outside_quiet_hours",
+            "attempts_below_eight",
+            "skip_locked"
+          ],
+          "transaction_effects": [
+            "increment_attempts",
+            "set_five_minute_lease",
+            "set_new_lease_token"
+          ],
+          "requirements": [
+            "R16"
+          ],
+          "acceptance": [
+            "AT36"
+          ],
+          "invalid_error": "FORBIDDEN",
+          "idempotent": false
+        },
+        {
+          "id": "notification_outbox.complete",
+          "action": "complete",
+          "from_states": [
+            "processing"
+          ],
+          "to_state": "completed",
+          "capability": "system.notification_worker",
+          "preconditions": [
+            "current_unexpired_lease_token_matches"
+          ],
+          "transaction_effects": [
+            "clear_lease",
+            "clear_last_error"
+          ],
+          "requirements": [
+            "R16"
+          ],
+          "acceptance": [
+            "AT36"
+          ],
+          "invalid_error": "LEASE_STALE",
+          "idempotent": false
+        },
+        {
+          "id": "notification_outbox.retry",
+          "action": "retry",
+          "from_states": [
+            "processing"
+          ],
+          "to_state": "pending",
+          "capability": "system.notification_worker",
+          "preconditions": [
+            "current_unexpired_lease_token_matches",
+            "safe_error_code"
+          ],
+          "transaction_effects": [
+            "exponential_delay_minutes_1_to_64",
+            "clear_lease",
+            "fail_after_eight_attempts"
+          ],
+          "requirements": [
+            "R16"
+          ],
+          "acceptance": [
+            "AT36"
+          ],
+          "invalid_error": "LEASE_STALE",
+          "idempotent": false
+        }
+      ]
     }
   ],
   "derived_states": {
