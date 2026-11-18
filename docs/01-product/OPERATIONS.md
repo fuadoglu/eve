@@ -27,7 +27,7 @@ Məcburi: giriş, çıxış, qonağın adı və ümumi qiymət (sıfır qiymət 
 
 ## Hazırlıq və təmizlik
 
-Gecələmə availability-si ilə hazır status ayrı saxlanır. Çıxış üçün bir cleaning task yaranır; unique(reservation_id, task_kind) təkrar yaradılmanı bloklayır. Tarix dəyişəndə gələcək iş yenilənir; tamamlanmış iş silinmir. Yoxlama tələb edilirsə cleaning task onun keçidini açır, ikinci forma yaradılmır.
+Gecələmə availability-si ilə hazır status ayrı saxlanır. Çıxış üçün bir cleaning task yaranır; unique(reservation_id, task_kind) təkrar yaradılmanı bloklayır. Tarix dəyişəndə gələcək iş yenilənir; tamamlanmış iş silinmir. Checkout zamanı mövcud eyni-placement cleaning task-ı, completed olsa belə, eyni kimlik/təlimat/assignee və transition history ilə saxlanır, readiness üçün tələb edilir və yeni checkout inspeksiyasına bağlanır. Bu task-ın əvvəlki completion-u yeni inspection submission və snapshot otaqlarının hamısına cavab olmadan evi hazır etmir. Yoxlama tələb edilirsə cleaning task onun keçidini açır, ikinci forma yaradılmır.
 
 Qəbul edən şəxs “Tamamladım” deyəndə iş reported_done olur. Sahib/təyinli menecer “Təsdiqlə” edir. Hazırlıq yalnız tələb olunan təmizlik və yoxlamalar tamamlandıqda hazır olur. Hazırlığı pozmayan xırda inventar problemi tarixləri avtomatik bloklamır.
 

@@ -146,22 +146,35 @@ create trigger inspection_room_answer_readiness_after_write
 after insert or update or delete on app_private.inspection_room_answers
 for each row execute function app_private.inspection_readiness_changed();
 
--- Checkout may reuse a future cleaning task created before this migration.
--- Make that unfinished task readiness-required without changing its identity,
--- instruction, assignee or immutable transition history.
+-- Checkout may reuse a same-placement cleaning task created before this
+-- migration, including one already completed. Attach the checkout inspection
+-- and require readiness without changing identity, state, instructions,
+-- assignee or immutable transition history.
 create function app_private.checkout_cleaning_required()
 returns trigger
 language plpgsql security definer set search_path = ''
 as $$
+declare
+  v_event_id uuid;
 begin
   if old.state is distinct from new.state and new.state='completed'
      and new.actual_check_out_at is not null then
+    select e.id into v_event_id
+      from app_private.inspection_events e
+      where e.owner_account_id=new.owner_account_id and e.property_id=new.property_id
+        and e.reservation_id=new.id and e.placement_id=new.current_placement_id
+        and e.event_kind='check_out'
+        and e.handover_key='reservation:'||new.id::text||':checkout:'||new.current_placement_id::text;
+    if v_event_id is null then
+      raise exception using errcode='23514',message='checkout_inspection_event_missing';
+    end if;
     update app_private.tasks t
-      set required_for_readiness=true,version=t.version+1,updated_at=clock_timestamp()
+      set required_for_readiness=true,inspection_event_id=v_event_id,
+          version=t.version+1,updated_at=clock_timestamp()
       where t.reservation_id=new.id and t.placement_id=new.current_placement_id
         and t.property_id=new.property_id and t.owner_account_id=new.owner_account_id
-        and t.kind='cleaning' and t.state in ('open','accepted','reported_done')
-        and not t.required_for_readiness;
+        and t.kind='cleaning' and t.state<>'cancelled'
+        and (not t.required_for_readiness or t.inspection_event_id is distinct from v_event_id);
   end if;
   return new;
 end;

@@ -196,7 +196,8 @@
           "transaction_effects": [
             "record_actual_checkout",
             "upsert_cleaning_task",
-            "upsert_handover_event"
+            "upsert_handover_event",
+            "recompute_readiness"
           ],
           "requirements": [
             "R04",
