@@ -7734,6 +7734,26 @@
           ]
         },
         {
+          "name": "idempotency_key_hash",
+          "type": "varchar(64)",
+          "nullable": true,
+          "default": null,
+          "description": "Task link yaradılmasının actor/task scope-lu idempotency açarının SHA-256 hash-i; raw açar saxlanmır",
+          "validation": [
+            "idempotency_key_hash ~ '^[0-9a-f]{64}$'"
+          ]
+        },
+        {
+          "name": "request_hash",
+          "type": "varchar(64)",
+          "nullable": true,
+          "default": null,
+          "description": "Task link yaradılması üçün kanonik payload hash-i; fərqli retry rədd edilir",
+          "validation": [
+            "request_hash ~ '^[0-9a-f]{64}$'"
+          ]
+        },
+        {
           "name": "kind",
           "type": "enum:link_kind",
           "nullable": false,
@@ -7858,6 +7878,14 @@
         },
         {
           "columns": [
+            "created_by",
+            "task_id",
+            "idempotency_key_hash"
+          ],
+          "predicate": "kind='task' AND idempotency_key_hash IS NOT NULL"
+        },
+        {
+          "columns": [
             "id",
             "property_id",
             "owner_account_id"
@@ -7954,6 +7982,11 @@
         }
       ],
       "checks": [
+        {
+          "name": "task_link_request_hashes",
+          "expression": "idempotency_key_hash/request_hash both NULL, or task link with created_by and lowercase SHA-256 hashes",
+          "enforcement": "CHECK"
+        },
         {
           "name": "link_target",
           "expression": "(kind='task' AND task_id IS NOT NULL AND inspection_event_id IS NULL AND reservation_id IS NULL AND placement_id IS NULL AND side IS NULL) OR (kind='inspection' AND task_id IS NULL AND inspection_event_id IS NOT NULL AND reservation_id IS NULL AND placement_id IS NULL AND side IS NOT NULL) OR (kind='guest_guide' AND task_id IS NULL AND inspection_event_id IS NULL AND reservation_id IS NOT NULL AND placement_id IS NOT NULL AND side IS NULL)",

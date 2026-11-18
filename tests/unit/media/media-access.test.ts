@@ -71,7 +71,8 @@ test("link exchange is same-origin, accepts only the token field and sets a scop
   assert.equal(hash, await hashScopedLinkToken(token));
   assert.equal(response.status, 200);
   assert.match(response.headers.get("set-cookie") ?? "", /HttpOnly; SameSite=Strict; Secure/);
-  assert.match(response.headers.get("set-cookie") ?? "", new RegExp(`Path=\\/api\\/v1\\/s\\/${token}\\/`));
+  assert.match(response.headers.get("set-cookie") ?? "", /Path=\/api\/v1\/s\//);
+  assert.doesNotMatch(response.headers.get("set-cookie") ?? "", new RegExp(token));
   assert.equal(response.headers.get("cache-control"), "private, no-store");
   assert.doesNotMatch(await response.text(), new RegExp(token));
 

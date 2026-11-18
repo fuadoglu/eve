@@ -27,7 +27,7 @@ begin
       or has_table_privilege('app_executor',c.oid,'UPDATE') is distinct from
         (c.relname in ('manager_invites','property_memberships','idempotency_keys','tasks','access_links','media_assets','link_session_rate_limits','reservations','reservation_placements','occupancy','realtor_accounts'))
       or has_table_privilege('app_executor',c.oid,'INSERT') is distinct from
-        (c.relname in ('owner_accounts','properties','trial_claims','subscriptions','rooms','inventory_items','media_bindings','media_assets','manager_invites','invite_properties','property_memberships','manager_invite_accept_context','reservations','reservation_placements','occupancy','rent_entries','realtor_accounts','realtor_settlements','outbox','audit_events','idempotency_keys','task_transition_events','task_transition_media','link_session_rate_limits','tasks','reservation_attribution_transfers','inspection_days','inspection_events','expenses','expense_allocations'))
+        (c.relname in ('owner_accounts','properties','trial_claims','subscriptions','rooms','inventory_items','media_bindings','media_assets','manager_invites','invite_properties','property_memberships','manager_invite_accept_context','reservations','reservation_placements','occupancy','rent_entries','realtor_accounts','realtor_settlements','outbox','audit_events','idempotency_keys','task_transition_events','task_transition_media','link_session_rate_limits','tasks','access_links','reservation_attribution_transfers','inspection_days','inspection_events','expenses','expense_allocations'))
       or has_table_privilege('app_executor',c.oid,'SELECT') is distinct from
         (c.relname in ('profiles','owner_accounts','properties','occupancy',
           'property_memberships','reservations','reservation_placements',
@@ -167,6 +167,9 @@ begin
     ('media_assets','media_assets_proxy_internal_read'),
     ('media_bindings','media_bindings_proxy_internal_read'),
     ('access_links','access_links_media_internal_read'),
+    ('properties','properties_task_link_internal_read'),
+    ('expenses','expenses_scoped_task_read'),
+    ('idempotency_keys','idempotency_keys_scoped_task_read'),
     ('tasks','tasks_media_internal_read'),
     ('task_transition_events','task_transition_events_media_internal_read'),
     ('task_transition_media','task_transition_media_proxy_internal_read'),
@@ -222,8 +225,22 @@ begin
   select count(*) into table_count
   from pg_policy p join pg_class c on c.oid=p.polrelid
   where c.relnamespace='app_private'::regnamespace;
-  if table_count <> 153 then
+  if table_count <> 161 then
     raise exception 'unexpected private table policies: %',table_count;
+  end if;
+  if (select count(*) from (values
+        ('access_links','access_links_task_create_internal','a'),
+        ('expenses','expenses_scoped_task_insert','a'),
+        ('expense_allocations','expense_allocations_scoped_task_insert','a'),
+        ('idempotency_keys','idempotency_keys_scoped_task_insert','a'),
+        ('idempotency_keys','idempotency_keys_scoped_task_update','w')
+      ) as expected(table_name,policy_name,command)
+      join pg_class c on c.relname=expected.table_name
+        and c.relnamespace='app_private'::regnamespace
+      join pg_policy p on p.polrelid=c.oid and p.polname=expected.policy_name
+        and p.polcmd=expected.command
+        and p.polroles=array['app_executor'::regrole::oid]) <> 5 then
+    raise exception 'scoped task write policies missing or mis-scoped';
   end if;
   if not exists (select 1 from pg_policy where polrelid='app_private.link_session_rate_limits'::regclass
       and polname='link_session_rate_limits_internal' and polcmd='*'
